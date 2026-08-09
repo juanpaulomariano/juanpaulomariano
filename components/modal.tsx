@@ -170,7 +170,7 @@ export default function Modal({
 
         <div
           className="overflow-hidden rounded-lg"
-          style={{ background: variant === "media" ? "#000" : TOKENS.warm }}
+          style={{ background: variant === "media" ? "#000" : TOKENS.white }}
         >
           {children}
         </div>

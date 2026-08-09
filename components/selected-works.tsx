@@ -5,7 +5,7 @@ import GalleryLightbox from "@/components/gallery-lightbox";
 import LivingPipeline from "@/components/living-pipeline";
 import VideoModal, { muxPoster } from "@/components/video-modal";
 import { TOKENS } from "@/lib/tokens";
-import { PROJECTS, type Project, type Shot, type Stat } from "@/lib/works";
+import { PROJECTS, type Project, type Shot } from "@/lib/works";
 
 /* ────────────────────────────────────────────────────────────────────────────
    Selected Works — a "switchboard": an index of systems on the left, an
@@ -13,11 +13,12 @@ import { PROJECTS, type Project, type Shot, type Stat } from "@/lib/works";
    (video, in-progress, pipeline) render from the same typed config in
    lib/works.ts.
 
-   Visual language matches the hero: white ground, hairline rules, precise
-   typography, one restrained red accent reserved for state (active project,
-   the travelling lead, in-progress status). Deliberately no card container,
-   no rounded surfaces, no filled active backgrounds, no pills — those read
-   as SaaS dashboard rather than editorial technical portfolio.
+   The hero is the design law: pure white ground, bold grotesk headings (no
+   serif anywhere), Manrope body, hairline rules, and one clay-red accent used
+   for a single emphasis at a time. There is deliberately NO stat row — the
+   descriptions carry every number inside a sentence rather than as isolated
+   trophy figures. The living pipeline is the one bold element here; the
+   hero's orbit is the page's other, and they must not compete.
 
    Stage height is reserved (min-height) so switching projects never shifts
    the page. Content lives in the config; nothing here needs editing to swap
@@ -45,7 +46,7 @@ export default function SelectedWorks() {
     <section
       id="work"
       className="px-6 py-24 sm:px-10 sm:py-32"
-      style={{ background: TOKENS.warm }}
+      style={{ background: TOKENS.white }}
     >
       <div className="mx-auto max-w-[1180px]">
         {/* ── Section header: a ruled masthead, not a card heading ── */}
@@ -55,10 +56,10 @@ export default function SelectedWorks() {
         >
           <div className="flex items-baseline justify-between gap-6">
             <p
-              className="text-[11px] uppercase tracking-[0.2em]"
+              className="text-[11px] tracking-[0.2em]"
               style={{ color: TOKENS.muted }}
             >
-              Selected work · Systems · Builds
+              Selected work
             </p>
             {/* Section number — architectural, set in the same tabular voice
                 as the stats so it reads as a coordinate, not decoration. */}
@@ -70,11 +71,12 @@ export default function SelectedWorks() {
             </span>
           </div>
 
+          {/* Bold grotesk, matching the hero's face and weight exactly. */}
           <h2
-            className="mt-7 max-w-[13em] text-[clamp(2.1rem,4.4vw,3.5rem)] leading-[1.06] tracking-[-0.02em]"
-            style={{ fontFamily: "var(--font-serif)", color: TOKENS.ink }}
+            className="mt-7 max-w-[13em] font-bold text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06] tracking-[-0.02em]"
+            style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.ink }}
           >
-            Systems I&apos;ve architected, end to end.
+            Systems I&apos;ve built, start to finish.
           </h2>
         </div>
 
@@ -189,9 +191,6 @@ export default function SelectedWorks() {
           shots={active.screenshots}
           title={active.title}
           startIndex={galleryStart}
-          unitLabel={
-            active.screenshots.length !== active.workflowCount ? "canvases" : ""
-          }
         />
       )}
     </section>
@@ -219,8 +218,8 @@ function Stage({
       </p>
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <h3
-          className="text-[clamp(1.6rem,2.7vw,2.25rem)] leading-[1.1] tracking-[-0.015em]"
-          style={{ fontFamily: "var(--font-serif)", color: TOKENS.ink }}
+          className="font-bold text-[clamp(1.5rem,2.5vw,2rem)] leading-[1.12] tracking-[-0.02em]"
+          style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.ink }}
         >
           {project.title}
         </h3>
@@ -239,24 +238,16 @@ function Stage({
       {project.type === "video" && (
         <div className="mt-9">
           <VideoPoster project={project} onPlay={onPlay} />
-          <StatRow stats={project.stats} />
-        </div>
-      )}
-
-      {project.type === "progress" && (
-        <div className="mt-9">
-          <StatRow stats={project.stats} />
         </div>
       )}
 
       {project.type === "pipeline" && (
         <div className="mt-10">
           <LivingPipeline stages={project.stages} runKey={project.key} />
-          <StatRow stats={project.stats} />
           <ProofWall
-            sentence={project.proofSentence}
+            intro={project.galleryIntro}
+            buttonLabel={project.galleryButton}
             shots={project.screenshots}
-            workflowCount={project.workflowCount}
             onOpen={onOpenGallery}
           />
         </div>
@@ -291,40 +282,6 @@ function InProgressTag() {
   );
 }
 
-/* Stats as a technical specification block: figures on a shared baseline,
-   divided by hairlines rather than boxed into individual metric cards. */
-function StatRow({ stats }: { stats: Stat[] }) {
-  return (
-    <dl
-      className="mt-10 grid border-t sm:grid-cols-3"
-      style={{ borderColor: TOKENS.ink }}
-    >
-      {stats.map((s, i) => (
-        <div
-          key={s.label}
-          className={`py-5 sm:py-6 ${i > 0 ? "border-t sm:border-l sm:border-t-0 sm:pl-6" : ""}`}
-          style={{ borderColor: TOKENS.hair }}
-        >
-          <dt className="sr-only">{s.label}</dt>
-          <dd>
-            <span
-              className="block text-[30px] leading-none tracking-[-0.02em] tabular-nums"
-              style={{ fontFamily: "var(--font-serif)", color: TOKENS.ink }}
-            >
-              {s.value}
-            </span>
-            <span
-              className="mt-2.5 block text-[10px] uppercase tracking-[0.16em]"
-              style={{ color: TOKENS.muted }}
-            >
-              {s.label}
-            </span>
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
 
 function VideoPoster({
   project,
@@ -392,15 +349,14 @@ function VideoPoster({
 }
 
 function ProofWall({
-  sentence,
+  intro,
+  buttonLabel,
   shots,
-  workflowCount,
   onOpen,
 }: {
-  sentence: string;
+  intro: string;
+  buttonLabel: string;
   shots: Shot[];
-  /* Counts workflows, not screenshots — some workflows span several canvases. */
-  workflowCount: number;
   onOpen: (i: number) => void;
 }) {
   /* Calm at rest: one sentence, a few faded thumbs as texture, one button.
@@ -412,30 +368,24 @@ function ProofWall({
 
   return (
     <div className="mt-10 border-t pt-7" style={{ borderColor: TOKENS.hair }}>
-      <div className="flex items-baseline justify-between gap-6">
-        <p className="text-[13.5px]" style={{ color: TOKENS.body }}>
-          {sentence}
-        </p>
-        <span
-          className="hidden shrink-0 text-[10px] uppercase tracking-[0.18em] sm:block"
-          style={{ color: TOKENS.muted }}
-        >
-          Evidence
-        </span>
-      </div>
+      <p className="text-[13.5px]" style={{ color: TOKENS.body }}>
+        {intro}
+      </p>
 
       {/* Previews are deliberately larger than a typical thumbnail: a GHL
           canvas is ~2500px wide, so at postage-stamp size the graph reads as
           grey noise and undercuts the claim rather than supporting it. At this
           size the branch structure is legible as a diagram, and the workflow's
           real name carries the specifics. The full canvas is one click away. */}
-      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {/* Single column on phones (screenshot + label reads as a list),
+          four-up from sm where the canvases have room to be diagrams. */}
+      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-4 sm:gap-3">
         {previews.map((s) => (
           <button
             key={s.i}
             type="button"
             onClick={() => onOpen(s.i)}
-            aria-label={`Open ${s.caption ?? `workflow ${s.i + 1}`} in the gallery`}
+            aria-label={`Open ${s.label} in the gallery`}
             className="group/thumb text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             <span
@@ -459,14 +409,12 @@ function ProofWall({
                 </span>
               )}
             </span>
-            {s.caption && (
-              <span
-                className="mt-1.5 block truncate text-[11px] transition-colors duration-200 group-hover/thumb:text-[#0A0A0A]"
-                style={{ color: TOKENS.muted }}
-              >
-                {s.caption}
-              </span>
-            )}
+            <span
+              className="mt-1.5 block truncate text-[11px] transition-colors duration-200 group-hover/thumb:text-[#0A0A0A]"
+              style={{ color: TOKENS.muted }}
+            >
+              {s.label}
+            </span>
           </button>
         ))}
       </div>
@@ -487,7 +435,7 @@ function ProofWall({
           e.currentTarget.style.borderColor = TOKENS.ink;
         }}
       >
-        See all {workflowCount} workflows
+        {buttonLabel}
         <span
           aria-hidden="true"
           className="transition-transform duration-300 group-hover/all:translate-x-1"

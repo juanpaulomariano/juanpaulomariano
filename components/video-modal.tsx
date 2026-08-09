@@ -79,13 +79,13 @@ function Spinner() {
   );
 }
 
-/* Error / unconfigured state: readable message on the warm surface rather
+/* Error / unconfigured state: readable message on a white surface rather
    than an unexplained black box. The modal stays fully usable. */
 function Notice({ heading, body }: { heading: string; body: string }) {
   return (
     <div
       className="flex h-full w-full flex-col items-center justify-center gap-2 px-8 text-center"
-      style={{ background: TOKENS.warm }}
+      style={{ background: TOKENS.white }}
     >
       <p className="text-[15px] font-medium" style={{ color: TOKENS.ink }}>
         {heading}

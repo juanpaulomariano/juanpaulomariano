@@ -16,10 +16,6 @@ type Props = {
   shots: Shot[];
   title: string;
   startIndex?: number;
-  /** Number of workflows, when it differs from the screenshot count (some
-      workflows span several canvases). Shown as context in the header so
-      "12 / 23 canvases" never appears to contradict "20 workflows". */
-  unitLabel?: string;
 };
 
 export default function GalleryLightbox({
@@ -28,7 +24,6 @@ export default function GalleryLightbox({
   shots,
   title,
   startIndex = 0,
-  unitLabel = "",
 }: Props) {
   const [i, setI] = useState(startIndex);
   const [zoomed, setZoomed] = useState(false);
@@ -57,6 +52,11 @@ export default function GalleryLightbox({
   if (!open) return null;
 
   const shot = shots[i];
+  /* Count workflows, not canvases: a workflow that spans several screenshots
+     is one workflow, so "4 / 20" agrees with the "See all 20 workflows"
+     button instead of quietly reporting a larger file count. */
+  const total = shots.filter((s) => !s.continuation).length;
+  const position = shots.slice(0, i + 1).filter((s) => !s.continuation).length;
   /* Prefetch the immediate neighbours only. */
   const near = new Set([
     i,
@@ -71,7 +71,7 @@ export default function GalleryLightbox({
       onArrow={go}
       variant="gallery"
       title={title}
-      subtitle={`${i + 1} / ${shots.length}${unitLabel ? ` ${unitLabel}` : ""}`}
+      subtitle={`${position} / ${total}`}
     >
       <div className="relative">
         {/* Two viewing modes:
@@ -84,7 +84,7 @@ export default function GalleryLightbox({
         <div
           className={zoomed ? "overflow-auto" : "flex items-center justify-center"}
           style={{
-            background: TOKENS.warm,
+            background: TOKENS.white,
             height: "min(78vh, 780px)",
             cursor: shot?.src ? (zoomed ? "zoom-out" : "zoom-in") : "default",
           }}
@@ -139,15 +139,27 @@ export default function GalleryLightbox({
         className="flex items-center justify-between gap-4 border-t px-4 py-3"
         style={{ borderColor: TOKENS.line, background: "#FFFFFF" }}
       >
-        <p className="min-w-0 text-[13px]" style={{ color: TOKENS.muted }}>
-          {shot?.caption ?? " "}
-        </p>
+        {/* The caption is what makes a deliberately zoomed-out canvas
+            legible, so it gets real width and reading size. */}
+        <div className="min-w-0">
+          <p
+            className="text-[11px] uppercase tracking-[0.16em]"
+            style={{ color: TOKENS.ink }}
+          >
+            {shot?.label ?? " "}
+          </p>
+          <p
+            className="mt-2 max-w-[70ch] text-[13.5px] leading-[1.7]"
+            style={{ color: TOKENS.body }}
+          >
+            {shot?.caption ?? " "}
+          </p>
+        </div>
         <p
           className="shrink-0 text-[12px] tabular-nums"
           style={{ color: TOKENS.muted }}
         >
-          {i + 1} / {shots.length}
-          {unitLabel ? ` ${unitLabel}` : ""}
+          {position} / {total}
         </p>
       </div>
 
@@ -169,12 +181,14 @@ export default function GalleryLightbox({
             style={{
               borderColor: n === i ? TOKENS.accent : TOKENS.line,
               opacity: n === i ? 1 : 0.55,
-              background: TOKENS.warm,
+              background: TOKENS.white,
             }}
           >
             {s.src ? (
+              /* Rail uses the small copy where one exists — a 12x20px cell has
+                 no use for a 300 KB lossless canvas. */
               <img
-                src={s.src}
+                src={s.previewSrc || s.src}
                 alt=""
                 loading="lazy"
                 decoding="async"
@@ -221,7 +235,7 @@ function PlaceholderBox({ label }: { label: string }) {
   return (
     <div
       className="flex h-[min(70vh,620px)] w-full items-center justify-center"
-      style={{ background: "#EFEBE4" }}
+      style={{ background: "#F4F4F4" }}
     >
       <span
         className="text-[13px] tracking-[0.08em] uppercase"

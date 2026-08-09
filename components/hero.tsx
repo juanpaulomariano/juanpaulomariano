@@ -1,18 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Tuning constants — everything you A/B lives here.
-   The dev panel (bottom-right, dev builds only) overrides these live;
-   production uses exactly these values.
+   Orbit settings — finalized. These constants are the single place to adjust
+   the hero; change one and the whole system (rings, dots, connectors, logo
+   depth) follows, since every position derives from them.
 ──────────────────────────────────────────────────────────────────────────── */
 
 /** The one accent color. Used only for the "can't do" emphasis + button hover. */
 const ACCENT = "#C0392B";
 
 /** Headline font: "grotesk" | "serif" | "manrope" */
-const HEADLINE_FONT: FontKey = "grotesk";
+const HEADLINE_FONT: FontKey = "manrope";
 
 /** Logos on flat white tiles (true) vs bare on the background (false). */
 const SHOW_TILES = true;
@@ -230,16 +230,18 @@ const DOT_SPECS = [
   { l: 2, a: 330, hollow: true },
 ];
 
-/* ── Headline font options ─────────────────────────────────────────────── */
+/* ── Headline font ───────────────────────────────────────────────────────────
+   Manrope is the chosen face. The other two are kept as ready alternates —
+   switch HEADLINE_FONT at the top of this file to try one; all three are
+   already loaded in app/layout.tsx. */
 
 type FontKey = "grotesk" | "serif" | "manrope";
 
 const HEADLINE_FONTS: Record<
   FontKey,
-  { label: string; className: string; style: CSSProperties }
+  { className: string; style: CSSProperties }
 > = {
   grotesk: {
-    label: "Grotesk",
     className: "font-bold tracking-[-0.02em] leading-[1.05]",
     style: {
       fontFamily: "var(--font-grotesk)",
@@ -247,7 +249,6 @@ const HEADLINE_FONTS: Record<
     },
   },
   serif: {
-    label: "Serif",
     className: "font-normal tracking-[-0.005em] leading-[1.03]",
     style: {
       fontFamily: "var(--font-serif)",
@@ -255,7 +256,6 @@ const HEADLINE_FONTS: Record<
     },
   },
   manrope: {
-    label: "Manrope",
     className: "font-extrabold tracking-[-0.025em] leading-[1.06]",
     style: {
       fontFamily: "var(--font-sans)",
@@ -267,21 +267,23 @@ const HEADLINE_FONTS: Record<
 /* ────────────────────────────────────────────────────────────────────────── */
 
 export default function Hero() {
-  const [font, setFont] = useState<FontKey>(HEADLINE_FONT);
-  const [tiles, setTiles] = useState(SHOW_TILES);
-  const [spin, setSpin] = useState(SLOW_ROTATION);
-  const [tilt, setTilt] = useState(TILT_DEG);
-  const [depthOn, setDepthOn] = useState(DEPTH_SCALING);
-  const [ringsOn, setRingsOn] = useState(ORBIT_RINGS);
-  const [dotsOn, setDotsOn] = useState(DOTS_AND_LINES);
-  const [cueOn, setCueOn] = useState(SCROLL_CUE);
-  const [rx, setRx] = useState(RX_FRAC);
-  const [ry, setRy] = useState(RY_FRAC);
-  const [yOff, setYOff] = useState(CENTER_OFFSET_PCT);
-  const [layers, setLayers] = useState<2 | 3>(LAYER_COUNT);
-  const [scaleMin, setScaleMin] = useState(SCALE_MIN);
-  const [scaleMax, setScaleMax] = useState(SCALE_MAX);
-  const [opacityFloor, setOpacityFloor] = useState(OPACITY_FLOOR);
+  /* Settings are finalized — every value below is a module constant at the top
+     of this file. The live tuning panel that produced them has been removed. */
+  const font = HEADLINE_FONT;
+  const tiles = SHOW_TILES;
+  const spin = SLOW_ROTATION;
+  const tilt = TILT_DEG;
+  const depthOn = DEPTH_SCALING;
+  const ringsOn = ORBIT_RINGS;
+  const dotsOn = DOTS_AND_LINES;
+  const cueOn = SCROLL_CUE;
+  const rx = RX_FRAC;
+  const ry = RY_FRAC;
+  const yOff = CENTER_OFFSET_PCT;
+  const layers = LAYER_COUNT;
+  const scaleMin = SCALE_MIN;
+  const scaleMax = SCALE_MAX;
+  const opacityFloor = OPACITY_FLOOR;
 
   const layout = buildLayout(layers, rx, ry);
   const knobs: DepthKnobs = {
@@ -350,7 +352,6 @@ export default function Hero() {
   }, [spin]);
 
   const headline = HEADLINE_FONTS[font];
-  const isDev = process.env.NODE_ENV === "development";
 
   /* Static positions for SSR / reduced motion / spin off — same math the
      rAF loop uses, at the current phase. */
@@ -641,122 +642,6 @@ export default function Hero() {
           </div>
         )}
       </div>
-
-      {/* ── Dev-only A/B panel ── */}
-      {isDev && (
-        <div className="absolute bottom-4 right-4 z-50 hidden flex-col gap-1 rounded-xl border-[0.5px] border-black/15 bg-white/95 p-1.5 text-[11px] backdrop-blur lg:flex">
-          <div className="flex items-center gap-1">
-            {(Object.keys(HEADLINE_FONTS) as FontKey[]).map((key) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setFont(key)}
-                className={`rounded-full px-2.5 py-1 transition-colors duration-150 ${
-                  font === key ? "bg-[#0A0A0A] text-white" : "text-[#444444] hover:text-[#0A0A0A]"
-                }`}
-              >
-                {HEADLINE_FONTS[key].label}
-              </button>
-            ))}
-            <span className="mx-1 h-4 w-px bg-black/10" aria-hidden="true" />
-            {(
-              [
-                ["Tiles", tiles, setTiles],
-                ["Spin", spin, setSpin],
-                ["Depth", depthOn, setDepthOn],
-                ["Rings", ringsOn, setRingsOn],
-                ["Dots", dotsOn, setDotsOn],
-                ["Cue", cueOn, setCueOn],
-              ] as const
-            ).map(([label, value, set]) => (
-              <button
-                key={label}
-                type="button"
-                onClick={() => set(!value)}
-                className={`rounded-full px-2.5 py-1 transition-colors duration-150 ${
-                  value ? "bg-[#0A0A0A] text-white" : "text-[#444444] hover:text-[#0A0A0A]"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center gap-2 px-1">
-            <label className="flex items-center gap-1 text-[#444444]">
-              Tilt {tilt}°
-              <input
-                type="range" min={45} max={70} step={1} value={tilt}
-                onChange={(e) => setTilt(Number(e.target.value))}
-                className="h-1 w-14 accent-[#0A0A0A]"
-              />
-            </label>
-            <label className="flex items-center gap-1 text-[#444444]">
-              Rx {rx.toFixed(2)}
-              <input
-                type="range" min={0.42} max={0.56} step={0.01} value={rx}
-                onChange={(e) => setRx(Number(e.target.value))}
-                className="h-1 w-14 accent-[#0A0A0A]"
-              />
-            </label>
-            <label className="flex items-center gap-1 text-[#444444]">
-              Ry {ry.toFixed(2)}
-              <input
-                type="range" min={0.3} max={0.44} step={0.01} value={ry}
-                onChange={(e) => setRy(Number(e.target.value))}
-                className="h-1 w-14 accent-[#0A0A0A]"
-              />
-            </label>
-            <label className="flex items-center gap-1 text-[#444444]">
-              Y {yOff.toFixed(1)}%
-              <input
-                type="range" min={-8} max={2} step={0.2} value={yOff}
-                onChange={(e) => setYOff(Number(e.target.value))}
-                className="h-1 w-14 accent-[#0A0A0A]"
-              />
-            </label>
-          </div>
-          <div className="flex items-center gap-2 px-1">
-            <span className="text-[#444444]">Layers</span>
-            {([2, 3] as const).map((n) => (
-              <button
-                key={n}
-                type="button"
-                onClick={() => setLayers(n)}
-                className={`rounded-full px-2 py-0.5 transition-colors duration-150 ${
-                  layers === n ? "bg-[#0A0A0A] text-white" : "text-[#444444] hover:text-[#0A0A0A]"
-                }`}
-              >
-                {n}
-              </button>
-            ))}
-            <span className="mx-1 h-4 w-px bg-black/10" aria-hidden="true" />
-            <label className="flex items-center gap-1 text-[#444444]">
-              Min {scaleMin.toFixed(2)}
-              <input
-                type="range" min={0.5} max={0.85} step={0.02} value={scaleMin}
-                onChange={(e) => setScaleMin(Number(e.target.value))}
-                className="h-1 w-14 accent-[#0A0A0A]"
-              />
-            </label>
-            <label className="flex items-center gap-1 text-[#444444]">
-              Max {scaleMax.toFixed(2)}
-              <input
-                type="range" min={1.05} max={1.4} step={0.01} value={scaleMax}
-                onChange={(e) => setScaleMax(Number(e.target.value))}
-                className="h-1 w-14 accent-[#0A0A0A]"
-              />
-            </label>
-            <label className="flex items-center gap-1 text-[#444444]">
-              Floor {opacityFloor.toFixed(2)}
-              <input
-                type="range" min={0.6} max={0.9} step={0.02} value={opacityFloor}
-                onChange={(e) => setOpacityFloor(Number(e.target.value))}
-                className="h-1 w-14 accent-[#0A0A0A]"
-              />
-            </label>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

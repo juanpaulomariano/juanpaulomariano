@@ -73,9 +73,12 @@ export default function LivingPipeline({ stages, runKey }: Props) {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div
+        className="flex items-baseline justify-between border-t pt-4"
+        style={{ borderColor: TOKENS.ink }}
+      >
         <p
-          className="text-[11px] uppercase tracking-[0.16em]"
+          className="text-[10px] uppercase tracking-[0.2em]"
           style={{ color: TOKENS.muted }}
         >
           Lead journey
@@ -85,7 +88,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
             type="button"
             onClick={() => setRunId((v) => v + 1)}
             disabled={!done}
-            className="rounded-full px-2 py-1 text-[11px] transition-opacity duration-200 disabled:opacity-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="text-[10px] uppercase tracking-[0.18em] transition-opacity duration-200 disabled:opacity-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
             style={{ color: TOKENS.muted }}
           >
             Replay
@@ -93,21 +96,27 @@ export default function LivingPipeline({ stages, runKey }: Props) {
         )}
       </div>
 
-      {/* Desktop / tablet: horizontal track ───────────────────────────────── */}
-      <div className="relative mt-5 hidden sm:block">
+      {/* Desktop / tablet: horizontal track ─────────────────────────────────
+          Technical diagram treatment: a hairline rail, small precise nodes
+          (hollow until traversed), and the travelling lead as the one
+          emphatic red mark. Motion mechanics are unchanged. */}
+      <div className="relative mt-8 hidden sm:block">
         {/* Rail + fill live in the node-center band (half a node inset). */}
         <div
-          className="absolute top-[7px] h-px"
+          className="absolute top-[5px] h-px"
           style={{
             left: `${50 / stages.length}%`,
             right: `${50 / stages.length}%`,
             background: TOKENS.line,
           }}
         >
+          {/* Traversed rail is ink, not red: red is reserved for the lead's
+              current position, so a completed run reads as an architectural
+              diagram rather than a fully-coloured progress bar. */}
           <div
             className="h-full origin-left"
             style={{
-              background: TOKENS.accent,
+              background: TOKENS.ink,
               transform: `scaleX(${pct / 100})`,
               transition: reduced
                 ? "none"
@@ -116,13 +125,13 @@ export default function LivingPipeline({ stages, runKey }: Props) {
           />
           {/* The lead. translateX only — never `left`. */}
           <div
-            className="absolute top-1/2 h-[9px] w-[9px] rounded-full"
+            className="absolute top-1/2 h-[7px] w-[7px] rounded-full"
             style={{
               left: 0,
-              marginTop: -4.5,
-              marginLeft: -4.5,
+              marginTop: -3.5,
+              marginLeft: -3.5,
               background: TOKENS.accent,
-              boxShadow: "0 0 0 4px rgba(192,57,43,0.14)",
+              boxShadow: "0 0 0 3px rgba(192,57,43,0.12)",
               transform: `translateX(${pct}%)`,
               transition: reduced
                 ? "none"
@@ -134,20 +143,31 @@ export default function LivingPipeline({ stages, runKey }: Props) {
         <ol className="relative grid" style={{ gridTemplateColumns: `repeat(${stages.length}, minmax(0,1fr))` }}>
           {stages.map((label, i) => {
             const lit = i <= step;
+            const current = i === step;
             return (
-              <li key={label} className="flex flex-col items-center gap-2.5 text-center">
+              <li key={label} className="flex flex-col items-center gap-3.5 text-center">
                 <span
-                  className="block h-[15px] w-[15px] rounded-full border"
+                  className="block h-[11px] w-[11px] rounded-full border"
                   style={{
-                    background: lit ? TOKENS.accent : "#FFFFFF",
-                    borderColor: lit ? TOKENS.accent : TOKENS.line,
+                    /* Passed = ink, current = red, ahead = hollow. Only one
+                       node carries the accent at any moment. */
+                    background: current
+                      ? TOKENS.accent
+                      : lit
+                        ? TOKENS.ink
+                        : TOKENS.white,
+                    borderColor: current
+                      ? TOKENS.accent
+                      : lit
+                        ? TOKENS.ink
+                        : TOKENS.line,
                     transition: reduced
                       ? "none"
                       : `background-color 320ms ${EASE.enter}, border-color 320ms ${EASE.enter}`,
                   }}
                 />
                 <span
-                  className="px-1 text-[12px] leading-tight"
+                  className="px-1 text-[10px] uppercase leading-[1.5] tracking-[0.13em]"
                   style={{
                     color: lit ? TOKENS.ink : TOKENS.muted,
                     transition: reduced ? "none" : "color 320ms ease",
@@ -162,32 +182,41 @@ export default function LivingPipeline({ stages, runKey }: Props) {
       </div>
 
       {/* Mobile: the same run, stacked vertically ─────────────────────────── */}
-      <ol className="mt-4 sm:hidden">
+      <ol className="mt-6 sm:hidden">
         {stages.map((label, i) => {
           const lit = i <= step;
+          const current = i === step;
           return (
-            <li key={label} className="relative flex gap-3 pb-3 last:pb-0">
+            <li key={label} className="relative flex gap-3.5 pb-4 last:pb-0">
               {i < stages.length - 1 && (
                 <span
                   aria-hidden="true"
-                  className="absolute left-[7px] top-[15px] w-px"
+                  className="absolute left-[5px] top-[13px] w-px"
                   style={{
                     bottom: 0,
-                    background: i < step ? TOKENS.accent : TOKENS.line,
+                    background: i < step ? TOKENS.ink : TOKENS.line,
                     transition: reduced ? "none" : "background-color 320ms ease",
                   }}
                 />
               )}
               <span
-                className="relative z-10 mt-0.5 block h-[15px] w-[15px] shrink-0 rounded-full border"
+                className="relative z-10 mt-[3px] block h-[11px] w-[11px] shrink-0 rounded-full border"
                 style={{
-                  background: lit ? TOKENS.accent : "#FFFFFF",
-                  borderColor: lit ? TOKENS.accent : TOKENS.line,
+                  background: current
+                    ? TOKENS.accent
+                    : lit
+                      ? TOKENS.ink
+                      : TOKENS.white,
+                  borderColor: current
+                    ? TOKENS.accent
+                    : lit
+                      ? TOKENS.ink
+                      : TOKENS.line,
                   transition: reduced ? "none" : `background-color 320ms ${EASE.enter}`,
                 }}
               />
               <span
-                className="text-[13px] leading-[15px]"
+                className="text-[10px] uppercase leading-[15px] tracking-[0.13em]"
                 style={{ color: lit ? TOKENS.ink : TOKENS.muted }}
               >
                 {label}

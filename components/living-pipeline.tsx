@@ -75,11 +75,11 @@ export default function LivingPipeline({ stages, runKey }: Props) {
     <div>
       <div
         className="flex items-baseline justify-between border-t pt-4"
-        style={{ borderColor: TOKENS.ink }}
+        style={{ borderColor: TOKENS.darkLine }}
       >
         <p
           className="text-[10px] uppercase tracking-[0.2em]"
-          style={{ color: TOKENS.muted }}
+          style={{ color: TOKENS.darkMuted }}
         >
           Lead journey
         </p>
@@ -89,7 +89,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
             onClick={() => setRunId((v) => v + 1)}
             disabled={!done}
             className="text-[10px] uppercase tracking-[0.18em] transition-opacity duration-200 disabled:opacity-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-            style={{ color: TOKENS.muted }}
+            style={{ color: TOKENS.darkMuted }}
           >
             Replay
           </button>
@@ -107,7 +107,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
           style={{
             left: `${50 / stages.length}%`,
             right: `${50 / stages.length}%`,
-            background: TOKENS.line,
+            background: TOKENS.darkLine,
           }}
         >
           {/* Traversed rail is ink, not red: red is reserved for the lead's
@@ -116,7 +116,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
           <div
             className="h-full origin-left"
             style={{
-              background: TOKENS.ink,
+              background: TOKENS.darkInk,
               transform: `scaleX(${pct / 100})`,
               transition: reduced
                 ? "none"
@@ -154,13 +154,13 @@ export default function LivingPipeline({ stages, runKey }: Props) {
                     background: current
                       ? TOKENS.accent
                       : lit
-                        ? TOKENS.ink
-                        : TOKENS.white,
+                        ? TOKENS.darkInk
+                        : TOKENS.darkBg,
                     borderColor: current
                       ? TOKENS.accent
                       : lit
-                        ? TOKENS.ink
-                        : TOKENS.line,
+                        ? TOKENS.darkInk
+                        : TOKENS.darkLine,
                     transition: reduced
                       ? "none"
                       : `background-color 320ms ${EASE.enter}, border-color 320ms ${EASE.enter}`,
@@ -169,7 +169,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
                 <span
                   className="px-1 text-[10px] uppercase leading-[1.5] tracking-[0.13em]"
                   style={{
-                    color: lit ? TOKENS.ink : TOKENS.muted,
+                    color: lit ? TOKENS.darkInk : TOKENS.darkMuted,
                     transition: reduced ? "none" : "color 320ms ease",
                   }}
                 >
@@ -194,7 +194,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
                   className="absolute left-[5px] top-[13px] w-px"
                   style={{
                     bottom: 0,
-                    background: i < step ? TOKENS.ink : TOKENS.line,
+                    background: i < step ? TOKENS.darkInk : TOKENS.darkLine,
                     transition: reduced ? "none" : "background-color 320ms ease",
                   }}
                 />
@@ -205,19 +205,19 @@ export default function LivingPipeline({ stages, runKey }: Props) {
                   background: current
                     ? TOKENS.accent
                     : lit
-                      ? TOKENS.ink
-                      : TOKENS.white,
+                      ? TOKENS.darkInk
+                      : TOKENS.darkBg,
                   borderColor: current
                     ? TOKENS.accent
                     : lit
-                      ? TOKENS.ink
-                      : TOKENS.line,
+                      ? TOKENS.darkInk
+                      : TOKENS.darkLine,
                   transition: reduced ? "none" : `background-color 320ms ${EASE.enter}`,
                 }}
               />
               <span
                 className="text-[10px] uppercase leading-[15px] tracking-[0.13em]"
-                style={{ color: lit ? TOKENS.ink : TOKENS.muted }}
+                style={{ color: lit ? TOKENS.darkInk : TOKENS.darkMuted }}
               >
                 {label}
               </span>

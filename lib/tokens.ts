@@ -21,6 +21,21 @@ export const TOKENS = {
       technical rules that should register as texture, not as borders. */
   line: "#E4E4E4",
   hair: "#EFEFEF",
+
+  /* ── Dark surface ──────────────────────────────────────────────────────
+     Used by exactly one section (Selected Work). It is the page's single
+     visual reset between the white hero and the white sections after it, so
+     the contrast comes from purpose rather than from constant colour changes.
+     Do not introduce a second dark section. */
+  darkBg: "#0A0A0A",
+  darkInk: "#FFFFFF",
+  /** Body copy on dark. Light enough to read comfortably at 14-15px. */
+  darkBody: "#B4B4B4",
+  /** Labels and inactive items on dark. */
+  darkMuted: "#8A8A8A",
+  /** Hairlines on dark, in the same two weights as the light surface. */
+  darkLine: "rgba(255,255,255,0.20)",
+  darkHair: "rgba(255,255,255,0.10)",
 } as const;
 
 /** Shared easing curves (see ui-animation defaults). */

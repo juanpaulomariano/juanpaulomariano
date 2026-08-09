@@ -26,7 +26,7 @@ import { PROJECTS, type Project, type Shot } from "@/lib/works";
 ──────────────────────────────────────────────────────────────────────────── */
 
 /** Tallest stage governs the reserved height — prevents layout shift. */
-const STAGE_MIN_H = 545;
+const STAGE_MIN_H = 620;
 
 export default function SelectedWorks() {
   const [activeKey, setActiveKey] = useState(PROJECTS[0].key);
@@ -45,44 +45,48 @@ export default function SelectedWorks() {
   return (
     <section
       id="work"
-      className="px-6 py-24 sm:px-10 sm:py-32"
-      style={{ background: TOKENS.white }}
+      className="px-6 py-20 sm:px-10 sm:py-24"
+      style={{ background: TOKENS.darkBg }}
     >
-      <div className="mx-auto max-w-[1180px]">
+      <div className="mx-auto max-w-[1320px]">
         {/* ── Section header: a ruled masthead, not a card heading ── */}
         <div
           className="border-t pt-5"
-          style={{ borderColor: TOKENS.ink }}
+          style={{ borderColor: TOKENS.darkLine }}
         >
           <div className="flex items-baseline justify-between gap-6">
             <p
               className="text-[11px] tracking-[0.2em]"
-              style={{ color: TOKENS.muted }}
+              style={{ color: TOKENS.darkMuted }}
             >
               Selected work
             </p>
             {/* Section number — architectural, set in the same tabular voice
-                as the stats so it reads as a coordinate, not decoration. */}
+                as the rail numerals so it reads as a coordinate. */}
             <span
               className="text-[11px] tabular-nums tracking-[0.2em]"
-              style={{ color: TOKENS.muted }}
+              style={{ color: TOKENS.darkMuted }}
             >
               02
             </span>
           </div>
 
-          {/* Bold grotesk, matching the hero's face and weight exactly. */}
+          {/* Bold grotesk, matching the hero's face and weight exactly.
+              Set on two lines so it establishes this as the main section
+              without growing large enough to overpower the work below. */}
           <h2
-            className="mt-7 max-w-[13em] font-bold text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06] tracking-[-0.02em]"
-            style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.ink }}
+            className="mt-6 max-w-[13em] font-bold text-[clamp(2.3rem,4.8vw,3.9rem)] leading-[1.04] tracking-[-0.025em]"
+            style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.darkInk }}
           >
-            Systems I&apos;ve built, start to finish.
+            Systems I&apos;ve built,
+            <br />
+            start to finish.
           </h2>
         </div>
 
         {/* ── The switchboard: two columns of one composition, joined by a
                single hairline. No outer card, no rounded container. ── */}
-        <div className="mt-16 flex flex-col lg:flex-row lg:gap-14">
+        <div className="mt-10 flex flex-col lg:flex-row lg:gap-12">
           {/* LEFT RAIL — an index of systems. Horizontal strip under lg. */}
           <div
             ref={railRef}
@@ -102,11 +106,11 @@ export default function SelectedWorks() {
                   id={`tab-${p.key}`}
                   type="button"
                   onClick={() => setActiveKey(p.key)}
-                  className="group relative shrink-0 border-t py-4 pr-6 text-left transition-opacity duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 lg:pr-0"
+                  className="group relative shrink-0 border-t py-3.5 pr-6 text-left transition-opacity duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 lg:pr-0"
                   style={{
-                    borderColor: selected ? TOKENS.ink : TOKENS.hair,
+                    borderColor: selected ? TOKENS.darkLine : TOKENS.darkHair,
                     minWidth: 176,
-                    opacity: selected ? 1 : 0.62,
+                    opacity: selected ? 1 : 0.55,
                   }}
                 >
                   {/* Active marker: a short red rule riding the top border —
@@ -121,7 +125,7 @@ export default function SelectedWorks() {
                   />
                   <span
                     className="block text-[10px] tabular-nums tracking-[0.18em]"
-                    style={{ color: selected ? TOKENS.accent : TOKENS.muted }}
+                    style={{ color: selected ? TOKENS.accent : TOKENS.darkMuted }}
                   >
                     {String(idx + 1).padStart(2, "0")}
                   </span>
@@ -129,7 +133,7 @@ export default function SelectedWorks() {
                     <span
                       className="text-[15px] tracking-[-0.01em] transition-colors duration-200"
                       style={{
-                        color: TOKENS.ink,
+                        color: selected ? TOKENS.darkInk : TOKENS.darkBody,
                         fontWeight: selected ? 600 : 400,
                       }}
                     >
@@ -139,7 +143,7 @@ export default function SelectedWorks() {
                   </span>
                   <span
                     className="mt-1 block text-[12px]"
-                    style={{ color: TOKENS.muted }}
+                    style={{ color: TOKENS.darkMuted }}
                   >
                     {p.railSublabel}
                   </span>
@@ -150,7 +154,7 @@ export default function SelectedWorks() {
             <span
               aria-hidden="true"
               className="hidden border-t lg:block"
-              style={{ borderColor: TOKENS.hair }}
+              style={{ borderColor: TOKENS.darkHair }}
             />
           </div>
 
@@ -161,8 +165,8 @@ export default function SelectedWorks() {
             role="tabpanel"
             aria-labelledby={`tab-${active.key}`}
             tabIndex={0}
-            className="min-w-0 flex-1 border-t pt-8 lg:border-l lg:border-t-0 lg:pl-14 lg:pt-0"
-            style={{ borderColor: TOKENS.hair, minHeight: STAGE_MIN_H }}
+            className="min-w-0 flex-1 border-t pt-7 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0"
+            style={{ borderColor: TOKENS.darkHair, minHeight: STAGE_MIN_H }}
           >
             <Stage
               project={active}
@@ -212,37 +216,37 @@ function Stage({
     <div>
       <p
         className="text-[10px] uppercase tracking-[0.2em]"
-        style={{ color: TOKENS.muted }}
+        style={{ color: TOKENS.darkMuted }}
       >
         {project.eyebrow}
       </p>
-      <div className="mt-3 flex flex-wrap items-center gap-3">
+      <div className="mt-2.5 flex flex-wrap items-center gap-3">
         <h3
           className="font-bold text-[clamp(1.5rem,2.5vw,2rem)] leading-[1.12] tracking-[-0.02em]"
-          style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.ink }}
+          style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.darkInk }}
         >
           {project.title}
         </h3>
         {project.inProgress && <InProgressTag />}
       </div>
-      <p className="mt-2 text-[14px]" style={{ color: TOKENS.muted }}>
+      <p className="mt-2 text-[14px]" style={{ color: TOKENS.darkMuted }}>
         {project.subtitle}
       </p>
       <p
-        className="mt-5 max-w-[46em] text-[14.5px] leading-[1.8]"
-        style={{ color: TOKENS.body }}
+        className="mt-4 max-w-[60em] text-[14.5px] leading-[1.75]"
+        style={{ color: TOKENS.darkBody }}
       >
         {project.description}
       </p>
 
       {project.type === "video" && (
-        <div className="mt-9">
+        <div className="mt-7">
           <VideoPoster project={project} onPlay={onPlay} />
         </div>
       )}
 
       {project.type === "pipeline" && (
-        <div className="mt-10">
+        <div className="mt-8">
           <LivingPipeline stages={project.stages} runKey={project.key} />
           <ProofWall
             intro={project.galleryIntro}
@@ -274,7 +278,7 @@ function InProgressTag() {
   return (
     <span
       className="inline-flex shrink-0 items-center gap-1.5 text-[10px] uppercase tracking-[0.18em]"
-      style={{ color: TOKENS.muted }}
+      style={{ color: TOKENS.darkMuted }}
     >
       <StatusDot />
       In progress
@@ -297,7 +301,9 @@ function VideoPoster({
       type="button"
       onClick={onPlay}
       className="group relative block aspect-video w-full overflow-hidden border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-      style={{ borderColor: TOKENS.hair, background: TOKENS.white }}
+      /* Light border, not a shadow: the bright build should sit ON the dark
+         canvas, not float above it as a card. */
+      style={{ borderColor: TOKENS.darkLine, background: TOKENS.white }}
       aria-label={`Play the ${project.title} walkthrough`}
     >
       {poster ? (
@@ -367,8 +373,8 @@ function ProofWall({
     .slice(0, 4);
 
   return (
-    <div className="mt-10 border-t pt-7" style={{ borderColor: TOKENS.hair }}>
-      <p className="text-[13.5px]" style={{ color: TOKENS.body }}>
+    <div className="mt-9 border-t pt-6" style={{ borderColor: TOKENS.darkHair }}>
+      <p className="text-[13.5px]" style={{ color: TOKENS.darkBody }}>
         {intro}
       </p>
 
@@ -389,8 +395,8 @@ function ProofWall({
             className="group/thumb text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             <span
-              className="block aspect-[16/10] overflow-hidden border transition-colors duration-200 group-hover/thumb:border-[#0A0A0A]"
-              style={{ borderColor: TOKENS.hair, background: TOKENS.white }}
+              className="block aspect-[16/10] overflow-hidden border transition-colors duration-200"
+              style={{ borderColor: TOKENS.darkHair, background: TOKENS.white }}
             >
               {s.src ? (
                 <img
@@ -410,8 +416,8 @@ function ProofWall({
               )}
             </span>
             <span
-              className="mt-1.5 block truncate text-[11px] transition-colors duration-200 group-hover/thumb:text-[#0A0A0A]"
-              style={{ color: TOKENS.muted }}
+              className="mt-1.5 block truncate text-[11px] transition-colors duration-200 group-hover/thumb:text-white"
+              style={{ color: TOKENS.darkMuted }}
             >
               {s.label}
             </span>
@@ -424,15 +430,15 @@ function ProofWall({
       <button
         type="button"
         onClick={() => onOpen(0)}
-        className="group/all mt-7 inline-flex items-center gap-3 border-b pb-1.5 text-[13px] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-        style={{ borderColor: TOKENS.ink, color: TOKENS.ink }}
+        className="group/all mt-6 inline-flex items-center gap-3 border-b pb-1.5 text-[13px] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+        style={{ borderColor: TOKENS.darkInk, color: TOKENS.darkInk }}
         onMouseEnter={(e) => {
           e.currentTarget.style.color = TOKENS.accent;
           e.currentTarget.style.borderColor = TOKENS.accent;
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.color = TOKENS.ink;
-          e.currentTarget.style.borderColor = TOKENS.ink;
+          e.currentTarget.style.color = TOKENS.darkInk;
+          e.currentTarget.style.borderColor = TOKENS.darkInk;
         }}
       >
         {buttonLabel}

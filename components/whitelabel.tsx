@@ -31,10 +31,10 @@ const FLASH_STAGGER_MS = 80;
     frame and clear of the left sidebar, so they annotate the nav rather than
     covering the thing they are pointing at. */
 const LABEL_POSITIONS = [
-  { top: "3.5%", left: "31%" }, // custom domain — beside the address bar
-  { top: "26%", left: "27%" }, // reorganized navigation — right of the menu
-  { top: "62%", left: "27%" }, // branded sidebar — right of the menu, lower
-  { top: "13%", left: "27%" }, // custom logo — right of the logo mark
+  { top: "1.5%", left: "10%" }, // custom domain — left of the address bar
+  { top: "40%", left: "19%" }, // reorganized navigation — right of the menu
+  { top: "68%", left: "19%" }, // branded sidebar — right of the menu, lower
+  { top: "28%", left: "19%" }, // custom logo — right of the logo mark
 ];
 
 type View = "client" | "stock";
@@ -114,10 +114,10 @@ export default function Whitelabel() {
     <section
       ref={sectionRef}
       id="whitelabel"
-      className="px-6 py-24 sm:px-10 sm:py-32"
+      className="px-6 py-20 sm:px-10 sm:py-24"
       style={{ background: TOKENS.white }}
     >
-      <div className="mx-auto max-w-[1180px]">
+      <div className="mx-auto max-w-[1320px]">
         {/* Header, centered */}
         <div className="mx-auto max-w-[46rem] text-center">
           <p
@@ -127,7 +127,7 @@ export default function Whitelabel() {
             White-label
           </p>
           <h2
-            className="mx-auto mt-5 font-bold text-[clamp(2rem,4.2vw,3.2rem)] leading-[1.06] tracking-[-0.02em]"
+            className="mx-auto mt-4 font-bold text-[clamp(2rem,4.2vw,3.2rem)] leading-[1.06] tracking-[-0.02em]"
             style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.ink }}
           >
             <span className="block" style={{ color: TOKENS.muted }}>
@@ -136,7 +136,7 @@ export default function Whitelabel() {
             <span className="block">GoHighLevel out of sight.</span>
           </h2>
           <p
-            className="mx-auto mt-6 max-w-[46ch] text-[14.5px] leading-[1.75]"
+            className="mx-auto mt-5 max-w-[46ch] text-[14.5px] leading-[1.75]"
             style={{ color: TOKENS.muted }}
           >
             Turn GoHighLevel into an environment your clients know as yours.
@@ -146,7 +146,7 @@ export default function Whitelabel() {
         </div>
 
         {/* Toggle */}
-        <div className="mt-11 flex flex-col items-center">
+        <div className="mt-8 flex flex-col items-center">
           <div
             role="group"
             aria-label="Switch between the client view and the platform underneath"
@@ -168,8 +168,8 @@ export default function Whitelabel() {
             />
             {(
               [
-                ["client", "What your client sees"],
-                ["stock", "What's underneath"],
+                ["client", "Your brand"],
+                ["stock", "Under the hood"],
               ] as const
             ).map(([key, label]) => {
               const active = view === key;
@@ -193,7 +193,7 @@ export default function Whitelabel() {
         </div>
 
         {/* Browser frame */}
-        <div className="relative mx-auto mt-10 max-w-[1080px]">
+        <div className="relative mx-auto mt-8 max-w-[1320px]">
           <div className="border" style={{ borderColor: TOKENS.line }}>
             {/* Slim chrome: dots + the live address bar */}
             <div
@@ -209,9 +209,17 @@ export default function Whitelabel() {
                   />
                 ))}
               </span>
+              {/* The domain change is the strongest single piece of proof in
+                  this section, so the bar carries a little more weight than
+                  real browser chrome would: a hairline border and near-black
+                  text rather than a flat grey strip. */}
               <span
-                className="min-w-0 flex-1 truncate px-3 py-1 text-center text-[11.5px] sm:text-[12.5px]"
-                style={{ background: "#FFFFFF", color: TOKENS.body }}
+                className="min-w-0 flex-1 truncate border px-3 py-1.5 text-center text-[12px] sm:text-[13px]"
+                style={{
+                  background: "#FFFFFF",
+                  borderColor: TOKENS.line,
+                  color: TOKENS.ink,
+                }}
               >
                 {/* Live, not baked into the screenshot. */}
                 {isClient ? example.clientDomain : example.stockDomain}
@@ -290,7 +298,7 @@ export default function Whitelabel() {
         </p>
 
         {/* Capabilities: one quiet row, hairline-separated. No cards, no icons. */}
-        <div className="mt-14 grid gap-y-8 border-t pt-8 sm:grid-cols-2 lg:grid-cols-4"
+        <div className="mt-12 grid gap-y-8 border-t pt-8 sm:grid-cols-2 lg:grid-cols-4"
           style={{ borderColor: TOKENS.line }}
         >
           {CAPABILITIES.map((c, i) => (
@@ -311,7 +319,7 @@ export default function Whitelabel() {
 
         {/* Honest limitation. Stated once, without hedging around it. */}
         <p
-          className="mx-auto mt-10 max-w-[62ch] text-center text-[11px] leading-[1.7]"
+          className="mx-auto mt-7 max-w-[62ch] text-center text-[11px] leading-[1.7]"
           style={{ color: TOKENS.muted }}
         >
           White-labeling covers the client-facing brand layer. Some native

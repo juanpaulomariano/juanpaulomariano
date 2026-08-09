@@ -28,6 +28,12 @@ npm run dev      # http://localhost:3000
 | `public/logos/` | Tool logos (normalized SVGs) |
 | `public/works/` | Project screenshots and posters |
 
+## Deeper docs
+
+- [`docs/selected-works.md`](docs/selected-works.md) — how the Selected Works
+  section works: architecture, the three stage types, the living pipeline,
+  the shared modal, and how to edit content safely.
+
 ## Editing content
 
 `lib/works.ts` is the single source of truth for the works section. Copy,

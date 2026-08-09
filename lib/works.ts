@@ -193,21 +193,21 @@ const IRONPULSE_SHOTS: Shot[] = [
   },
   {
     src: "/works/ironpulse/wf-17.webp",
-    label: "WF-17 — Upsells",
+    label: "WF-17 — Nutrition coaching upsell",
     caption:
-      "Timed offers for nutrition coaching, the transformation program, and program upgrades, each one skipping members who already bought.",
+      "Thirty days after someone joins, the system checks whether they're still active and not already on nutrition, then sends three emails a week apart. It stops the moment they buy.",
   },
   {
     src: "/works/ironpulse/wf-18.webp",
-    label: "WF-18 — Upsells",
+    label: "WF-18 — Transformation program upsell",
     caption:
-      "Timed offers for nutrition coaching, the transformation program, and program upgrades, each one skipping members who already bought.",
+      "The eight-week program runs on limited spots, so this one moves faster: emails land two days apart instead of seven, and anyone already enrolled or already bought is filtered out before the first send.",
   },
   {
     src: "/works/ironpulse/wf-23.webp",
-    label: "WF-23 — Upsells",
+    label: "WF-23 — Program upgrade upsell",
     caption:
-      "Timed offers for nutrition coaching, the transformation program, and program upgrades, each one skipping members who already bought.",
+      "At sixty days, members on trial, group, or semi-private get an offer to move up. Anyone already on the top program has no upgrade path, so the workflow ends instead of emailing them anyway. No SMS on this one, since it's a bigger decision than a nudge.",
   },
   {
     /* WF-19 has a canvas but no written caption in the copy deck, and WF-12
@@ -244,9 +244,9 @@ const GLOWTHEORY_SHOTS: Shot[] = [
   {
     src: "/works/glowtheory/wf-01-b.webp",
     continuation: true,
-    label: "WF-01 — New lead, sorted",
+    label: "WF-01B — Interest tagging",
     caption:
-      "Every new inquiry is captured, tagged by treatment, and checked against existing clients so a regular asking about a new service is never treated like a stranger.",
+      "The second half of lead capture. Six entry points feed in, from Facebook and Instagram to walk-ins, and the lead splits down one of seven treatment paths so everything after this point already knows what they came for. No message goes out here, which is what stops a lead getting two greetings from two workflows.",
   },
   {
     src: "/works/glowtheory/wf-02.webp",
@@ -265,9 +265,9 @@ const GLOWTHEORY_SHOTS: Shot[] = [
   {
     src: "/works/glowtheory/wf-03-b.webp",
     continuation: true,
-    label: "WF-03 — Follow-up sequence",
+    label: "WF-03B — Inbound reply handler",
     caption:
-      "If they don't reply, a few messages over five days keep the door open, and every one checks first whether they've already booked so nobody gets a stale nudge.",
+      "Watches for a reply by text or email and moves the lead to engaged the moment one lands, which shuts off the follow-up chasing them. It also checks whether it has already handled this person, so a lead who sends three messages in a row is only processed once.",
   },
   {
     src: "/works/glowtheory/wf-04.webp",

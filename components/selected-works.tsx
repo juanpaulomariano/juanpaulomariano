@@ -345,33 +345,47 @@ function ProofWall({
         {sentence}
       </p>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
+      {/* Previews are deliberately larger than a typical thumbnail: a GHL
+          canvas is ~2500px wide, so at postage-stamp size the graph reads as
+          grey noise and undercuts the claim rather than supporting it. At this
+          size the branch structure is legible as a diagram, and the workflow's
+          real name carries the specifics. The full canvas is one click away. */}
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {previews.map((s) => (
           <button
             key={s.i}
             type="button"
             onClick={() => onOpen(s.i)}
-            aria-label={`Open workflow ${s.i + 1} in the gallery`}
-            className="h-[62px] w-[104px] overflow-hidden rounded border opacity-60 transition-opacity duration-200 hover:opacity-100 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ borderColor: TOKENS.line, background: "#FFFFFF" }}
+            aria-label={`Open ${s.caption ?? `workflow ${s.i + 1}`} in the gallery`}
+            className="group/thumb text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
-            {s.src ? (
-              /* `contain`, not `cover`: these canvases are wide with the graph
-                 in a band across the middle, so cropping to fill would show an
-                 empty white region and the thumbnail would read as blank. */
-              <img
-                src={s.src}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="h-full w-full object-contain"
-              />
-            ) : (
+            <span
+              className="block aspect-[16/10] overflow-hidden rounded border transition-colors duration-200"
+              style={{ borderColor: TOKENS.line, background: "#FFFFFF" }}
+            >
+              {s.src ? (
+                <img
+                  src={s.src}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover object-left opacity-80 transition-opacity duration-200 group-hover/thumb:opacity-100"
+                />
+              ) : (
+                <span
+                  className="flex h-full w-full items-center justify-center text-[10px]"
+                  style={{ color: TOKENS.muted }}
+                >
+                  {s.i + 1}
+                </span>
+              )}
+            </span>
+            {s.caption && (
               <span
-                className="flex h-full w-full items-center justify-center text-[10px]"
+                className="mt-1.5 block truncate text-[11px] transition-colors duration-200 group-hover/thumb:text-[#0A0A0A]"
                 style={{ color: TOKENS.muted }}
               >
-                {s.i + 1}
+                {s.caption}
               </span>
             )}
           </button>

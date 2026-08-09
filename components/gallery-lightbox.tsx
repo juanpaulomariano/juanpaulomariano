@@ -31,11 +31,16 @@ export default function GalleryLightbox({
   unitLabel = "",
 }: Props) {
   const [i, setI] = useState(startIndex);
+  const [zoomed, setZoomed] = useState(false);
   const railRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (open) setI(startIndex);
   }, [open, startIndex]);
+
+  /* Changing image resets to fit view — otherwise you land mid-canvas on a
+     zoomed pane with no idea where you are. */
+  useEffect(() => setZoomed(false), [i]);
 
   const go = useCallback(
     (dir: -1 | 1) => setI((v) => (v + dir + shots.length) % shots.length),
@@ -69,16 +74,34 @@ export default function GalleryLightbox({
       subtitle={`${i + 1} / ${shots.length}${unitLabel ? ` ${unitLabel}` : ""}`}
     >
       <div className="relative">
+        {/* Two viewing modes:
+            FIT  — whole canvas, scaled down to the viewport (orientation)
+            100% — native pixels in a scrollable pane (reading node labels)
+            These screenshots are ~2560x1400 with small type, so a fit-to-screen
+            view alone is never legible. Zoom is the point, not a nicety. */}
+        {/* Not a flex container when zoomed: a flex item shrinks to fit even
+            with max-w-none, which silently caps the image below 100%. */}
         <div
-          className="flex items-center justify-center"
-          style={{ background: TOKENS.warm, minHeight: "min(70vh, 620px)" }}
+          className={zoomed ? "overflow-auto" : "flex items-center justify-center"}
+          style={{
+            background: TOKENS.warm,
+            height: "min(78vh, 780px)",
+            cursor: shot?.src ? (zoomed ? "zoom-out" : "zoom-in") : "default",
+          }}
+          onClick={() => shot?.src && setZoomed((v) => !v)}
         >
           {shot?.src ? (
             <img
               key={shot.src}
               src={shot.src}
               alt={shot.caption ?? `${title} — workflow ${i + 1}`}
-              className="max-h-[min(70vh,620px)] w-auto max-w-full object-contain"
+              className={
+                zoomed
+                  ? "block max-w-none"
+                  : "max-h-[min(78vh,780px)] w-auto max-w-full object-contain"
+              }
+              /* Explicit width at 100% so nothing can scale it down. */
+              style={zoomed ? { width: "auto" } : undefined}
               loading="eager"
               decoding="async"
             />
@@ -86,6 +109,17 @@ export default function GalleryLightbox({
             <PlaceholderBox label={`Workflow ${i + 1}`} />
           )}
         </div>
+
+        {shot?.src && (
+          <button
+            type="button"
+            onClick={() => setZoomed((v) => !v)}
+            className="absolute right-3 top-3 rounded-full border bg-white/95 px-3 py-1.5 text-[12px] transition-colors duration-200 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ borderColor: TOKENS.line, color: TOKENS.ink }}
+          >
+            {zoomed ? "Fit to screen" : "Zoom to 100%"}
+          </button>
+        )}
 
         {/* Prefetch neighbours off-screen so arrowing is instant. */}
         <div aria-hidden="true" className="hidden">

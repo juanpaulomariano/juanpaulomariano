@@ -16,6 +16,10 @@ type Props = {
   shots: Shot[];
   title: string;
   startIndex?: number;
+  /** Number of workflows, when it differs from the screenshot count (some
+      workflows span several canvases). Shown as context in the header so
+      "12 / 23 canvases" never appears to contradict "20 workflows". */
+  unitLabel?: string;
 };
 
 export default function GalleryLightbox({
@@ -24,6 +28,7 @@ export default function GalleryLightbox({
   shots,
   title,
   startIndex = 0,
+  unitLabel = "",
 }: Props) {
   const [i, setI] = useState(startIndex);
   const railRef = useRef<HTMLDivElement>(null);
@@ -61,7 +66,7 @@ export default function GalleryLightbox({
       onArrow={go}
       variant="gallery"
       title={title}
-      subtitle={`${i + 1} / ${shots.length}`}
+      subtitle={`${i + 1} / ${shots.length}${unitLabel ? ` ${unitLabel}` : ""}`}
     >
       <div className="relative">
         <div
@@ -108,6 +113,7 @@ export default function GalleryLightbox({
           style={{ color: TOKENS.muted }}
         >
           {i + 1} / {shots.length}
+          {unitLabel ? ` ${unitLabel}` : ""}
         </p>
       </div>
 

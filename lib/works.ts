@@ -2,15 +2,14 @@
    Selected Works content. Edit copy, stats, stages, and image lists here —
    nothing in this file touches layout.
 
-   TO SUPPLY LATER:
-   • PSD Limo   → muxPlaybackId, posterSrc (optional), posterTime
-   • IronPulse  → 20 screenshots under /works/ironpulse/
-   • Glow Theory→ 16 screenshots under /works/glowtheory/
-
    Gallery order is CURATED — the array order is the order shown, best-first.
    It is deliberately NOT filename order. `preview: true` marks the 3–4 most
    visually complex canvases used as the calm proof-wall thumbnails.
    Any `src` that is an empty string renders as a labeled placeholder box.
+
+   Screenshots live in /public/works/{project}/ as WebP (converted from the
+   source PNGs in assets/ — 39 MB → 1.7 MB, since these canvases are mostly
+   flat white). Re-export from assets/ if you ever need the originals.
 ──────────────────────────────────────────────────────────────────────────── */
 
 export type Stat = { value: string; label: string };
@@ -53,18 +52,68 @@ export type PipelineProject = Base & {
   stages: string[];
   proofSentence: string;
   screenshots: Shot[];
+  /** Workflow count for the gallery button. Set explicitly because some
+      workflows span several canvases (IronPulse WF-01A is 3 screenshots),
+      so `screenshots.length` would overstate the real number of workflows
+      and contradict the verified stat above. */
+  workflowCount: number;
 };
 
 export type Project = VideoProject | ProgressProject | PipelineProject;
 
-/** Build a placeholder shot list until the real screenshots land. */
-function pending(dir: string, count: number, previews: number[]): Shot[] {
-  return Array.from({ length: count }, (_, i) => ({
-    src: "", // ← replace with `/works/${dir}/wf-XX.png`
-    caption: undefined,
-    preview: previews.includes(i),
-  }));
-}
+/* Screenshot sets ──────────────────────────────────────────────────────────
+   Order is CURATED, best-first — the lightbox shows them in array order, and
+   the opening images should be the ones that best demonstrate the work.
+   Captions are the workflows' real names, read from each canvas.
+   `preview: true` marks the calm proof-wall thumbnails (the visually complex
+   branching canvases, deliberately not WF-01). */
+
+const IRONPULSE_SHOTS: Shot[] = [
+  { src: "/works/ironpulse/wf-11.webp",    caption: "WF-11 — Member retention, at risk", preview: true },
+  { src: "/works/ironpulse/wf-01b.webp",   caption: "WF-01B — Speed to lead, post data capture", preview: true },
+  { src: "/works/ironpulse/wf-05.webp",    caption: "WF-05 — FFC no-show recovery", preview: true },
+  { src: "/works/ironpulse/wf-07.webp",    caption: "WF-07 — Post-FFC sales follow-up", preview: true },
+  { src: "/works/ironpulse/wf-01a-1.webp", caption: "WF-01A — Conversation AI data capture gate" },
+  { src: "/works/ironpulse/wf-01a-2.webp", caption: "WF-01A-2 — Contact data captured" },
+  { src: "/works/ironpulse/wf-01a-3.webp", caption: "WF-01A-3 — Partial / no contact data captured" },
+  { src: "/works/ironpulse/wf-02.webp",    caption: "WF-02 — Speed to lead, website opt-in" },
+  { src: "/works/ironpulse/wf-03.webp",    caption: "WF-03 — FFC booking confirmation" },
+  { src: "/works/ironpulse/wf-04.webp",    caption: "WF-04 — FFC pre-appointment reminders" },
+  { src: "/works/ironpulse/wf-06.webp",    caption: "WF-06 — FFC reschedule handling" },
+  { src: "/works/ironpulse/wf-08.webp",    caption: "WF-08 — Enrollment confirmation" },
+  { src: "/works/ironpulse/wf-09.webp",    caption: "WF-09 — New member onboarding" },
+  { src: "/works/ironpulse/wf-10.webp",    caption: "WF-10 — New member check-in, weeks 1–4" },
+  { src: "/works/ironpulse/wf-13.webp",    caption: "WF-13 — Short-term lead nurture" },
+  { src: "/works/ironpulse/wf-14.webp",    caption: "WF-14 — Long-term lead nurture" },
+  { src: "/works/ironpulse/wf-15.webp",    caption: "WF-15 — Review request system" },
+  { src: "/works/ironpulse/wf-16.webp",    caption: "WF-16 — Referral request system" },
+  { src: "/works/ironpulse/wf-17.webp",    caption: "WF-17 — Nutrition coaching upsell" },
+  { src: "/works/ironpulse/wf-18.webp",    caption: "WF-18 — Transformation program upsell" },
+  { src: "/works/ironpulse/wf-19.webp",    caption: "WF-19 — Member pause handling" },
+  { src: "/works/ironpulse/wf-20.webp",    caption: "WF-20 — Dead lead reactivation" },
+  { src: "/works/ironpulse/wf-23.webp",    caption: "WF-23 — Program upgrade upsell" },
+];
+
+const GLOWTHEORY_SHOTS: Shot[] = [
+  { src: "/works/glowtheory/wf-03-a.webp", caption: "WF-03A — Lead follow-up sequence", preview: true },
+  { src: "/works/glowtheory/wf-12.webp",   caption: "WF-12 — Overdue reactivation", preview: true },
+  { src: "/works/glowtheory/wf-09.webp",   caption: "WF-09 — Post-visit follow-up", preview: true },
+  { src: "/works/glowtheory/wf-07.webp",   caption: "WF-07 — No-show handler", preview: true },
+  { src: "/works/glowtheory/wf-01-a.webp", caption: "WF-01A — New lead capture, source tagging" },
+  { src: "/works/glowtheory/wf-01-b.webp", caption: "WF-01B — New lead entry, interest tagging" },
+  { src: "/works/glowtheory/wf-02.webp",   caption: "WF-02 — Speed-to-lead response" },
+  { src: "/works/glowtheory/wf-03-b.webp", caption: "WF-03B — Inbound reply handler" },
+  { src: "/works/glowtheory/wf-04.webp",   caption: "WF-04 — Engaged but not booked handler" },
+  { src: "/works/glowtheory/wf-05.webp",   caption: "WF-05 — Booking confirmation" },
+  { src: "/works/glowtheory/wf-06.webp",   caption: "WF-06 — Appointment reminder" },
+  { src: "/works/glowtheory/wf-08.webp",   caption: "WF-08 — Cancellation handler" },
+  { src: "/works/glowtheory/wf-10.webp",   caption: "WF-10 — Review request" },
+  { src: "/works/glowtheory/wf-11.webp",   caption: "WF-11 — Rebooking reminder" },
+  { src: "/works/glowtheory/wf-13.webp",   caption: "WF-13 — Lapsed win-back" },
+  { src: "/works/glowtheory/wf-14.webp",   caption: "WF-14 — Birthday / anniversary" },
+  { src: "/works/glowtheory/wf-15.webp",   caption: "WF-15 — Referral program" },
+  { src: "/works/glowtheory/wf-16.webp",   caption: "WF-16 — Do-not-contact" },
+];
 
 export const PROJECTS: Project[] = [
   {
@@ -125,7 +174,8 @@ export const PROJECTS: Project[] = [
       { value: "0", label: "logical errors after audit" },
     ],
     proofSentence: "All 20 workflows, individually built and documented.",
-    screenshots: pending("ironpulse", 20, [0, 1, 2, 3]),
+    workflowCount: 20,
+    screenshots: IRONPULSE_SHOTS,
   },
   {
     key: "glow-theory",
@@ -145,6 +195,7 @@ export const PROJECTS: Project[] = [
       { value: "22", label: "bugs caught pre-launch" },
     ],
     proofSentence: "All 16 workflows, individually built and documented.",
-    screenshots: pending("glowtheory", 16, [0, 1, 2, 3]),
+    workflowCount: 16,
+    screenshots: GLOWTHEORY_SHOTS,
   },
 ];

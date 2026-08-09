@@ -146,6 +146,9 @@ export default function SelectedWorks() {
           shots={active.screenshots}
           title={active.title}
           startIndex={galleryStart}
+          unitLabel={
+            active.screenshots.length !== active.workflowCount ? "canvases" : ""
+          }
         />
       )}
     </section>
@@ -210,6 +213,7 @@ function Stage({
           <ProofWall
             sentence={project.proofSentence}
             shots={project.screenshots}
+            workflowCount={project.workflowCount}
             onOpen={onOpenGallery}
           />
         </div>
@@ -319,10 +323,13 @@ function VideoPoster({
 function ProofWall({
   sentence,
   shots,
+  workflowCount,
   onOpen,
 }: {
   sentence: string;
   shots: Shot[];
+  /* Counts workflows, not screenshots — some workflows span several canvases. */
+  workflowCount: number;
   onOpen: (i: number) => void;
 }) {
   /* Calm at rest: one sentence, a few faded thumbs as texture, one button.
@@ -346,15 +353,18 @@ function ProofWall({
             onClick={() => onOpen(s.i)}
             aria-label={`Open workflow ${s.i + 1} in the gallery`}
             className="h-[62px] w-[104px] overflow-hidden rounded border opacity-60 transition-opacity duration-200 hover:opacity-100 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ borderColor: TOKENS.line, background: "#EFEBE4" }}
+            style={{ borderColor: TOKENS.line, background: "#FFFFFF" }}
           >
             {s.src ? (
+              /* `contain`, not `cover`: these canvases are wide with the graph
+                 in a band across the middle, so cropping to fill would show an
+                 empty white region and the thumbnail would read as blank. */
               <img
                 src={s.src}
                 alt=""
                 loading="lazy"
                 decoding="async"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain"
               />
             ) : (
               <span
@@ -376,7 +386,7 @@ function ProofWall({
         onMouseEnter={(e) => (e.currentTarget.style.background = TOKENS.accent)}
         onMouseLeave={(e) => (e.currentTarget.style.background = TOKENS.ink)}
       >
-        See all {shots.length} workflows
+        See all {workflowCount} workflows
       </button>
     </div>
   );

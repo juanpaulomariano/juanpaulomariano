@@ -4,3 +4,8 @@ out
 next-env.d.ts
 *.tsbuildinfo
 .DS_Store
+
+# Workflow screenshot sources + client documents (converted copies live in
+# public/works/ as WebP). Keep the originals local.
+assets/GlowTheory Workflow Screenshots/
+assets/IronPulse Workflow Screensots/

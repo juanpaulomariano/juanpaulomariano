@@ -365,7 +365,7 @@ function ProofWall({
             >
               {s.src ? (
                 <img
-                  src={s.src}
+                  src={s.previewSrc || s.src}
                   alt=""
                   loading="lazy"
                   decoding="async"

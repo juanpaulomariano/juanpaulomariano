@@ -7,20 +7,29 @@
    visually complex canvases used as the calm proof-wall thumbnails.
    Any `src` that is an empty string renders as a labeled placeholder box.
 
-   Screenshots live in /public/works/{project}/ as WebP (converted from the
-   source PNGs in assets/ — 39 MB → 1.7 MB, since these canvases are mostly
-   flat white). Re-export from assets/ if you ever need the originals.
+   Screenshots live in /public/works/{project}/ as LOSSLESS WebP at the source
+   resolution — verified pixel-identical to the PNGs in assets/. For these flat
+   UI canvases lossless is both sharper AND smaller than lossy (a q92 encode of
+   WF-09 was 140 KB against 108 KB lossless), so there is no tradeoff to make.
+
+   /public/works/previews/ holds small lossy copies for the proof-wall cards,
+   which render ~260px wide (37 KB for all eight, vs ~2 MB if the cards reused
+   the full canvases). Nothing here loads until a project is selected.
 ──────────────────────────────────────────────────────────────────────────── */
 
 export type Stat = { value: string; label: string };
 
 export type Shot = {
-  /** Path under /public. Empty string → placeholder box. */
+  /** Full canvas, lossless WebP at native resolution — used by the lightbox. */
   src: string;
   /** Optional short caption shown under the large image in the lightbox. */
   caption?: string;
   /** Marks this shot as one of the calm proof-wall thumbnails. */
   preview?: boolean;
+  /** Small lossy copy for the proof-wall card. The card renders ~260px wide,
+      so serving the full lossless canvas there would cost ~50x the bytes for
+      no visible gain. Falls back to `src` when absent. */
+  previewSrc?: string;
 };
 
 type Base = {
@@ -69,10 +78,10 @@ export type Project = VideoProject | ProgressProject | PipelineProject;
    branching canvases, deliberately not WF-01). */
 
 const IRONPULSE_SHOTS: Shot[] = [
-  { src: "/works/ironpulse/wf-11.webp",    caption: "WF-11 — Member retention, at risk", preview: true },
-  { src: "/works/ironpulse/wf-01b.webp",   caption: "WF-01B — Speed to lead, post data capture", preview: true },
-  { src: "/works/ironpulse/wf-05.webp",    caption: "WF-05 — FFC no-show recovery", preview: true },
-  { src: "/works/ironpulse/wf-07.webp",    caption: "WF-07 — Post-FFC sales follow-up", preview: true },
+  { src: "/works/ironpulse/wf-11.webp",    caption: "WF-11 — Member retention, at risk", preview: true, previewSrc: "/works/previews/ironpulse-wf-11.webp" },
+  { src: "/works/ironpulse/wf-01b.webp",   caption: "WF-01B — Speed to lead, post data capture", preview: true, previewSrc: "/works/previews/ironpulse-wf-01b.webp" },
+  { src: "/works/ironpulse/wf-05.webp",    caption: "WF-05 — FFC no-show recovery", preview: true, previewSrc: "/works/previews/ironpulse-wf-05.webp" },
+  { src: "/works/ironpulse/wf-07.webp",    caption: "WF-07 — Post-FFC sales follow-up", preview: true, previewSrc: "/works/previews/ironpulse-wf-07.webp" },
   { src: "/works/ironpulse/wf-01a-1.webp", caption: "WF-01A — Conversation AI data capture gate" },
   { src: "/works/ironpulse/wf-01a-2.webp", caption: "WF-01A-2 — Contact data captured" },
   { src: "/works/ironpulse/wf-01a-3.webp", caption: "WF-01A-3 — Partial / no contact data captured" },
@@ -95,10 +104,10 @@ const IRONPULSE_SHOTS: Shot[] = [
 ];
 
 const GLOWTHEORY_SHOTS: Shot[] = [
-  { src: "/works/glowtheory/wf-03-a.webp", caption: "WF-03A — Lead follow-up sequence", preview: true },
-  { src: "/works/glowtheory/wf-12.webp",   caption: "WF-12 — Overdue reactivation", preview: true },
-  { src: "/works/glowtheory/wf-09.webp",   caption: "WF-09 — Post-visit follow-up", preview: true },
-  { src: "/works/glowtheory/wf-07.webp",   caption: "WF-07 — No-show handler", preview: true },
+  { src: "/works/glowtheory/wf-03-a.webp", caption: "WF-03A — Lead follow-up sequence", preview: true, previewSrc: "/works/previews/glowtheory-wf-03-a.webp" },
+  { src: "/works/glowtheory/wf-12.webp",   caption: "WF-12 — Overdue reactivation", preview: true, previewSrc: "/works/previews/glowtheory-wf-12.webp" },
+  { src: "/works/glowtheory/wf-09.webp",   caption: "WF-09 — Post-visit follow-up", preview: true, previewSrc: "/works/previews/glowtheory-wf-09.webp" },
+  { src: "/works/glowtheory/wf-07.webp",   caption: "WF-07 — No-show handler", preview: true, previewSrc: "/works/previews/glowtheory-wf-07.webp" },
   { src: "/works/glowtheory/wf-01-a.webp", caption: "WF-01A — New lead capture, source tagging" },
   { src: "/works/glowtheory/wf-01-b.webp", caption: "WF-01B — New lead entry, interest tagging" },
   { src: "/works/glowtheory/wf-02.webp",   caption: "WF-02 — Speed-to-lead response" },

@@ -100,7 +100,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
           Technical diagram treatment: a hairline rail, small precise nodes
           (hollow until traversed), and the travelling lead as the one
           emphatic red mark. Motion mechanics are unchanged. */}
-      <div className="relative mt-8 hidden sm:block">
+      <div className="relative mt-7 hidden sm:block">
         {/* Rail + fill live in the node-center band (half a node inset). */}
         <div
           className="absolute top-[5px] h-px"

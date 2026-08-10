@@ -25,8 +25,50 @@ import { PROJECTS, type Project, type Shot } from "@/lib/works";
    copy or images.
 ──────────────────────────────────────────────────────────────────────────── */
 
-/** Tallest stage governs the reserved height — prevents layout shift. */
-const STAGE_MIN_H = 620;
+/* Reserved stage height — prevents the page shifting when you switch projects.
+
+   Deliberately NOT a pixel constant. The tallest stage is PSD Limo, and almost
+   all of its height is a full-width `aspect-video` poster, so that stage's
+   height is a RATIO of the stage width, not a number: measured, it swings from
+   634px to 791px depending on viewport, and it peaks just below a breakpoint
+   (at 1023 and again at 1440) where the fluid container is at its widest.
+
+   A fixed min-height therefore cannot track it. Any single value is too tall
+   somewhere — parking dead black space under the short stages, which is the
+   opposite of what the two-column pipeline layout is for — and too short
+   somewhere else, which lets the page jump. Per-breakpoint constants fail the
+   same way: sampling at 1280 sets a floor that is ~50px short by 1279.
+
+   Which stage is tallest also changes with width. Measured content heights:
+
+     width    video   pipeline   tallest
+     1440      791      467       video     (pipeline is two-column here)
+     1280      715      518       video
+     1024      614      686       pipeline  (pipeline is one column below xl)
+      640      584      702       pipeline
+
+   So the reservation is the GREATER of two terms, via CSS max():
+
+     - the video term, a ratio of width: 56.25% (9/16) for the poster plus
+       STAGE_TEXT_H for the text block above it. This tracks the poster
+       continuously instead of guessing a pixel value per breakpoint.
+     - the pipeline term, a flat pixel value: the one-column pipeline stage is
+       roughly constant at 671-702px across sm-lg, and it is the tallest thing
+       on screen in that range.
+
+   Below sm the stages are long stacked columns of very different heights, so
+   nothing is reserved there; a shared floor would only add empty scroll. */
+
+/** Text block above the video poster. 235-279px measured across 640-1600 — it
+    grows as the description wraps to more lines. The maximum is used: a
+    reservation a few px too tall costs nothing visible, one too short lets the
+    page jump, which is the failure this exists to prevent. */
+const STAGE_TEXT_H = 279;
+
+/** Tallest one-column pipeline stage (702px at 640, the narrowest sm width).
+    Only governs between sm and xl; above xl the two-column pipeline is far
+    shorter and the video term wins. */
+const STAGE_PIPELINE_H = 702;
 
 export default function SelectedWorks() {
   const [activeKey, setActiveKey] = useState(PROJECTS[0].key);
@@ -165,9 +207,32 @@ export default function SelectedWorks() {
             role="tabpanel"
             aria-labelledby={`tab-${active.key}`}
             tabIndex={0}
-            className="min-w-0 flex-1 border-t pt-7 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0"
-            style={{ borderColor: TOKENS.darkHair, minHeight: STAGE_MIN_H }}
+            className="relative min-w-0 flex-1 border-t pt-7 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0"
+            style={{ borderColor: TOKENS.darkHair }}
           >
+            {/* Height reservation — see STAGE_TEXT_H / STAGE_PIPELINE_H.
+
+                A percentage `padding-top` resolves against the CONTAINER'S
+                WIDTH, which is the whole point: 56.25% is 9/16, so the first
+                term reserves exactly the height the video stage's full-width
+                poster will occupy at any width, with no per-breakpoint
+                constants to re-measure. (`aspect-ratio` cannot do this job —
+                with no width of its own the element computes to zero height.)
+
+                max() then takes whichever is taller, the video stage or the
+                one-column pipeline stage, so the floor follows whichever
+                project actually governs at that width.
+
+                Floated and zero-width so it contributes height without taking
+                part in the stage's normal flow. Hidden below sm, where the
+                stages are stacked columns and no shared floor makes sense. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none float-left hidden w-0 sm:block"
+              style={{
+                paddingTop: `max(calc(56.25% + ${STAGE_TEXT_H}px), ${STAGE_PIPELINE_H}px)`,
+              }}
+            />
             <Stage
               project={active}
               onPlay={() => setVideoOpen(true)}
@@ -212,8 +277,58 @@ function Stage({
   onPlay: () => void;
   onOpenGallery: (i: number) => void;
 }) {
+  /* Pipeline projects run a two-column stage from `xl`: context on the left,
+     the working system on the right. It reclaims the empty right-hand band and
+     collapses the stage height enough that the description, the pipeline and
+     the first row of workflow thumbnails read together without scrolling.
+
+     Why `xl` and not `lg`: on desktop the rail (236px) already takes a column,
+     so splitting the stage makes three zones across. Measured at 1024 that
+     leaves the text column at ~32 characters per line and the pipeline's five
+     nodes at ~69px — too narrow for "Consultation booked" to sit on one line,
+     and thumbnails shrink to the size where a GHL canvas is grey noise. At
+     1280 the same split gives ~48 characters and ~96px nodes, which holds. */
+  if (project.type === "pipeline") {
+    return (
+      <div className="xl:grid xl:grid-cols-[42fr_58fr] xl:gap-10">
+        {/* min-w-0 on both cells: grid children default to min-width:auto, so
+            without it the thumbnail row would push the column wider than its
+            track instead of fitting inside it. */}
+        <div className="min-w-0">
+          <StageIntro project={project} />
+        </div>
+        <div className="mt-7 min-w-0 xl:mt-0">
+          <LivingPipeline stages={project.stages} runKey={project.key} />
+          <ProofWall
+            intro={project.galleryIntro}
+            buttonLabel={project.galleryButton}
+            shots={project.screenshots}
+            onOpen={onOpenGallery}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  /* Video keeps the full-width cinematic poster, and the in-progress stage is
+     text only. Neither gains anything from a second column. */
   return (
     <div>
+      <StageIntro project={project} />
+      {project.type === "video" && (
+        <div className="mt-7">
+          <VideoPoster project={project} onPlay={onPlay} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* The written half of every stage. Shared so the one-column and two-column
+   layouts can never drift apart. */
+function StageIntro({ project }: { project: Project }) {
+  return (
+    <>
       <p
         className="text-[10px] uppercase tracking-[0.2em]"
         style={{ color: TOKENS.darkMuted }}
@@ -232,31 +347,15 @@ function Stage({
       <p className="mt-2 text-[14px]" style={{ color: TOKENS.darkMuted }}>
         {project.subtitle}
       </p>
+      {/* Capped at 46em while the stage is one column; from xl the grid track
+          is the measure, so the cap is released rather than fighting it. */}
       <p
-        className="mt-4 max-w-[60em] text-[14.5px] leading-[1.75]"
+        className="mt-4 max-w-[46em] text-[14.5px] leading-[1.75] xl:max-w-none"
         style={{ color: TOKENS.darkBody }}
       >
         {project.description}
       </p>
-
-      {project.type === "video" && (
-        <div className="mt-7">
-          <VideoPoster project={project} onPlay={onPlay} />
-        </div>
-      )}
-
-      {project.type === "pipeline" && (
-        <div className="mt-8">
-          <LivingPipeline stages={project.stages} runKey={project.key} />
-          <ProofWall
-            intro={project.galleryIntro}
-            buttonLabel={project.galleryButton}
-            shots={project.screenshots}
-            onOpen={onOpenGallery}
-          />
-        </div>
-      )}
-    </div>
+    </>
   );
 }
 
@@ -373,7 +472,7 @@ function ProofWall({
     .slice(0, 4);
 
   return (
-    <div className="mt-9 border-t pt-6" style={{ borderColor: TOKENS.darkHair }}>
+    <div className="mt-7 border-t pt-5" style={{ borderColor: TOKENS.darkHair }}>
       <p className="text-[13.5px]" style={{ color: TOKENS.darkBody }}>
         {intro}
       </p>
@@ -385,7 +484,7 @@ function ProofWall({
           real name carries the specifics. The full canvas is one click away. */}
       {/* Single column on phones (screenshot + label reads as a list),
           four-up from sm where the canvases have room to be diagrams. */}
-      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-4 sm:gap-3">
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-4 sm:gap-3">
         {previews.map((s) => (
           <button
             key={s.i}
@@ -430,7 +529,7 @@ function ProofWall({
       <button
         type="button"
         onClick={() => onOpen(0)}
-        className="group/all mt-6 inline-flex items-center gap-3 border-b pb-1.5 text-[13px] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+        className="group/all mt-5 inline-flex items-center gap-3 border-b pb-1.5 text-[13px] transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
         style={{ borderColor: TOKENS.darkInk, color: TOKENS.darkInk }}
         onMouseEnter={(e) => {
           e.currentTarget.style.color = TOKENS.accent;

@@ -6,6 +6,21 @@ obvious from reading the code, and how to change things safely.
 
 ---
 
+## The one page-level constraint
+
+This section is the **only dark surface on the page** (`TOKENS.darkBg`,
+`#0A0A0A`). The rhythm is white hero → dark work → white product demo → white
+close, so the darkness is the page's single visual reset and it earns its
+weight by being unique.
+
+If you add a second dark section, this one stops being a reset and the page
+turns into alternating stripes. The dark tokens (`darkInk`, `darkBody`,
+`darkMuted`, `darkLine`, `darkHair`) exist so this surface has the same
+two-weight hairline system as the light sections rather than ad-hoc `rgba`
+values — they are not an invitation to build more dark surfaces.
+
+---
+
 ## The shape of it
 
 One framed container — a "switchboard" — split into two parts:
@@ -45,7 +60,7 @@ mobile component to keep in sync.
 
 The split that matters: **`lib/works.ts` is the only file you edit to change
 what the section says.** Everything else is mechanism. You can rewrite every
-word, swap all 36 screenshots, and reorder the projects without opening a
+word, swap all 41 screenshots, and reorder the projects without opening a
 component.
 
 ---
@@ -116,7 +131,7 @@ Three stacked elements:
 
 1. **The living pipeline** (see below)
 2. **Stat row** — three figures
-3. **Proof wall** — one sentence, 3–4 faded thumbnails, one button
+3. **Proof wall** — one sentence, four labelled previews, one button
 
 ---
 
@@ -173,16 +188,22 @@ horizontal track. One state, two layouts.
 
 ## The proof wall, and why it stays calm
 
-IronPulse has 20 workflow screenshots; Glow Theory has 16. Showing 36 thumbnails
-at rest would turn a portfolio into a contact sheet — visually exhausting and
-impossible to read.
+IronPulse has 20 workflows across 23 canvases; Glow Theory has 16 across 18.
+Showing all 41 at rest would turn a portfolio into a contact sheet — visually
+exhausting and impossible to read.
 
 So at rest the wall shows:
 
-- **one sentence** stating the count ("All 20 workflows, individually built and
-  documented.")
-- **3–4 thumbnails at 60% opacity**, as texture rather than content
+- **one sentence** stating the count ("All 20 workflows, one by one.")
+- **four previews** with their workflow labels, at 80% opacity, rising to full
+  on hover
 - **one button** — "See all 20 workflows"
+
+The previews are deliberately **larger than a typical thumbnail**, four-up from
+`sm` and single-column on phones. A GoHighLevel canvas is around 2500px wide; at
+postage-stamp size the graph reads as grey noise, which undercuts the claim
+instead of supporting it. At this size the branch structure is legible as a
+diagram and the workflow's real name carries the specifics.
 
 The full set is opt-in. The claim is made in words; the evidence is one click
 away for anyone who wants it.
@@ -220,6 +241,11 @@ The gallery passes an `onArrow` callback; the modal routes ArrowLeft/ArrowRight
 to it. That's the only content-specific keyboard behavior, and the gallery gets
 it without reimplementing any dialog mechanics.
 
+The gallery adds one control the video modal has no use for: a **Zoom to 100% /
+Fit to screen** toggle. Fitted is the default so the whole canvas is visible on
+open; zoomed shows the WebP at native resolution for reading individual nodes.
+This is why the source images are stored losslessly — the zoom has to hold up.
+
 **Scroll-lock detail:** locking `overflow: hidden` removes the scrollbar, which
 would shift the page content sideways. The lock measures the scrollbar width
 and compensates with `padding-right`, so nothing moves.
@@ -228,15 +254,17 @@ and compensates with `padding-right`, so nothing moves.
 
 ## Image loading strategy
 
-Nothing loads 36 screenshots up front.
+Nothing loads 41 screenshots up front.
 
-- **Page render:** only the 3–4 proof-wall thumbnails per pipeline project, and
-  they're `loading="lazy"`.
+- **Page render:** only the four proof-wall thumbnails per pipeline project.
+  They're `loading="lazy"` and they request the small `previewSrc` copy, not the
+  lossless canvas.
 - **Lightbox closed:** the gallery component is unmounted entirely — the parent
   renders it only when `galleryOpen` is true. Zero requests.
-- **Lightbox open:** the current image loads eagerly; its two immediate
-  neighbours prefetch so arrow navigation feels instant. Thumbnail rail images
-  are lazy.
+- **Lightbox open:** the current image loads eagerly. Its immediate neighbours
+  are mounted in a hidden container so the browser has already fetched them by
+  the time you arrow across. Thumbnail rail images are lazy and use
+  `previewSrc`.
 
 This is why arrowing through the gallery doesn't stutter while still keeping
 the page itself light.
@@ -245,11 +273,11 @@ the page itself light.
 
 ## No layout shift
 
-`STAGE_MIN_H` (545px) reserves the stage height. Without it, switching from the
+`STAGE_MIN_H` (620px) reserves the stage height. Without it, switching from the
 tall pipeline stage to the short Mercer stage would collapse the container and
 jump the page under the user's cursor.
 
-If you add content that makes a stage taller than 545px, raise this constant to
+If you add content that makes a stage taller than 620px, raise this constant to
 match the new tallest stage.
 
 ---
@@ -266,33 +294,62 @@ prose.
 
 ### Add workflow screenshots
 
-1. Drop files into `public/works/ironpulse/` or `public/works/glowtheory/`.
-2. Replace the empty `src` strings in that project's `screenshots` array.
+All screenshots are real and in place — `IRONPULSE_SHOTS` and
+`GLOWTHEORY_SHOTS` are literal arrays. To add one:
 
-Entries with an empty `src` render as numbered placeholder boxes — the section
-works fully before any images exist, which is how it's currently running.
-
-Currently the arrays are generated by a `pending()` helper. Once you have real
-files, replace the call with a literal array:
+1. Drop the full canvas into `public/works/ironpulse/` or
+   `public/works/glowtheory/` as **lossless WebP at native resolution**. These
+   canvases are deliberately zoomed out, so re-compressing them destroys the
+   node labels that make them worth showing.
+2. If the shot is a proof-wall preview, also export a small lossy copy to
+   `public/works/previews/` and point `previewSrc` at it.
+3. Append a `Shot` to the array.
 
 ```ts
-screenshots: [
-  { src: "/works/ironpulse/enrollment.png",
-    caption: "Enrollment — fires 6 workflows", preview: true },
-  { src: "/works/ironpulse/dm-capture.png", preview: true },
-  // …
-]
+{
+  src: "/works/ironpulse/wf-07.webp",
+  label: "WF-07",
+  caption: "Enrollment — fires six downstream workflows",
+  preview: true,
+  previewSrc: "/works/previews/ironpulse-wf-07.webp",
+}
 ```
+
+An entry whose `src` is an empty string still renders as a numbered placeholder
+box, so the section degrades safely — but nothing currently relies on that.
+
+### The two image sizes
+
+`src` is the lossless canvas the lightbox opens. `previewSrc` is a small lossy
+copy used for the proof-wall card and the lightbox thumbnail rail, both of which
+render around 260px wide. Both call sites fall back to `src` when `previewSrc`
+is absent, so it's an optimisation, not a requirement.
+
+### Captions and labels
+
+**Both are required** on every shot, and that's a deliberate constraint rather
+than an oversight. These canvases are zoomed out far enough that the node text
+isn't readable at rest; the caption is what carries the meaning. A screenshot
+without one is just texture.
+
+### Workflow count vs. image count
+
+IronPulse has 23 canvases but claims **20 workflows**; Glow Theory has 18
+canvases and claims **16**. The difference is `continuation: true`, which marks
+a canvas as a continuation of the previous entry's workflow — WF-01A spans three
+canvases, and two Glow Theory workflows span two each.
+
+The lightbox counter filters those out, so "4 / 20" agrees with the
+"See all 20 workflows" button instead of counting image files. If you add a
+multi-canvas workflow and forget the flag, the counter and the button copy in
+`galleryIntro` / `galleryButton` will silently disagree.
 
 ### Gallery order
 
 **Array order is display order.** It's curated best-first, deliberately not
 filename order — `wf-01` is rarely your strongest canvas. Reorder the array to
-reorder the lightbox.
-
-### Captions
-
-Optional, per screenshot. Shown under the large image in the lightbox only.
+reorder the lightbox. Keep continuation canvases immediately after the entry
+they continue, since the counter assumes that adjacency.
 
 ### The Mux video
 

@@ -18,18 +18,18 @@ export default function FinalCta() {
           className="border-t pt-5"
           style={{ borderColor: TOKENS.ink }}
         >
-          <div className="flex items-baseline justify-between gap-6">
-            <p
-              className="text-[11px] tracking-[0.2em]"
-              style={{ color: TOKENS.muted }}
-            >
-              Contact
-            </p>
+          {/* Numeral only, like every other section. The "Contact" eyebrow is
+              gone: the headline and the two links below say what this is. */}
+          <div className="flex justify-end">
             <span
-              className="text-[11px] tabular-nums tracking-[0.2em]"
-              style={{ color: TOKENS.muted }}
+              className="tabular-nums tracking-[0.2em]"
+              style={{
+                color: TOKENS.muted,
+                fontSize: TYPE.micro,
+                ...TYPE_STYLE.micro,
+              }}
             >
-              04
+              05
             </span>
           </div>
         </div>

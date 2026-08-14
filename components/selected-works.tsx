@@ -80,12 +80,29 @@ export default function SelectedWorks() {
     >
       <div className="mx-auto max-w-[1320px]">
         {/* ── Section header ──────────────────────────────────────────────
-            No eyebrow and no section number. Both were small uppercase
-            tracked labels in the same voice as the rail numerals, the project
-            eyebrow and the pipeline label, so five different things whispered
-            at the same pitch and nothing led. The headline says what the
-            section is; its position on the page says where it is. */}
-        <div className="border-t pt-10" style={{ borderColor: TOKENS.darkLine }}>
+            A numeral, and no text eyebrow. The eyebrow used to read "Selected
+            work" in the same small uppercase tracked voice as the project
+            eyebrow and the pipeline label, so several things whispered at the
+            same pitch and nothing led. The headline says what the section is.
+
+            The numeral stays because the page numbers its sections 01-05 and a
+            single figure against a rule cannot compete with a headline. */}
+        <div className="border-t pt-5" style={{ borderColor: TOKENS.darkLine }}>
+          <div className="flex justify-end">
+            <span
+              className="tabular-nums tracking-[0.2em]"
+              style={{
+                color: TOKENS.darkMuted,
+                fontSize: TYPE.micro,
+                ...TYPE_STYLE.micro,
+              }}
+            >
+              02
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-5">
           {/* Bold grotesk, matching the hero's face and weight exactly. Set on
               two lines so it establishes this as the main section without
               growing large enough to overpower the work below. */}

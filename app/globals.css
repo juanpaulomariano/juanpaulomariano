@@ -96,6 +96,40 @@ button:focus-visible {
   animation: stage-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* ── Conversation AI: reserved transcript height ─────────────────────────────
+   The two channels have different line counts, and switching between them
+   would collapse or grow the rail under the reader. This reserves the TALLER
+   of the two at each breakpoint so the switch is a swap in place, exactly like
+   the Selected Work stage.
+
+   Here rather than as a Tailwind utility for the same reason as
+   `.stage-reserve`: the values are measured constants, and Tailwind only
+   generates classes it can find as literal strings in the source.
+
+   These are hand-tuned, not computed. Re-measure at the NARROWEST width of
+   each range (1280 for xl, ~1023 for the sm range) if you add lines to either
+   channel — sampling at a range's lower edge sets a floor that is short by the
+   time you reach the top of it.
+
+   PENDING: both values are 0 until the real transcripts land, which leaves the
+   rail free to size itself in the meantime. Fill them in from the browser. */
+
+.transcript-reserve {
+  min-height: 0px;
+}
+
+@media (min-width: 640px) {
+  .transcript-reserve {
+    min-height: 0px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .transcript-reserve {
+    min-height: 0px;
+  }
+}
+
 /* ── Selected Work: play mark prime ──────────────────────────────────────────
    The video poster is a screenshot of a website, and a screenshot is a thing
    you look at rather than a thing you click. This fires ONCE when the poster

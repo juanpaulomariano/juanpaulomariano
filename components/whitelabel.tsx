@@ -132,16 +132,29 @@ export default function Whitelabel() {
           the line wrapped and orphaned "sight." on a third line. 58fr clears it
           at 1280, and from 2xl the column drops back to 52fr so the browser
           frame gets the width instead. */}
+      <div className="mx-auto mb-10 max-w-[1320px]">
+        <div className="border-t pt-5" style={{ borderColor: TOKENS.ink }}>
+          <div className="flex justify-end">
+            <span
+              className="tabular-nums tracking-[0.2em]"
+              style={{
+                color: TOKENS.muted,
+                fontSize: TYPE.micro,
+                ...TYPE_STYLE.micro,
+              }}
+            >
+              04
+            </span>
+          </div>
+        </div>
+      </div>
+
       <div className="mx-auto max-w-[1320px] xl:grid xl:grid-cols-[58fr_42fr] xl:items-center xl:gap-12 2xl:grid-cols-[52fr_48fr]">
         <div className="min-w-0">
         {/* Header. Centered while stacked, left-aligned once beside the frame. */}
         <div className="mx-auto max-w-[46rem] text-center xl:mx-0 xl:text-left">
-          <p
-            className="text-[11px] tracking-[0.2em]"
-            style={{ color: TOKENS.muted }}
-          >
-            White-label
-          </p>
+          {/* The "White-label" text eyebrow is gone; the headline directly
+              below says it. The page carries numerals only. */}
           {/* Same size as the other two section titles. It was previously
               stepped down at xl to fit the narrower column, which made the page
               read as though this section mattered a third less than the ones

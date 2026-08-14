@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { EASE, TOKENS } from "@/lib/tokens";
+import { EASE, TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
 import {
   CAPABILITIES,
   CAPTIONS,
@@ -126,7 +126,13 @@ export default function Whitelabel() {
           fits without shrinking the screenshot to the point where the CRM
           navigation — the actual proof of white-labeling — stops being
           readable. */}
-      <div className="mx-auto max-w-[1320px] xl:grid xl:grid-cols-[42fr_58fr] xl:items-center xl:gap-14">
+      {/* The text column takes more of the grid at the narrow end of xl and
+          gives it back once there is room. "GoHighLevel out of sight." needs
+          ~600px at the section-title size; at 1280 a 52fr track is 591px, so
+          the line wrapped and orphaned "sight." on a third line. 58fr clears it
+          at 1280, and from 2xl the column drops back to 52fr so the browser
+          frame gets the width instead. */}
+      <div className="mx-auto max-w-[1320px] xl:grid xl:grid-cols-[58fr_42fr] xl:items-center xl:gap-12 2xl:grid-cols-[52fr_48fr]">
         <div className="min-w-0">
         {/* Header. Centered while stacked, left-aligned once beside the frame. */}
         <div className="mx-auto max-w-[46rem] text-center xl:mx-0 xl:text-left">
@@ -136,18 +142,33 @@ export default function Whitelabel() {
           >
             White-label
           </p>
+          {/* Same size as the other two section titles. It was previously
+              stepped down at xl to fit the narrower column, which made the page
+              read as though this section mattered a third less than the ones
+              around it; the column carries the larger type instead. */}
+          {/* text-balance on the second line: at the narrow end of xl the
+              column is ~591px and "GoHighLevel out of sight." needs ~600px, so
+              it wrapped to a third line with "sight." orphaned. Balancing
+              splits it evenly instead of leaving one word stranded. */}
           <h2
-            className="mx-auto mt-4 font-bold text-[clamp(2rem,4.2vw,3.2rem)] leading-[1.06] tracking-[-0.02em] xl:mx-0 xl:text-[clamp(2rem,3vw,2.6rem)]"
-            style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.ink }}
+            className="mx-auto mt-4 xl:mx-0"
+            style={{
+              fontFamily: "var(--font-grotesk)",
+              color: TOKENS.ink,
+              fontSize: TYPE.section,
+              ...TYPE_STYLE.section,
+            }}
           >
             <span className="block" style={{ color: TOKENS.muted }}>
               Your brand on top.
             </span>
-            <span className="block">GoHighLevel out of sight.</span>
+            <span className="block text-balance">
+              GoHighLevel out of sight.
+            </span>
           </h2>
           <p
-            className="mx-auto mt-5 max-w-[46ch] text-[14.5px] leading-[1.75] xl:mx-0"
-            style={{ color: TOKENS.muted }}
+            className="mx-auto mt-5 max-w-[46ch] xl:mx-0"
+            style={{ color: TOKENS.muted, fontSize: TYPE.body, ...TYPE_STYLE.body }}
           >
             Turn GoHighLevel into an environment your clients know as yours.
             Domain, branding, navigation, the whole client-facing layer, without
@@ -189,15 +210,19 @@ export default function Whitelabel() {
                   type="button"
                   onClick={() => flip(key)}
                   aria-pressed={active}
-                  className="relative z-10 px-4 py-2.5 text-[12.5px] transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:px-6"
-                  style={{ color: active ? "#FFFFFF" : TOKENS.muted }}
+                  className="relative z-10 px-4 py-2.5 transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:px-6"
+                  style={{
+                    color: active ? "#FFFFFF" : TOKENS.muted,
+                    fontSize: TYPE.ui,
+                    ...TYPE_STYLE.ui,
+                  }}
                 >
                   {label}
                 </button>
               );
             })}
           </div>
-          <p className="mt-3 text-[13px]" style={{ color: TOKENS.muted }}>
+          <p className="mt-3" style={{ color: TOKENS.muted, fontSize: TYPE.small, ...TYPE_STYLE.small }}>
             Flip it. Same platform, different business.
           </p>
         </div>
@@ -357,10 +382,10 @@ function WhitelabelDetails() {
             className={i > 0 ? "lg:border-l lg:pl-6 xl:border-l-0 xl:pl-0" : ""}
             style={{ borderColor: TOKENS.hair }}
           >
-            <p className="text-[13px]" style={{ color: TOKENS.ink }}>
+            <p style={{ color: TOKENS.ink, fontSize: TYPE.small, ...TYPE_STYLE.small }}>
               {c.label}
             </p>
-            <p className="mt-1.5 text-[12.5px]" style={{ color: TOKENS.muted }}>
+            <p className="mt-1.5" style={{ color: TOKENS.muted, fontSize: TYPE.micro, ...TYPE_STYLE.micro }}>
               {c.detail}
             </p>
           </div>

@@ -1,4 +1,4 @@
-import { TOKENS } from "@/lib/tokens";
+import { TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
 
 /* ────────────────────────────────────────────────────────────────────────────
    Final CTA — the page returns to air after the dark work section and the
@@ -36,14 +36,19 @@ export default function FinalCta() {
 
         <div className="mx-auto mt-14 max-w-[44rem] text-center sm:mt-16">
           <h2
-            className="mx-auto max-w-[15em] font-bold text-[clamp(2.1rem,4.6vw,3.6rem)] leading-[1.05] tracking-[-0.025em] text-balance"
-            style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.ink }}
+            className="mx-auto max-w-[15em] text-balance"
+            style={{
+              fontFamily: "var(--font-grotesk)",
+              color: TOKENS.ink,
+              fontSize: TYPE.section,
+              ...TYPE_STYLE.section,
+            }}
           >
             Tell me what the platform can&apos;t do yet.
           </h2>
           <p
-            className="mx-auto mt-6 max-w-[42ch] text-[14.5px] leading-[1.75]"
-            style={{ color: TOKENS.muted }}
+            className="mx-auto mt-6 max-w-[42ch]"
+            style={{ color: TOKENS.muted, fontSize: TYPE.body, ...TYPE_STYLE.body }}
           >
             If you have a client build that runs past what GoHighLevel does out
             of the box, send me the shape of it. I&apos;ll tell you straight
@@ -53,14 +58,14 @@ export default function FinalCta() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <a
               href="mailto:paumirasol800@gmail.com"
-              className="rounded-full bg-[#0A0A0A] px-6 py-3 text-[14px] font-medium text-white transition-colors duration-300 hover:bg-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="rounded-full bg-[#0A0A0A] px-6 py-3 text-[13.5px] font-medium text-white transition-colors duration-300 hover:bg-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ "--accent": TOKENS.accent } as React.CSSProperties}
             >
               Send me a client build
             </a>
             <a
               href="#work"
-              className="rounded-full border-[0.5px] px-6 py-3 text-[14px] font-medium transition-colors duration-300 hover:bg-black/[0.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="rounded-full border-[0.5px] px-6 py-3 text-[13.5px] font-medium transition-colors duration-300 hover:bg-black/[0.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ borderColor: "rgba(0,0,0,0.2)", color: TOKENS.ink }}
             >
               See the work again

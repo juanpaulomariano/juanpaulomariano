@@ -45,21 +45,21 @@ button:focus-visible {
 }
 
 @media (min-width: 640px) {
-  /* 797px is the tallest stage anywhere in this range, measured at 1023: just
+  /* 799px is the tallest stage anywhere in this range, measured at 1023: just
      below lg, where the container is widest before the rail claims a column
      and the still-full-width video poster is at its largest. The peaks sit
      just under breakpoints, not at their lower edges, so sampling at 640 would
      set a floor short enough to jump at both 1023 and 1279. */
   .stage-reserve {
-    --stage-h: 797px;
+    --stage-h: 799px;
   }
 }
 
 @media (min-width: 1280px) {
-  /* 546px, measured at 1280 (the narrowest xl width, where the two columns are
+  /* 548px, measured at 1280 (the narrowest xl width, where the two columns are
      tightest and the stage is therefore tallest). */
   .stage-reserve {
-    --stage-h: 546px;
+    --stage-h: 548px;
   }
 }
 

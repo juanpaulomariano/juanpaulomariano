@@ -383,19 +383,19 @@ export default function Hero() {
         </a>
         <div className="flex items-center gap-7">
           <nav className="hidden items-center gap-7 sm:flex" aria-label="Primary">
-            <a href="#work" className="text-[13px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
+            <a href="#work" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
               Work
             </a>
-            <a href="#about" className="text-[13px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
+            <a href="#about" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
               About
             </a>
-            <a href="#contact" className="text-[13px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
+            <a href="#contact" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
               Contact
             </a>
           </nav>
           <a
             href="#contact"
-            className="rounded-full bg-[#0A0A0A] px-4 py-1.5 text-[13px] font-medium text-white transition-colors duration-300 hover:bg-[var(--accent)]"
+            className="rounded-full bg-[#0A0A0A] px-4 py-1.5 text-[13.5px] font-medium text-white transition-colors duration-300 hover:bg-[var(--accent)]"
           >
             Book a call
           </a>
@@ -589,7 +589,10 @@ export default function Hero() {
             .
           </h1>
 
-          <p className="mt-6 max-w-[34em] text-[15px] leading-[1.7] text-[#444444]">
+          {/* body role (14.5px/1.75) — was a one-off 15px/1.7, which put the
+              hero's dek half a pixel away from every other paragraph on the
+              page for no reason. */}
+          <p className="mt-6 max-w-[34em] text-[14.5px] leading-[1.75] text-[#444444]">
             I build the CRM, the automation, and the custom code for when the
             platform runs out. Under your brand, handed off clean. That’s the
             short version — the rest is in the work.
@@ -598,13 +601,13 @@ export default function Hero() {
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <a
               href="#contact"
-              className="rounded-full bg-[#0A0A0A] px-6 py-3 text-[14px] font-medium text-white transition-colors duration-300 hover:bg-[var(--accent)]"
+              className="rounded-full bg-[#0A0A0A] px-6 py-3 text-[13.5px] font-medium text-white transition-colors duration-300 hover:bg-[var(--accent)]"
             >
               Send me a client build
             </a>
             <a
               href="#work"
-              className="rounded-full border-[0.5px] border-black/20 px-6 py-3 text-[14px] font-medium text-[#0A0A0A] transition-colors duration-300 hover:border-black/45 hover:bg-black/[0.03]"
+              className="rounded-full border-[0.5px] border-black/20 px-6 py-3 text-[13.5px] font-medium text-[#0A0A0A] transition-colors duration-300 hover:border-black/45 hover:bg-black/[0.03]"
             >
               See my work
             </a>

@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import GalleryLightbox from "@/components/gallery-lightbox";
 import LivingPipeline from "@/components/living-pipeline";
 import VideoModal, { muxPoster } from "@/components/video-modal";
-import { TOKENS } from "@/lib/tokens";
+import { TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
 import { PROJECTS, type Project, type Shot } from "@/lib/works";
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -90,8 +90,13 @@ export default function SelectedWorks() {
               two lines so it establishes this as the main section without
               growing large enough to overpower the work below. */}
           <h2
-            className="max-w-[13em] font-bold text-[clamp(2.3rem,4.8vw,3.9rem)] leading-[1.04] tracking-[-0.025em]"
-            style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.darkInk }}
+            className="max-w-[13em]"
+            style={{
+              fontFamily: "var(--font-grotesk)",
+              color: TOKENS.darkInk,
+              fontSize: TYPE.section,
+              ...TYPE_STYLE.section,
+            }}
           >
             Systems I&apos;ve built,
             <br />
@@ -146,18 +151,23 @@ export default function SelectedWorks() {
                       an inactive project stays legible instead of dimming into
                       the background. */}
                   <span
-                    className="block text-[17px] tracking-[-0.015em] transition-colors duration-300"
+                    className="block transition-colors duration-300"
                     style={{
                       fontFamily: "var(--font-grotesk)",
-                      fontWeight: 600,
                       color: selected ? TOKENS.darkInk : TOKENS.darkBody,
+                      fontSize: TYPE.indexItem,
+                      ...TYPE_STYLE.indexItem,
                     }}
                   >
                     {p.railLabel}
                   </span>
                   <span
-                    className="mt-1.5 block text-[12.5px] transition-colors duration-300"
-                    style={{ color: selected ? TOKENS.darkBody : TOKENS.darkMuted }}
+                    className="mt-1.5 block transition-colors duration-300"
+                    style={{
+                      color: selected ? TOKENS.darkBody : TOKENS.darkMuted,
+                      fontSize: TYPE.micro,
+                      ...TYPE_STYLE.micro,
+                    }}
                   >
                     {p.railSublabel}
                     {/* Status as a word, not a coloured dot. The dot was
@@ -315,16 +325,25 @@ function StageIntro({ project }: { project: Project }) {
           information rather than as chrome. */}
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <h3
-          className="font-bold text-[clamp(1.7rem,2.8vw,2.3rem)] leading-[1.08] tracking-[-0.025em]"
-          style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.darkInk }}
+          style={{
+            fontFamily: "var(--font-grotesk)",
+            color: TOKENS.darkInk,
+            fontSize: TYPE.subsection,
+            ...TYPE_STYLE.subsection,
+          }}
         >
           {project.title}
         </h3>
         {project.inProgress && <InProgressTag />}
       </div>
       <p
-        className="mt-2.5 text-[13px] tracking-[0.02em]"
-        style={{ color: TOKENS.darkMuted }}
+        className="mt-2.5"
+        style={{
+          color: TOKENS.darkMuted,
+          fontSize: TYPE.small,
+          ...TYPE_STYLE.small,
+          letterSpacing: "0.02em",
+        }}
       >
         {project.eyebrow}
       </p>
@@ -333,8 +352,12 @@ function StageIntro({ project }: { project: Project }) {
           real size and the body colour rather than being greyed out under the
           title where it read as a caption. */}
       <p
-        className="mt-5 text-[16px] leading-[1.5] tracking-[-0.005em]"
-        style={{ color: TOKENS.darkInk }}
+        className="mt-5"
+        style={{
+          color: TOKENS.darkInk,
+          fontSize: TYPE.lead,
+          ...TYPE_STYLE.lead,
+        }}
       >
         {project.subtitle}
       </p>
@@ -342,8 +365,12 @@ function StageIntro({ project }: { project: Project }) {
       {/* Capped at 46em while the stage is one column; from xl the grid track
           is the measure, so the cap is released rather than fighting it. */}
       <p
-        className="mt-4 max-w-[46em] text-[14.5px] leading-[1.75] xl:max-w-none"
-        style={{ color: TOKENS.darkBody }}
+        className="mt-4 max-w-[46em] xl:max-w-none"
+        style={{
+          color: TOKENS.darkBody,
+          fontSize: TYPE.body,
+          ...TYPE_STYLE.body,
+        }}
       >
         {project.description}
       </p>
@@ -359,8 +386,8 @@ function StageIntro({ project }: { project: Project }) {
 function InProgressTag() {
   return (
     <span
-      className="shrink-0 text-[13px]"
-      style={{ color: TOKENS.accent }}
+      className="shrink-0"
+      style={{ color: TOKENS.accent, fontSize: TYPE.small, ...TYPE_STYLE.small }}
     >
       In progress
     </span>
@@ -456,7 +483,7 @@ function ProofWall({
 
   return (
     <div className="mt-7 border-t pt-5" style={{ borderColor: TOKENS.darkHair }}>
-      <p className="text-[13.5px]" style={{ color: TOKENS.darkBody }}>
+      <p style={{ color: TOKENS.darkBody, fontSize: TYPE.ui, ...TYPE_STYLE.ui }}>
         {intro}
       </p>
 

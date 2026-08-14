@@ -74,6 +74,7 @@ const LOGOS = [
   { src: "/logos/claude.svg",      label: "Claude",      size: 38 },
   { src: "/logos/notion.svg",      label: "Notion",      size: 36 },
   { src: "/logos/slack.svg",       label: "Slack",       size: 36 },
+  { src: "/logos/meta.svg",        label: "Meta",        size: 44 },
 ];
 
 /* ── 3D orbit geometry ───────────────────────────────────────────────────────

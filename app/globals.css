@@ -18,6 +18,17 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
+/* Selected Work runs on #0A0A0A, so the near-black ring above was invisible
+   there: every control in the section (rail tabs, proof thumbs, the gallery
+   button, the video poster, and the focusable stage itself) had a focus
+   indicator that could not be seen. Scoped to the section rather than set
+   per-button so a control added later cannot forget it. */
+#work a:focus-visible,
+#work button:focus-visible,
+#work [role="tabpanel"]:focus-visible {
+  outline-color: #ffffff;
+}
+
 /* ── Assembly (on load): fade + scale 0.9 → 1, staggered per logo ────────── */
 
 @keyframes assemble {
@@ -85,6 +96,56 @@ button:focus-visible {
   animation: stage-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* ── Selected Work: play mark prime ──────────────────────────────────────────
+   The video poster is a screenshot of a website, and a screenshot is a thing
+   you look at rather than a thing you click. This fires ONCE when the poster
+   scrolls into view: the mark swells and settles, the way a button depresses
+   and releases.
+
+   It is not a loop, for the same reason the pipeline is not a loop. The hero's
+   orbit is the page's one perpetual element and a second would compete for
+   attention. Runs on the plate only, never on the poster, so the screenshot
+   itself is never in motion.
+
+   620ms sits with the entrance durations (420-500ms) rather than the hover
+   ones (200-300ms), which is right: this is an entrance, not a response. */
+
+   The prime and the hover both want to scale the same element, and an
+   animation's value always beats a transition's on the same property, so
+   animating `transform` here silently killed the hover scale. Instead the
+   prime animates its own custom property and the element composes the two, so
+   each effect owns a separate variable and neither can clobber the other. */
+
+@property --prime-scale {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+/* Registered so it can be TRANSITIONED. An unregistered custom property has no
+   type, so the browser cannot interpolate it and the hover would snap. */
+@property --hover-scale {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+@keyframes play-prime {
+  0% {
+    --prime-scale: 1;
+  }
+  38% {
+    --prime-scale: 1.09;
+  }
+  100% {
+    --prime-scale: 1;
+  }
+}
+
+.play-prime {
+  animation: play-prime 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* ── Scroll cue wheel ────────────────────────────────────────────────────── */
 
 @keyframes cue-wheel {
@@ -107,6 +168,11 @@ button:focus-visible {
   }
   /* The stage still swaps, it just no longer travels to get there. */
   .stage-in {
+    animation: none;
+  }
+  /* The mark still reads as a control — the label and the scrim do that work.
+     Only the swell is withheld. */
+  .play-prime {
     animation: none;
   }
 }

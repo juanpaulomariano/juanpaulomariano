@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import GalleryLightbox from "@/components/gallery-lightbox";
 import LivingPipeline from "@/components/living-pipeline";
 import VideoModal, { muxPoster } from "@/components/video-modal";
-import { TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
+import { EASE, TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
 import { PROJECTS, type Project, type Shot } from "@/lib/works";
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -395,6 +395,29 @@ function InProgressTag() {
 }
 
 
+/* The poster is a screenshot of a website with a small white mark on it, and a
+   screenshot is a thing you look at, not a thing you click. Three changes make
+   it read as a control without adding decoration:
+
+   1. The mark primes once when the poster arrives — one swell and settle, then
+      it rests. Same one-shot shape as the white-label toggle's nudge, and not
+      a loop for the same reason the pipeline is not one.
+   2. A label unfurls out of the mark on hover and on focus.
+   3. The scrim actually deepens now. It never did: an inline opacity beat the
+      hover class, so the transition ran against a value it could not change.
+
+   On the label. One was deliberately removed from this exact spot before, as
+   "another small uppercase tracked string burnt over the screenshot". This is
+   a different object: sentence case at the interface type role, ink on white
+   INSIDE the plate rather than burnt over the image, and present only on hover
+   and focus, so it is never part of the resting composition that had the
+   whisper problem.
+
+   It also becomes the button's accessible name, which is why the aria-label is
+   gone: a visible label matching the announced one is the stronger version
+   (WCAG 2.5.3), and keeping both made the button state its purpose twice. The
+   project name is not lost — this sits inside a tabpanel labelled by its rail
+   tab, so the panel already supplies that context. */
 function VideoPoster({
   project,
   onPlay,
@@ -403,16 +426,45 @@ function VideoPoster({
   onPlay: () => void;
 }) {
   const poster = project.posterSrc || muxPoster(project.muxPlaybackId, project.posterTime);
+  const [reduced, setReduced] = useState(false);
+  const [primed, setPrimed] = useState(false);
+  const ref = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+    const onChange = () => setReduced(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  /* Prime once, when the poster is actually on screen. Tied to visibility
+     rather than to mount: the stage swaps in place, so mounting fires every
+     time you click back to this project — including while the section is
+     scrolled past, which would spend the animation on nobody. */
+  useEffect(() => {
+    if (reduced || primed || !ref.current) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setPrimed(true);
+        io.disconnect();
+      },
+      { threshold: 0.5 },
+    );
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, [reduced, primed]);
 
   return (
     <button
+      ref={ref}
       type="button"
       onClick={onPlay}
       className="group relative block aspect-video w-full overflow-hidden border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
       /* Light border, not a shadow: the bright build should sit ON the dark
          canvas, not float above it as a card. */
       style={{ borderColor: TOKENS.darkLine, background: TOKENS.white }}
-      aria-label={`Play the ${project.title} walkthrough`}
     >
       {poster ? (
         <img
@@ -431,32 +483,82 @@ function VideoPoster({
         </span>
       )}
 
-      {/* Media control. The label used to sit next to it as another small
-          uppercase tracked string burnt over the screenshot; a play mark on a
-          screenshot already means "play", so the control is now just the mark,
-          scrimmed so it holds on any frame and growing slightly on hover. */}
+      {/* Rest scrim: always on, holds the mark legible against any frame. */}
       <span
         aria-hidden="true"
-        className="absolute inset-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="absolute inset-0"
         style={{
           background:
             "linear-gradient(to top, rgba(10,10,10,0.34), rgba(10,10,10,0) 42%)",
-          opacity: 0.85,
         }}
       />
-      <span className="absolute bottom-4 left-4 flex items-center">
+      {/* Hover scrim, cross-fading over the rest one. Two stacked layers rather
+          than one animated gradient: gradients do not interpolate dependably
+          across browsers, and opacity is composited. */}
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(10,10,10,0.58), rgba(10,10,10,0) 64%)",
+        }}
+      />
+
+      {/* The plate and the label are one horizontal unit, so the label grows
+          out of the mark instead of appearing beside it. */}
+      <span className="absolute bottom-4 left-4 flex items-stretch">
+        {/* Two scales act on this plate: the one-shot prime and the hover
+            response. An animation's value always beats a transition's on the
+            same property, so if both drove `transform` the prime would pin the
+            plate at scale(1) and the hover would never show. Instead the prime
+            animates `--prime-scale` (see globals.css) and the hover animates
+            `--hover-scale`, and the transform multiplies them. */}
         <span
-          className="flex h-11 w-11 items-center justify-center transition-transform duration-300 ease-out group-hover:scale-[1.08]"
-          style={{ background: TOKENS.white }}
+          className={`flex h-11 w-11 shrink-0 items-center justify-center transition-[--hover-scale] duration-300 ease-out group-hover:[--hover-scale:1.08] group-focus-visible:[--hover-scale:1.08] ${
+            primed ? "play-prime" : ""
+          }`}
+          style={{
+            background: TOKENS.white,
+            transform: "scale(calc(var(--prime-scale, 1) * var(--hover-scale, 1)))",
+          }}
         >
           <span
+            aria-hidden="true"
             className="ml-[3px] block h-0 w-0"
             style={{
               borderTop: "6px solid transparent",
               borderBottom: "6px solid transparent",
-              borderLeft: "10px solid #0A0A0A",
+              borderLeft: `10px solid ${TOKENS.ink}`,
             }}
           />
+        </span>
+
+        {/* 0fr -> 1fr is the one way to transition to CONTENT width without
+            hard-coding a px value the copy then has to fit. The inner cell
+            needs min-w-0 and overflow-hidden or the text refuses to compress
+            and the track never collapses. */}
+        <span
+          className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-300 group-hover:grid-cols-[1fr] group-focus-visible:grid-cols-[1fr]"
+          style={
+            reduced
+              ? { gridTemplateColumns: "1fr", transitionDuration: "0ms" }
+              : { transitionTimingFunction: EASE.enter }
+          }
+        >
+          <span className="min-w-0 overflow-hidden">
+            <span
+              className="flex h-11 items-center whitespace-nowrap px-3.5 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
+              style={{
+                background: TOKENS.white,
+                color: TOKENS.ink,
+                fontSize: TYPE.ui,
+                ...TYPE_STYLE.ui,
+                transitionDuration: reduced ? "0ms" : undefined,
+              }}
+            >
+              Watch the walkthrough
+            </span>
+          </span>
         </span>
       </span>
     </button>

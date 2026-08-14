@@ -75,37 +75,22 @@ export default function SelectedWorks() {
       /* py trimmed at xl so the section fits a 900px laptop viewport: at that
          width the stage is two columns and short, and the padding is the only
          slack left that isn't content. */
-      className="px-6 py-20 sm:px-10 sm:py-24 xl:py-[76px]"
+      className="px-6 py-20 sm:px-10 sm:py-24 xl:py-[68px]"
       style={{ background: TOKENS.darkBg }}
     >
       <div className="mx-auto max-w-[1320px]">
-        {/* ── Section header: a ruled masthead, not a card heading ── */}
-        <div
-          className="border-t pt-5"
-          style={{ borderColor: TOKENS.darkLine }}
-        >
-          <div className="flex items-baseline justify-between gap-6">
-            <p
-              className="text-[11px] tracking-[0.2em]"
-              style={{ color: TOKENS.darkMuted }}
-            >
-              Selected work
-            </p>
-            {/* Section number — architectural, set in the same tabular voice
-                as the rail numerals so it reads as a coordinate. */}
-            <span
-              className="text-[11px] tabular-nums tracking-[0.2em]"
-              style={{ color: TOKENS.darkMuted }}
-            >
-              02
-            </span>
-          </div>
-
-          {/* Bold grotesk, matching the hero's face and weight exactly.
-              Set on two lines so it establishes this as the main section
-              without growing large enough to overpower the work below. */}
+        {/* ── Section header ──────────────────────────────────────────────
+            No eyebrow and no section number. Both were small uppercase
+            tracked labels in the same voice as the rail numerals, the project
+            eyebrow and the pipeline label, so five different things whispered
+            at the same pitch and nothing led. The headline says what the
+            section is; its position on the page says where it is. */}
+        <div className="border-t pt-10" style={{ borderColor: TOKENS.darkLine }}>
+          {/* Bold grotesk, matching the hero's face and weight exactly. Set on
+              two lines so it establishes this as the main section without
+              growing large enough to overpower the work below. */}
           <h2
-            className="mt-6 max-w-[13em] font-bold text-[clamp(2.3rem,4.8vw,3.9rem)] leading-[1.04] tracking-[-0.025em]"
+            className="max-w-[13em] font-bold text-[clamp(2.3rem,4.8vw,3.9rem)] leading-[1.04] tracking-[-0.025em]"
             style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.darkInk }}
           >
             Systems I&apos;ve built,
@@ -116,7 +101,7 @@ export default function SelectedWorks() {
 
         {/* ── The switchboard: two columns of one composition, joined by a
                single hairline. No outer card, no rounded container. ── */}
-        <div className="mt-10 flex flex-col lg:flex-row lg:gap-12 xl:mt-8">
+        <div className="mt-10 flex flex-col lg:flex-row lg:gap-14 xl:mt-9 xl:gap-16">
           {/* LEFT RAIL — an index of systems. Horizontal strip under lg. */}
           <div
             ref={railRef}
@@ -125,7 +110,7 @@ export default function SelectedWorks() {
             aria-orientation="horizontal"
             className="flex shrink-0 overflow-x-auto pb-2 lg:w-[236px] lg:flex-col lg:overflow-visible lg:pb-0"
           >
-            {PROJECTS.map((p, idx) => {
+            {PROJECTS.map((p) => {
               const selected = p.key === activeKey;
               return (
                 <button
@@ -136,66 +121,74 @@ export default function SelectedWorks() {
                   id={`tab-${p.key}`}
                   type="button"
                   onClick={() => setActiveKey(p.key)}
-                  className="group relative shrink-0 border-t py-3.5 pr-6 text-left transition-opacity duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 lg:pr-0"
+                  /* The whole row is the target, and the accent rule slides
+                     along the left edge on desktop rather than capping the top
+                     border, so selecting a project reads as moving a marker
+                     down an index instead of relighting a box. */
+                  className="group relative shrink-0 border-t py-4 pr-6 text-left transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 lg:border-l lg:border-t-0 lg:pl-5 lg:pr-0"
                   style={{
-                    borderColor: selected ? TOKENS.darkLine : TOKENS.darkHair,
+                    borderColor: selected ? TOKENS.darkInk : TOKENS.darkHair,
                     minWidth: 176,
-                    opacity: selected ? 1 : 0.55,
                   }}
                 >
-                  {/* Active marker: a short red rule riding the top border —
-                      a state indicator, not a filled background. */}
+                  {/* Active marker. Vertical on desktop where the rail is a
+                      column, horizontal under lg where it is a tab strip. */}
                   <span
                     aria-hidden="true"
-                    className="absolute left-0 top-0 h-px transition-all duration-300 ease-out"
+                    className="absolute left-0 top-0 h-px w-full origin-left transition-transform duration-300 ease-out lg:h-full lg:w-px lg:origin-top"
                     style={{
-                      width: selected ? 26 : 0,
                       background: TOKENS.accent,
+                      transform: selected ? "scale(1)" : "scaleX(0)",
                     }}
                   />
+                  {/* Name carries the weight now: one size up, and the
+                      selected/unselected difference is colour, not opacity, so
+                      an inactive project stays legible instead of dimming into
+                      the background. */}
                   <span
-                    className="block text-[10px] tabular-nums tracking-[0.18em]"
-                    style={{ color: selected ? TOKENS.accent : TOKENS.darkMuted }}
+                    className="block text-[17px] tracking-[-0.015em] transition-colors duration-300"
+                    style={{
+                      fontFamily: "var(--font-grotesk)",
+                      fontWeight: 600,
+                      color: selected ? TOKENS.darkInk : TOKENS.darkBody,
+                    }}
                   >
-                    {String(idx + 1).padStart(2, "0")}
-                  </span>
-                  <span className="mt-2 flex items-center gap-2">
-                    <span
-                      className="text-[15px] tracking-[-0.01em] transition-colors duration-200"
-                      style={{
-                        color: selected ? TOKENS.darkInk : TOKENS.darkBody,
-                        fontWeight: selected ? 600 : 400,
-                      }}
-                    >
-                      {p.railLabel}
-                    </span>
-                    {p.inProgress && <StatusDot />}
+                    {p.railLabel}
                   </span>
                   <span
-                    className="mt-1 block text-[12px]"
-                    style={{ color: TOKENS.darkMuted }}
+                    className="mt-1.5 block text-[12.5px] transition-colors duration-300"
+                    style={{ color: selected ? TOKENS.darkBody : TOKENS.darkMuted }}
                   >
                     {p.railSublabel}
+                    {/* Status as a word, not a coloured dot. The dot was
+                        decoration that needed the sublabel to explain it. */}
+                    {p.inProgress && (
+                      <span style={{ color: TOKENS.accent }}> · In progress</span>
+                    )}
                   </span>
                 </button>
               );
             })}
-            {/* Close the index with a rule so it reads as a finished list. */}
+            {/* Runs the rail's spine past the last project so the index reads
+                as a continuous column rather than stopping at the final row.
+                Only on desktop, where the rail is vertical. */}
             <span
               aria-hidden="true"
-              className="hidden border-t lg:block"
+              className="hidden border-l lg:block lg:h-10"
               style={{ borderColor: TOKENS.darkHair }}
             />
           </div>
 
-          {/* MAIN STAGE — the inspection area. Separated from the rail by one
-              hairline on desktop; no border, no radius, no shadow. */}
+          {/* MAIN STAGE — the inspection area. The dividing hairline now lives
+              on the rail's own rows (which each carry a left border), so the
+              stage no longer draws a second vertical rule beside it; two
+              parallel lines a few pixels apart read as a rendering fault. */}
           <div
             id={`stage-${active.key}`}
             role="tabpanel"
             aria-labelledby={`tab-${active.key}`}
             tabIndex={0}
-            className="stage-reserve relative min-w-0 flex-1 border-t pt-7 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0"
+            className="stage-reserve relative min-w-0 flex-1 border-t pt-7 lg:border-t-0 lg:pt-0"
             style={{ borderColor: TOKENS.darkHair }}
           >
             {/* Height reservation — see STAGE_H_SM / STAGE_H_XL. Floated and
@@ -207,11 +200,15 @@ export default function SelectedWorks() {
               className="pointer-events-none float-left hidden w-0 sm:block"
               style={{ paddingTop: `var(--stage-h)` }}
             />
-            <Stage
-              project={active}
-              onPlay={() => setVideoOpen(true)}
-              onOpenGallery={openGallery}
-            />
+            {/* key remounts on selection so the entrance replays; see
+                `.stage-in` in globals.css for why it exists. */}
+            <div key={active.key} className="stage-in">
+              <Stage
+                project={active}
+                onPlay={() => setVideoOpen(true)}
+                onOpenGallery={openGallery}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -312,24 +309,36 @@ function Stage({
 function StageIntro({ project }: { project: Project }) {
   return (
     <>
-      <p
-        className="text-[10px] uppercase tracking-[0.2em]"
-        style={{ color: TOKENS.darkMuted }}
-      >
-        {project.eyebrow}
-      </p>
-      <div className="mt-2.5 flex flex-wrap items-center gap-3">
+      {/* Title first. The category used to sit above it as a third small
+          uppercase label, competing with the rail and the section header; it
+          is more useful as a plain caption under the name, where it reads as
+          information rather than as chrome. */}
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <h3
-          className="font-bold text-[clamp(1.5rem,2.5vw,2rem)] leading-[1.12] tracking-[-0.02em]"
+          className="font-bold text-[clamp(1.7rem,2.8vw,2.3rem)] leading-[1.08] tracking-[-0.025em]"
           style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.darkInk }}
         >
           {project.title}
         </h3>
         {project.inProgress && <InProgressTag />}
       </div>
-      <p className="mt-2 text-[14px]" style={{ color: TOKENS.darkMuted }}>
+      <p
+        className="mt-2.5 text-[13px] tracking-[0.02em]"
+        style={{ color: TOKENS.darkMuted }}
+      >
+        {project.eyebrow}
+      </p>
+
+      {/* Subtitle is the one line that states what the thing IS, so it gets
+          real size and the body colour rather than being greyed out under the
+          title where it read as a caption. */}
+      <p
+        className="mt-5 text-[16px] leading-[1.5] tracking-[-0.005em]"
+        style={{ color: TOKENS.darkInk }}
+      >
         {project.subtitle}
       </p>
+
       {/* Capped at 46em while the stage is one column; from xl the grid track
           is the measure, so the cap is released rather than fighting it. */}
       <p
@@ -344,25 +353,15 @@ function StageIntro({ project }: { project: Project }) {
 
 /* ── Pieces ──────────────────────────────────────────────────────────────── */
 
-/* Status marker for in-progress work. A small red dot plus a label reads as a
-   system status light; a bordered pill reads as a SaaS badge. */
-function StatusDot() {
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-block h-[5px] w-[5px] shrink-0 rounded-full"
-      style={{ background: TOKENS.accent }}
-    />
-  );
-}
-
+/* Status marker for in-progress work. Set in the accent and sized to sit on
+   the title's baseline: the word alone carries the state, so there is no
+   coloured dot needing a label to explain what it means. */
 function InProgressTag() {
   return (
     <span
-      className="inline-flex shrink-0 items-center gap-1.5 text-[10px] uppercase tracking-[0.18em]"
-      style={{ color: TOKENS.darkMuted }}
+      className="shrink-0 text-[13px]"
+      style={{ color: TOKENS.accent }}
     >
-      <StatusDot />
       In progress
     </span>
   );
@@ -405,31 +404,32 @@ function VideoPoster({
         </span>
       )}
 
-      {/* Media control: a flat bar anchored bottom-left rather than a large
-          centred circle. Reads as a portfolio caption with a play affordance,
-          not a video-platform overlay. */}
-      <span className="absolute inset-x-0 bottom-0 flex items-center gap-2.5 px-4 pb-4">
+      {/* Media control. The label used to sit next to it as another small
+          uppercase tracked string burnt over the screenshot; a play mark on a
+          screenshot already means "play", so the control is now just the mark,
+          scrimmed so it holds on any frame and growing slightly on hover. */}
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(10,10,10,0.34), rgba(10,10,10,0) 42%)",
+          opacity: 0.85,
+        }}
+      />
+      <span className="absolute bottom-4 left-4 flex items-center">
         <span
-          className="flex h-8 w-8 shrink-0 items-center justify-center transition-colors duration-200"
-          style={{ background: TOKENS.ink }}
+          className="flex h-11 w-11 items-center justify-center transition-transform duration-300 ease-out group-hover:scale-[1.08]"
+          style={{ background: TOKENS.white }}
         >
           <span
-            className="ml-[2px] block h-0 w-0"
+            className="ml-[3px] block h-0 w-0"
             style={{
-              borderTop: "5px solid transparent",
-              borderBottom: "5px solid transparent",
-              borderLeft: "8px solid #FFFFFF",
+              borderTop: "6px solid transparent",
+              borderBottom: "6px solid transparent",
+              borderLeft: "10px solid #0A0A0A",
             }}
           />
-        </span>
-        <span
-          className="text-[10px] uppercase tracking-[0.18em] transition-opacity duration-200"
-          style={{
-            color: TOKENS.ink,
-            textShadow: "0 1px 8px rgba(255,255,255,0.9)",
-          }}
-        >
-          Play walkthrough
         </span>
       </span>
     </button>

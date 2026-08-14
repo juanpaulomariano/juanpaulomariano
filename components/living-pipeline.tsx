@@ -77,10 +77,10 @@ export default function LivingPipeline({ stages, runKey }: Props) {
         className="flex items-baseline justify-between border-t pt-4"
         style={{ borderColor: TOKENS.darkLine }}
       >
-        <p
-          className="text-[10px] uppercase tracking-[0.2em]"
-          style={{ color: TOKENS.darkMuted }}
-        >
+        {/* Sentence case, not a tracked uppercase eyebrow: this section had
+            five small caps labels competing at the same pitch, and this one
+            names a diagram rather than titling a section. */}
+        <p className="text-[13px]" style={{ color: TOKENS.darkMuted }}>
           Lead journey
         </p>
         {!reduced && (
@@ -88,7 +88,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
             type="button"
             onClick={() => setRunId((v) => v + 1)}
             disabled={!done}
-            className="text-[10px] uppercase tracking-[0.18em] transition-opacity duration-200 disabled:opacity-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+            className="text-[12.5px] transition-opacity duration-200 disabled:opacity-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
             style={{ color: TOKENS.darkMuted }}
           >
             Replay
@@ -166,8 +166,12 @@ export default function LivingPipeline({ stages, runKey }: Props) {
                       : `background-color 320ms ${EASE.enter}, border-color 320ms ${EASE.enter}`,
                   }}
                 />
+                {/* Sentence case: at 10px with 0.13em tracking, a two-word
+                    stage like "Consultation booked" wrapped to two cramped
+                    lines of caps. Same information, one line, easier to read
+                    at a glance, which is what a diagram label is for. */}
                 <span
-                  className="px-1 text-[10px] uppercase leading-[1.5] tracking-[0.13em]"
+                  className="px-1 text-[12px] leading-[1.35] tracking-[0.01em]"
                   style={{
                     color: lit ? TOKENS.darkInk : TOKENS.darkMuted,
                     transition: reduced ? "none" : "color 320ms ease",

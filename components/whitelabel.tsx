@@ -117,9 +117,19 @@ export default function Whitelabel() {
       className="px-6 py-20 sm:px-10 sm:py-24"
       style={{ background: TOKENS.white }}
     >
-      <div className="mx-auto max-w-[1320px]">
-        {/* Header, centered */}
-        <div className="mx-auto max-w-[46rem] text-center">
+      {/* Two columns from xl: the written case on the left, the proof on the
+          right. Stacked and centered below that, exactly as before.
+
+          The split is what lets the section fit a laptop viewport. Stacked,
+          the browser frame alone is ~709px tall and the section runs to
+          1623px; in the 55% track the same frame is ~390px and everything
+          fits without shrinking the screenshot to the point where the CRM
+          navigation — the actual proof of white-labeling — stops being
+          readable. */}
+      <div className="mx-auto max-w-[1320px] xl:grid xl:grid-cols-[42fr_58fr] xl:items-center xl:gap-14">
+        <div className="min-w-0">
+        {/* Header. Centered while stacked, left-aligned once beside the frame. */}
+        <div className="mx-auto max-w-[46rem] text-center xl:mx-0 xl:text-left">
           <p
             className="text-[11px] tracking-[0.2em]"
             style={{ color: TOKENS.muted }}
@@ -127,7 +137,7 @@ export default function Whitelabel() {
             White-label
           </p>
           <h2
-            className="mx-auto mt-4 font-bold text-[clamp(2rem,4.2vw,3.2rem)] leading-[1.06] tracking-[-0.02em]"
+            className="mx-auto mt-4 font-bold text-[clamp(2rem,4.2vw,3.2rem)] leading-[1.06] tracking-[-0.02em] xl:mx-0 xl:text-[clamp(2rem,3vw,2.6rem)]"
             style={{ fontFamily: "var(--font-grotesk)", color: TOKENS.ink }}
           >
             <span className="block" style={{ color: TOKENS.muted }}>
@@ -136,7 +146,7 @@ export default function Whitelabel() {
             <span className="block">GoHighLevel out of sight.</span>
           </h2>
           <p
-            className="mx-auto mt-5 max-w-[46ch] text-[14.5px] leading-[1.75]"
+            className="mx-auto mt-5 max-w-[46ch] text-[14.5px] leading-[1.75] xl:mx-0"
             style={{ color: TOKENS.muted }}
           >
             Turn GoHighLevel into an environment your clients know as yours.
@@ -146,7 +156,7 @@ export default function Whitelabel() {
         </div>
 
         {/* Toggle */}
-        <div className="mt-8 flex flex-col items-center">
+        <div className="mt-8 flex flex-col items-center xl:mt-7 xl:items-start">
           <div
             role="group"
             aria-label="Switch between the client view and the platform underneath"
@@ -192,8 +202,18 @@ export default function Whitelabel() {
           </p>
         </div>
 
-        {/* Browser frame */}
-        <div className="relative mx-auto mt-8 max-w-[1320px]">
+        {/* Capabilities and the limitation note ride with the written column
+            from xl, so the proof column carries only the frame and its
+            caption. Below xl they fall back under everything, in order. */}
+        <div className="hidden xl:block">
+          <WhitelabelDetails />
+        </div>
+        </div>
+
+        {/* Browser frame — the proof column. No max-width at xl: the grid track
+            is the constraint there, and an inherited cap would shrink the
+            screenshot below the size where the CRM navigation stays readable. */}
+        <div className="relative mx-auto mt-8 w-full min-w-0 max-w-[1320px] xl:mt-0 xl:max-w-none">
           <div className="border" style={{ borderColor: TOKENS.line }}>
             {/* Slim chrome: dots + the live address bar */}
             <div
@@ -286,7 +306,6 @@ export default function Whitelabel() {
               </span>
             ))}
           </div>
-        </div>
 
         {/* Caption. Height reserved for two lines so flipping never shifts. */}
         <p
@@ -297,48 +316,65 @@ export default function Whitelabel() {
           {isClient ? CAPTIONS.client : CAPTIONS.stock}
         </p>
 
-        {/* Capabilities: one quiet row, hairline-separated. No cards, no icons. */}
-        <div className="mt-12 grid gap-y-8 border-t pt-8 sm:grid-cols-2 lg:grid-cols-4"
-          style={{ borderColor: TOKENS.line }}
-        >
-          {CAPABILITIES.map((c, i) => (
-            <div
-              key={c.label}
-              className={i > 0 ? "lg:border-l lg:pl-6" : ""}
-              style={{ borderColor: TOKENS.hair }}
-            >
-              <p className="text-[13px]" style={{ color: TOKENS.ink }}>
-                {c.label}
-              </p>
-              <p className="mt-1.5 text-[12.5px]" style={{ color: TOKENS.muted }}>
-                {c.detail}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Honest limitation. Stated once, without hedging around it. */}
-        <p
-          className="mx-auto mt-7 max-w-[62ch] text-center text-[11px] leading-[1.7]"
-          style={{ color: TOKENS.muted }}
-        >
-          White-labeling covers the client-facing brand layer. Some native
-          HighLevel settings and system-level pages stay platform-specific.
-        </p>
-
-        {/* Nav controls appear only once there is more than one example. */}
-        {multiple && (
-          <div className="mt-8 flex justify-center gap-2">
-            {WHITELABEL_EXAMPLES.map((ex) => (
-              <span
-                key={ex.brandName}
-                className="h-1.5 w-1.5 rounded-full"
-                style={{ background: TOKENS.line }}
-              />
-            ))}
+          {/* Stacked fallback for the same details below xl, where they cannot
+              ride the written column. */}
+          <div className="xl:hidden">
+            <WhitelabelDetails />
           </div>
-        )}
+
+          {/* Nav controls appear only once there is more than one example. */}
+          {multiple && (
+            <div className="mt-8 flex justify-center gap-2">
+              {WHITELABEL_EXAMPLES.map((ex) => (
+                <span
+                  key={ex.brandName}
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ background: TOKENS.line }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </section>
+  );
+}
+
+/* Capabilities row plus the limitation note. One component so the two-column
+   and stacked layouts can never drift apart. Centered while stacked,
+   left-aligned and single-column when it rides the written column at xl. */
+function WhitelabelDetails() {
+  return (
+    <>
+      {/* One quiet row, hairline-separated. No cards, no icons. */}
+      <div
+        className="mt-12 grid gap-y-8 border-t pt-8 sm:grid-cols-2 lg:grid-cols-4 xl:mt-8 xl:grid-cols-2 xl:gap-y-5 xl:pt-6"
+        style={{ borderColor: TOKENS.line }}
+      >
+        {CAPABILITIES.map((c, i) => (
+          <div
+            key={c.label}
+            className={i > 0 ? "lg:border-l lg:pl-6 xl:border-l-0 xl:pl-0" : ""}
+            style={{ borderColor: TOKENS.hair }}
+          >
+            <p className="text-[13px]" style={{ color: TOKENS.ink }}>
+              {c.label}
+            </p>
+            <p className="mt-1.5 text-[12.5px]" style={{ color: TOKENS.muted }}>
+              {c.detail}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Honest limitation. Stated once, without hedging around it. */}
+      <p
+        className="mx-auto mt-7 max-w-[62ch] text-center text-[11px] leading-[1.7] xl:mx-0 xl:mt-6 xl:text-left"
+        style={{ color: TOKENS.muted }}
+      >
+        White-labeling covers the client-facing brand layer. Some native
+        HighLevel settings and system-level pages stay platform-specific.
+      </p>
+    </>
   );
 }

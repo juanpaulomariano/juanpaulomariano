@@ -32,6 +32,35 @@ button:focus-visible {
   animation-delay: var(--assemble-delay, 0ms);
 }
 
+/* ── Selected Work: reserved stage height ────────────────────────────────────
+   The stage reserves the height of the tallest project so switching projects
+   never shifts the page. Two values: below xl the pipeline stage stacks and is
+   tall; from xl it runs two columns and is much shorter. Kept here rather than
+   as Tailwind utilities because the values are interpolated from constants in
+   selected-works.tsx, and Tailwind only generates classes it can find as
+   literal strings in the source. See STAGE_H_SM / STAGE_H_XL there. */
+
+.stage-reserve {
+  --stage-h: 0px;
+}
+
+@media (min-width: 640px) {
+  /* 776px is the tallest stage anywhere in this range, measured at 1023 —
+     just below lg, where the container is widest before the rail claims a
+     column and the still-full-width video poster is at its largest. The peaks
+     sit just under breakpoints, not at their lower edges: sampling at 640
+     would give 702 and the page would jump at both 1023 and 1279. */
+  .stage-reserve {
+    --stage-h: 776px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .stage-reserve {
+    --stage-h: 518px;
+  }
+}
+
 /* ── Scroll cue wheel ────────────────────────────────────────────────────── */
 
 @keyframes cue-wheel {

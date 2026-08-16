@@ -72,6 +72,8 @@ type ChannelBase = {
   switchLabel: string;
   /** One line under the rail naming what the reader is looking at. */
   railLabel: string;
+  /** Name shown in the call surface header, like a caller ID. */
+  surfaceTitle: string;
   /** What each speaker is called in the rail's gutter. Context-specific:
       a receptionist call reads "Agent / Caller", a DM thread "Bot / Lead" —
       one generic pair would be wrong in both places. */
@@ -125,6 +127,7 @@ const VOICE: VoiceChannel = {
   kind: "voice",
   key: "voice",
   switchLabel: "Voice call",
+  surfaceTitle: "Bright Hollow Family Dental",
   railLabel: "A real inbound call, answered by the agent",
   speakerLabels: { bot: "Agent", lead: "Caller" },
   audioSrc: "",
@@ -286,6 +289,7 @@ const TEXT: TextChannel = {
   kind: "text",
   key: "dm",
   switchLabel: "Instagram DM",
+  surfaceTitle: "IronPulse Fitness",
   railLabel: "A real DM thread, answered in under a minute",
   speakerLabels: { bot: "Bot", lead: "Lead" },
   cadenceMs: 900,
@@ -322,19 +326,84 @@ export const CHANNELS: Channel[] = [VOICE];
    names are receipts — they read as "this exists in a running system", which
    is exactly the register this page trades in. All 11 workflows surfaced,
    zero feature-grid feel. */
-export const CAPABILITIES: { label: string; detail: string }[] = [
+/** `galleryTarget` names the workflow whose canvas the row opens in the
+    gallery — the interaction that turns the list from claims into receipts:
+    click a capability, land on the flow that implements it. */
+export const CAPABILITIES: {
+  label: string;
+  detail: string;
+  galleryTarget: string;
+}[] = [
   {
     label: "Books and reschedules",
     detail:
       "check_availability · book_appointment · reschedule_appointment · cancel_appointment",
+    galleryTarget: "book_appointment",
   },
-  { label: "Knows the caller", detail: "lookup_contact · upsert_contact" },
-  { label: "Captures insurance", detail: "capture_insurance" },
+  {
+    label: "Knows the caller",
+    detail: "lookup_contact · upsert_contact",
+    galleryTarget: "lookup_contact",
+  },
+  {
+    label: "Captures insurance",
+    detail: "capture_insurance",
+    galleryTarget: "capture_insurance",
+  },
   {
     label: "Triages the reason for the call",
     detail: "triage_symptom · resolve_appointment_type",
+    galleryTarget: "triage_symptom",
   },
-  { label: "Hands off to a human", detail: "transfer_log · update_opportunity" },
+  {
+    label: "Hands off to a human",
+    detail: "transfer_log · update_opportunity",
+    galleryTarget: "transfer_log",
+  },
+] as const;
+
+/* ── The system map ─────────────────────────────────────────────────────────
+   What happens during one call, in order. This is the "behind the scenes"
+   layer for a visitor who wants the machinery without opening a single
+   screenshot; step 03 links into the gallery for the ones who want more.
+   Every line is grounded in the deployed system. Nothing here is aspiration. */
+export const SYSTEM_MAP: {
+  step: string;
+  label: string;
+  detail: string;
+  /** Workflow names rendered as gallery links under the detail line. */
+  links?: string[];
+}[] = [
+  {
+    step: "01",
+    label: "A call comes in",
+    detail: "Answered on the first ring, any hour of the day.",
+  },
+  {
+    step: "02",
+    label: "The agent holds the conversation",
+    detail:
+      "It greets returning patients by name, asks what a receptionist would ask, and pauses about a second and a half when it checks something real.",
+  },
+  {
+    step: "03",
+    label: "Eleven workflows do the work",
+    detail:
+      "Each thing the agent needs to know or do during the call is one webhook away.",
+    links: ["lookup_contact", "check_availability", "book_appointment"],
+  },
+  {
+    step: "04",
+    label: "GoHighLevel gets the record",
+    detail:
+      "Contact, appointment, tags and pipeline stage, written while the caller is still on the line.",
+  },
+  {
+    step: "05",
+    label: "A person steps in when it matters",
+    detail:
+      "Billing questions and emergencies transfer out, with the reason written to the record first.",
+  },
 ] as const;
 
 /** Section copy, kept here so nothing in the component is a bare string. */

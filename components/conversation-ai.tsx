@@ -4,34 +4,35 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import CallTransport from "@/components/call-transport";
 import GalleryLightbox from "@/components/gallery-lightbox";
 import TranscriptRail from "@/components/transcript-rail";
-import { CAPABILITIES, CHANNELS, SECTION } from "@/lib/conversation";
+import { CAPABILITIES, CHANNELS, SECTION, SYSTEM_MAP } from "@/lib/conversation";
 import { EASE, TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Conversation AI.
+   Conversation AI — reconstructed around progressive disclosure.
 
-   Voice and text are not two features. They are one machine with the channel
-   as a variable: a lead who DMs and a lead who calls both get a real
-   conversation that collects a phone number and an email, then hands a
-   qualified contact to the workflows. So this is ONE channel switch over ONE
-   transcript rail, structurally the twin of the white-label toggle — that one
-   crossfades two screenshots, this one crossfades two transcripts.
+   THREE BLOCKS, ONE GRID. The DOM order is the mobile and screen-reader
+   order: intro (what is this) → demo (experience it) → proof (capabilities,
+   evidence, close). At xl the demo takes the left track spanning both rows
+   and the intro/proof stack on the right, which keeps this section's
+   artifact-LEFT/text-RIGHT mirror of white-label intact.
 
-   Building it as two side-by-side demos was the obvious alternative and the
-   wrong one: it doubles the height, forces two things playing at once, and
-   makes the section read as two half-sections stapled together.
+   THE CALL SURFACE is a framed product panel, the same device as the
+   white-label browser frame: a hairline frame that depicts a product, not a
+   decorative card. Header names the practice like a caller ID; the transport
+   and transcript live inside. While the recording is pending the frame still
+   reads as a designed state, not a broken one.
 
-   WHITE, not dark. A voice demo instinctively wants a dark surface and it
-   cannot have one: Selected Work is the page's single dark reset, and a second
-   dark section turns the page into stripes. See lib/tokens.ts.
+   THE SYSTEM MAP is the "behind the scenes" layer: five numbered steps in
+   the transcript rail's own row grammar (hairline rows, gutter, content).
+   Step 03 links straight into the gallery at the named workflow canvases —
+   wayfinding for the agency reader without a single icon.
 
-   NO WAVEFORM. It would be decorative SVG on a page with no icons, it is hard
-   to draw without looping, and it depicts "audio" rather than proving
-   anything. The transcript is the waveform — it shows what the bot actually
-   said, which is the claim.
+   CAPABILITIES ARE BUTTONS. Clicking one opens the gallery at the canvas
+   that implements it. The interaction teaches: claims become receipts.
 
-   The one bold element is the transcript revealing itself in time with a real
-   voice. Everything else stays quiet.
+   Still no waveform, still white, still one bold element (the transcript
+   inking in sync with a real voice once the recording lands). See the
+   design-law notes in lib/tokens.ts.
 ──────────────────────────────────────────────────────────────────────────── */
 
 export default function ConversationAi() {
@@ -39,6 +40,7 @@ export default function ConversationAi() {
   const [cursor, setCursor] = useState(-1);
   const [reduced, setReduced] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [galleryStart, setGalleryStart] = useState(0);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const active = CHANNELS.find((c) => c.key === activeKey) ?? CHANNELS[0];
@@ -55,10 +57,7 @@ export default function ConversationAi() {
   /* The text channel advances on a timer, the same shape as the living
      pipeline: absolute offsets scheduled up front so they cannot drift, and
      the array cleared both at effect start and in cleanup so a stale timer
-     from the previous channel can never fire into the new one.
-
-     Reduced motion jumps straight to the end state — every line revealed —
-     which is exactly where the run finishes anyway. */
+     from the previous channel can never fire into the new one. */
   useEffect(() => {
     timers.current.forEach(clearTimeout);
     timers.current = [];
@@ -96,6 +95,18 @@ export default function ConversationAi() {
   const primary = shots[0];
   const hasEvidence = shots.length > 0;
 
+  /* Open the gallery at a named workflow's canvas (or at the start). The
+     capabilities rows and the system map both route through this. */
+  const openGallery = (target?: string) => {
+    let index = 0;
+    if (target) {
+      const i = shots.findIndex((s) => s.label.includes(target));
+      if (i >= 0) index = i;
+    }
+    setGalleryStart(index);
+    setLightboxOpen(true);
+  };
+
   return (
     <section
       id="ai"
@@ -103,9 +114,8 @@ export default function ConversationAi() {
       style={{ background: TOKENS.white }}
     >
       <div className="mx-auto max-w-[1320px]">
-        {/* Numeral only. The page numbers its sections 01-05; it does not
-            label them, because a text eyebrow beside every headline is what
-            made everything whisper at the same pitch. */}
+        {/* Numeral only — the page numbers its sections, it does not label
+            them. */}
         <div className="border-t pt-5" style={{ borderColor: TOKENS.ink }}>
           <div className="flex justify-end">
             <span
@@ -121,21 +131,12 @@ export default function ConversationAi() {
           </div>
         </div>
 
-        {/* THE DEMO SITS LEFT, the written case right — the true mirror of
-            white-label's text-left/artifact-right. An earlier draft mirrored
-            only the track WIDTHS, which left three consecutive sections
-            (dark work, this, white-label) all reading text-left/artifact-right
-            — one long stripe. Flipping the artifact side is what actually
-            breaks the rhyme: 02 artifact-right → 03 artifact-LEFT → 04
-            artifact-right.
-
-            Flipped with `order` at xl, not DOM order: the DOM keeps the
-            written case first so mobile stacks headline-before-demo and
-            screen readers meet the claim before the transcript. Track widths
-            keep the demo's larger share (52/56fr), now as the FIRST track. */}
-        <div className="mt-10 xl:grid xl:grid-cols-[52fr_48fr] xl:gap-12 2xl:grid-cols-[56fr_44fr] 2xl:gap-14">
-          {/* ── The written case ── */}
-          <div className="min-w-0 xl:order-2">
+        {/* DOM: intro → demo → proof (the mobile priority order).
+            xl: demo owns the left track across both rows; intro and proof
+            stack on the right. */}
+        <div className="mt-10 xl:grid xl:grid-cols-[52fr_48fr] xl:gap-x-12 2xl:grid-cols-[56fr_44fr] 2xl:gap-x-14">
+          {/* ── LEVEL 1: what this is ── */}
+          <div className="min-w-0 xl:col-start-2 xl:row-start-1">
             <h2
               style={{
                 fontFamily: "var(--font-grotesk)",
@@ -174,10 +175,7 @@ export default function ConversationAi() {
               {SECTION.factLine}
             </p>
 
-            {/* The stack, named. The Vapi mark is already on the page in the
-                hero orbit, so it is not a new icon — and naming the stack is
-                what this audience actually wants to know. */}
-            <div className="mt-8 flex items-center gap-3">
+            <div className="mt-7 flex items-center gap-3">
               <img
                 src="/logos/vapi.svg"
                 alt="Vapi"
@@ -197,126 +195,15 @@ export default function ConversationAi() {
                 {SECTION.stackNote}
               </p>
             </div>
-
-            {/* ── Capabilities: the white-label quiet-row pattern ──
-                Owner language on top, the literal n8n workflow names beneath
-                as evidence texture. Receipts, not a feature grid. */}
-            <div
-              className="mt-8 grid gap-y-5 border-t pt-6 sm:grid-cols-2 sm:gap-x-6 xl:grid-cols-1"
-              style={{ borderColor: TOKENS.line }}
-            >
-              {CAPABILITIES.map((c) => (
-                <div key={c.label}>
-                  <p
-                    style={{
-                      color: TOKENS.ink,
-                      fontSize: TYPE.small,
-                      ...TYPE_STYLE.small,
-                    }}
-                  >
-                    {c.label}
-                  </p>
-                  <p
-                    className="mt-1 break-words"
-                    style={{
-                      color: TOKENS.muted,
-                      fontSize: TYPE.micro,
-                      ...TYPE_STYLE.micro,
-                    }}
-                  >
-                    {c.detail}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* ── Evidence: a citation, not a hero image ──
-                Plain hairline border, no browser chrome (that device belongs
-                to white-label), caption required. */}
-            {hasEvidence && primary && (
-              <div className="mt-8">
-                <button
-                  type="button"
-                  onClick={() => setLightboxOpen(true)}
-                  aria-label={
-                    shots.length > 1
-                      ? `Open ${primary.label} and ${shots.length - 1} more screenshots`
-                      : `Open ${primary.label} full size`
-                  }
-                  className="group block w-full max-w-[22rem] text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                >
-                  <span
-                    className="block overflow-hidden border"
-                    style={{
-                      borderColor: TOKENS.line,
-                      aspectRatio: `${primary.width} / ${primary.height}`,
-                    }}
-                  >
-                    <img
-                      src={primary.src}
-                      alt=""
-                      className="h-full w-full object-cover object-top transition-opacity duration-200 group-hover:opacity-90"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </span>
-                  <span
-                    className="mt-2 block"
-                    style={{
-                      color: TOKENS.ink,
-                      fontSize: TYPE.small,
-                      ...TYPE_STYLE.small,
-                    }}
-                  >
-                    {primary.label}
-                    {/* The machinery is one click deeper: outcome on the page,
-                        workflows and agent configuration in the lightbox — an
-                        agency keeps arrowing, a business owner already has the
-                        point. */}
-                    {shots.length > 1 && (
-                      <span style={{ color: TOKENS.muted }}>
-                        {" "}
-                        · {shots.length} screenshots
-                      </span>
-                    )}
-                  </span>
-                </button>
-
-                {/* Height reserved for two lines so switching channels never
-                    shifts the column. */}
-                <p
-                  className="mt-1 min-h-[3rem] max-w-[38ch]"
-                  style={{
-                    color: TOKENS.muted,
-                    fontSize: TYPE.small,
-                    ...TYPE_STYLE.small,
-                  }}
-                >
-                  {primary.caption}
-                </p>
-                <p
-                  className="mt-1 max-w-[38ch]"
-                  style={{
-                    color: TOKENS.muted,
-                    fontSize: TYPE.micro,
-                    ...TYPE_STYLE.micro,
-                  }}
-                >
-                  {primary.redactionNote}
-                </p>
-              </div>
-            )}
           </div>
 
-          {/* ── The demo ── */}
-          <div className="mt-10 min-w-0 xl:order-1 xl:mt-0">
-            {/* Channel switch. Hidden entirely while there is one channel:
-                a toggle over a single option is filler. */}
+          {/* ── LEVEL 2: the demonstration ── */}
+          <div className="mt-10 min-w-0 xl:col-start-1 xl:row-span-2 xl:row-start-1 xl:mt-0">
             {multiple && (
               <div
                 role="group"
                 aria-label="Switch between the voice call and the message thread"
-                className="relative inline-flex border p-1"
+                className="relative mb-5 inline-flex border p-1"
                 style={{ borderColor: TOKENS.line }}
               >
                 <span
@@ -356,45 +243,294 @@ export default function ConversationAi() {
               </div>
             )}
 
-            {/* Voice gets a transport; text runs on its own timer and needs
-                none. Both drive the same cursor. */}
-            {active.kind === "voice" && (
-              <div className="mt-6">
+            {/* The call surface: a product panel, not a card. Same framing
+                device as the white-label browser window. */}
+            <div className="border" style={{ borderColor: TOKENS.line }}>
+              <div
+                className="flex items-baseline justify-between gap-4 border-b px-4 py-3 sm:px-5"
+                style={{ borderColor: TOKENS.line, background: "#FCFCFC" }}
+              >
+                <span
+                  className="min-w-0 truncate"
+                  style={{
+                    color: TOKENS.ink,
+                    fontSize: TYPE.ui,
+                    ...TYPE_STYLE.ui,
+                  }}
+                >
+                  {active.surfaceTitle}
+                </span>
+                <span
+                  className="shrink-0 uppercase tracking-[0.16em]"
+                  style={{
+                    color: TOKENS.muted,
+                    fontSize: TYPE.micro,
+                    ...TYPE_STYLE.micro,
+                  }}
+                >
+                  {active.switchLabel}
+                </span>
+              </div>
+
+              <div className="px-4 py-5 sm:px-5">
+                {active.kind === "voice" && (
+                  <div>
+                    <p
+                      className="mb-4 max-w-[52ch]"
+                      style={{
+                        color: TOKENS.muted,
+                        fontSize: TYPE.small,
+                        ...TYPE_STYLE.small,
+                      }}
+                    >
+                      {active.callContext}
+                    </p>
+                    <CallTransport
+                      src={active.audioSrc}
+                      durationSec={active.durationSec}
+                      lines={active.lines}
+                      onCursor={handleCursor}
+                      reduced={reduced}
+                    />
+                  </div>
+                )}
+
+                <TranscriptRail
+                  lines={active.lines}
+                  cursor={cursor}
+                  showTimestamps={active.kind === "voice"}
+                  speakerLabels={active.speakerLabels}
+                  reduced={reduced}
+                  railLabel={active.railLabel}
+                />
+              </div>
+            </div>
+
+            {/* ── LEVEL 3: the system, in call order ──
+                The transcript rail's row grammar reused: hairline rows, a
+                gutter, content. The map reads as a transcript of the system
+                itself. */}
+            <div className="mt-9">
+              <p
+                className="uppercase tracking-[0.16em]"
+                style={{
+                  color: TOKENS.muted,
+                  fontSize: TYPE.micro,
+                  ...TYPE_STYLE.micro,
+                }}
+              >
+                What happens during a call
+              </p>
+              <ol className="mt-2">
+                {SYSTEM_MAP.map((s) => (
+                  <li
+                    key={s.step}
+                    className="flex gap-4 border-t py-3.5 first:border-t-0 sm:gap-6"
+                    style={{ borderColor: TOKENS.hair }}
+                  >
+                    <span
+                      className="w-[3.25rem] shrink-0 tabular-nums"
+                      style={{
+                        color: TOKENS.muted,
+                        fontSize: TYPE.micro,
+                        ...TYPE_STYLE.micro,
+                      }}
+                    >
+                      {s.step}
+                    </span>
+                    <div className="min-w-0">
+                      <p
+                        style={{
+                          color: TOKENS.ink,
+                          fontSize: TYPE.small,
+                          fontWeight: 500,
+                          lineHeight: TYPE_STYLE.small.lineHeight,
+                        }}
+                      >
+                        {s.label}
+                      </p>
+                      <p
+                        className="mt-0.5 max-w-[52ch]"
+                        style={{
+                          color: TOKENS.muted,
+                          fontSize: TYPE.small,
+                          ...TYPE_STYLE.small,
+                        }}
+                      >
+                        {s.detail}
+                      </p>
+                      {s.links && hasEvidence && (
+                        <p
+                          className="mt-1.5"
+                          style={{
+                            fontSize: TYPE.micro,
+                            ...TYPE_STYLE.micro,
+                          }}
+                        >
+                          {s.links.map((name) => (
+                            <button
+                              key={name}
+                              type="button"
+                              onClick={() => openGallery(name)}
+                              className="mr-3 border-b pb-px transition-colors duration-200 hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                              style={{
+                                color: TOKENS.body,
+                                borderColor: TOKENS.line,
+                              }}
+                            >
+                              {name}
+                            </button>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              openGallery("The 11 n8n workflows")
+                            }
+                            className="border-b pb-px transition-colors duration-200 hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                            style={{
+                              color: TOKENS.body,
+                              borderColor: TOKENS.line,
+                            }}
+                          >
+                            all 11 →
+                          </button>
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+
+          {/* ── LEVELS 4-5: receipts, evidence, honesty, close ── */}
+          <div className="mt-10 min-w-0 xl:col-start-2 xl:row-start-2 xl:mt-9">
+            {/* Capabilities open the gallery at the canvas that implements
+                them: the row is the claim, the click is the receipt. */}
+            <div
+              className="grid gap-y-4 border-t pt-6 sm:grid-cols-2 sm:gap-x-6 xl:grid-cols-1"
+              style={{ borderColor: TOKENS.line }}
+            >
+              {CAPABILITIES.map((c) => (
+                <button
+                  key={c.label}
+                  type="button"
+                  onClick={() => openGallery(c.galleryTarget)}
+                  disabled={!hasEvidence}
+                  aria-label={`Open the ${c.galleryTarget} workflow in the gallery`}
+                  className="group/cap block text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
+                >
+                  <span
+                    className="flex items-baseline gap-2"
+                    style={{
+                      color: TOKENS.ink,
+                      fontSize: TYPE.small,
+                      fontWeight: 500,
+                      lineHeight: TYPE_STYLE.small.lineHeight,
+                    }}
+                  >
+                    <span className="transition-colors duration-200 group-hover/cap:text-[#C0392B]">
+                      {c.label}
+                    </span>
+                    {hasEvidence && (
+                      <span
+                        aria-hidden="true"
+                        className="translate-x-0 transition-transform duration-200 group-hover/cap:translate-x-1"
+                        style={{ color: TOKENS.muted, fontSize: TYPE.micro }}
+                      >
+                        →
+                      </span>
+                    )}
+                  </span>
+                  <span
+                    className="mt-0.5 block break-words"
+                    style={{
+                      color: TOKENS.muted,
+                      fontSize: TYPE.micro,
+                      ...TYPE_STYLE.micro,
+                    }}
+                  >
+                    {c.detail}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Evidence citation: outcome on the page, machinery one click
+                deeper in the same lightbox. */}
+            {hasEvidence && primary && (
+              <div className="mt-8">
+                <button
+                  type="button"
+                  onClick={() => openGallery()}
+                  aria-label={
+                    shots.length > 1
+                      ? `Open ${primary.label} and ${shots.length - 1} more screenshots`
+                      : `Open ${primary.label} full size`
+                  }
+                  className="group block w-full max-w-[24rem] text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                >
+                  <span
+                    className="block overflow-hidden border"
+                    style={{
+                      borderColor: TOKENS.line,
+                      aspectRatio: `${primary.width} / ${primary.height}`,
+                    }}
+                  >
+                    <img
+                      src={primary.src}
+                      alt=""
+                      className="h-full w-full object-cover object-top transition-opacity duration-200 group-hover:opacity-90"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </span>
+                  <span
+                    className="mt-2 block"
+                    style={{
+                      color: TOKENS.ink,
+                      fontSize: TYPE.small,
+                      ...TYPE_STYLE.small,
+                    }}
+                  >
+                    {primary.label}
+                    {shots.length > 1 && (
+                      <span style={{ color: TOKENS.muted }}>
+                        {" "}
+                        · {shots.length} screenshots
+                      </span>
+                    )}
+                  </span>
+                </button>
+
                 <p
-                  className="mb-4"
+                  className="mt-1 max-w-[42ch]"
                   style={{
                     color: TOKENS.muted,
                     fontSize: TYPE.small,
                     ...TYPE_STYLE.small,
                   }}
                 >
-                  {active.callContext}
+                  {primary.caption}
                 </p>
-                <CallTransport
-                  src={active.audioSrc}
-                  durationSec={active.durationSec}
-                  lines={active.lines}
-                  onCursor={handleCursor}
-                  reduced={reduced}
-                />
+                <p
+                  className="mt-1 max-w-[42ch]"
+                  style={{
+                    color: TOKENS.muted,
+                    fontSize: TYPE.micro,
+                    ...TYPE_STYLE.micro,
+                  }}
+                >
+                  {primary.redactionNote}
+                </p>
               </div>
             )}
 
-            <div className="mt-7 border-t pt-2" style={{ borderColor: TOKENS.line }}>
-              <TranscriptRail
-                lines={active.lines}
-                cursor={cursor}
-                showTimestamps={active.kind === "voice"}
-                speakerLabels={active.speakerLabels}
-                reduced={reduced}
-                railLabel={active.railLabel}
-              />
-            </div>
-
             {SECTION.limitation && (
               <p
-                className="mt-7 max-w-[62ch]"
+                className="mt-8 max-w-[58ch] border-t pt-6"
                 style={{
+                  borderColor: TOKENS.hair,
                   color: TOKENS.muted,
                   fontSize: TYPE.micro,
                   ...TYPE_STYLE.micro,
@@ -404,10 +540,8 @@ export default function ConversationAi() {
               </p>
             )}
 
-            {/* Bridge to the page's one conversion control. A line, not a
-                second filled button. */}
             <p
-              className="mt-7"
+              className="mt-6"
               style={{
                 color: TOKENS.muted,
                 fontSize: TYPE.small,
@@ -428,9 +562,6 @@ export default function ConversationAi() {
         </div>
       </div>
 
-      {/* Reuses the gallery lightbox — arrows, counter, thumbnail rail and
-          zoom-to-100% all come with it, which matters because CRM tags, n8n
-          canvases and the agent's prompt are all small text. */}
       {hasEvidence && lightboxOpen && (
         <GalleryLightbox
           open={lightboxOpen}
@@ -441,7 +572,7 @@ export default function ConversationAi() {
             caption: e.caption,
           }))}
           title={primary?.label ?? active.railLabel}
-          startIndex={0}
+          startIndex={galleryStart}
         />
       )}
     </section>

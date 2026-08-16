@@ -77,7 +77,14 @@ type ChannelBase = {
       one generic pair would be wrong in both places. */
   speakerLabels: { bot: string; lead: string };
   lines: Line[];
-  evidence: Evidence;
+  /** An evidence SET, not a single image. The page stays calm — only the
+      first shot with a `src` renders as the on-page citation — and the
+      lightbox behind it carries the whole set. Two audiences, one control:
+      a business owner clicks through to the outcome (the CRM record), an
+      agency owner keeps arrowing into the machinery (n8n workflows, the
+      agent's configuration). Order = lightbox order: outcome first, then
+      provenance, then machinery. */
+  evidence: Evidence[];
 };
 
 export type VoiceChannel = ChannelBase & {
@@ -125,14 +132,51 @@ const VOICE: VoiceChannel = {
   callContext:
     "A new patient calls Bright Hollow Family Dental — a demonstration practice — and the agent answers on the first ring",
   lines: [],
-  evidence: {
-    src: "",
-    width: 0,
-    height: 0,
-    label: "The contact this call created",
-    caption: "",
-    redactionNote: "Caller number removed. The call is unedited.",
-  },
+  /* PENDING: all srcs empty until the owner captures them. Captions are
+     written when the images land — a caption describing an image that does
+     not exist yet would drift from what the screenshot actually shows. */
+  evidence: [
+    {
+      src: "",
+      width: 0,
+      height: 0,
+      label: "The contact this call created",
+      caption: "",
+      redactionNote: "Caller number removed. The call is unedited.",
+    },
+    {
+      src: "",
+      width: 0,
+      height: 0,
+      label: "Vapi call log",
+      caption: "",
+      redactionNote: "Caller number removed.",
+    },
+    {
+      src: "",
+      width: 0,
+      height: 0,
+      label: "The 11 n8n workflows behind the agent",
+      caption: "",
+      redactionNote: "Shown as deployed. Nothing staged.",
+    },
+    {
+      src: "",
+      width: 0,
+      height: 0,
+      label: "book_appointment, opened",
+      caption: "",
+      redactionNote: "Credentials and webhook URLs cropped.",
+    },
+    {
+      src: "",
+      width: 0,
+      height: 0,
+      label: "The agent's configuration",
+      caption: "",
+      redactionNote: "Account details cropped. The prompt shown is the prompt that runs.",
+    },
+  ],
 };
 
 /* ── Text ────────────────────────────────────────────────────────────────────
@@ -149,14 +193,16 @@ const TEXT: TextChannel = {
   speakerLabels: { bot: "Bot", lead: "Lead" },
   cadenceMs: 900,
   lines: [],
-  evidence: {
-    src: "",
-    width: 0,
-    height: 0,
-    label: "Instagram DM",
-    caption: "",
-    redactionNote: "Name and handle removed. The conversation is unedited.",
-  },
+  evidence: [
+    {
+      src: "",
+      width: 0,
+      height: 0,
+      label: "Instagram DM",
+      caption: "",
+      redactionNote: "Name and handle removed. The conversation is unedited.",
+    },
+  ],
 };
 
 /* Referenced here so the pending channel survives strict unused checks while

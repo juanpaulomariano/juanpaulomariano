@@ -90,8 +90,11 @@ export default function ConversationAi() {
      restart on every parent render. */
   const handleCursor = useCallback((i: number) => setCursor(i), []);
 
-  const evidence = active.evidence;
-  const hasEvidence = Boolean(evidence.src);
+  /* The citation shows the first captured shot; the lightbox carries every
+     captured shot. While nothing is captured, the whole block unmounts. */
+  const shots = active.evidence.filter((e) => e.src);
+  const primary = shots[0];
+  const hasEvidence = shots.length > 0;
 
   return (
     <section
@@ -230,23 +233,27 @@ export default function ConversationAi() {
             {/* ── Evidence: a citation, not a hero image ──
                 Plain hairline border, no browser chrome (that device belongs
                 to white-label), caption required. */}
-            {hasEvidence && (
+            {hasEvidence && primary && (
               <div className="mt-8">
                 <button
                   type="button"
                   onClick={() => setLightboxOpen(true)}
-                  aria-label={`Open ${evidence.label} full size`}
+                  aria-label={
+                    shots.length > 1
+                      ? `Open ${primary.label} and ${shots.length - 1} more screenshots`
+                      : `Open ${primary.label} full size`
+                  }
                   className="group block w-full max-w-[22rem] text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   <span
                     className="block overflow-hidden border"
                     style={{
                       borderColor: TOKENS.line,
-                      aspectRatio: `${evidence.width} / ${evidence.height}`,
+                      aspectRatio: `${primary.width} / ${primary.height}`,
                     }}
                   >
                     <img
-                      src={evidence.src}
+                      src={primary.src}
                       alt=""
                       className="h-full w-full object-cover object-top transition-opacity duration-200 group-hover:opacity-90"
                       loading="lazy"
@@ -261,7 +268,17 @@ export default function ConversationAi() {
                       ...TYPE_STYLE.small,
                     }}
                   >
-                    {evidence.label}
+                    {primary.label}
+                    {/* The machinery is one click deeper: outcome on the page,
+                        workflows and agent configuration in the lightbox — an
+                        agency keeps arrowing, a business owner already has the
+                        point. */}
+                    {shots.length > 1 && (
+                      <span style={{ color: TOKENS.muted }}>
+                        {" "}
+                        · {shots.length} screenshots
+                      </span>
+                    )}
                   </span>
                 </button>
 
@@ -275,7 +292,7 @@ export default function ConversationAi() {
                     ...TYPE_STYLE.small,
                   }}
                 >
-                  {evidence.caption}
+                  {primary.caption}
                 </p>
                 <p
                   className="mt-1 max-w-[38ch]"
@@ -285,7 +302,7 @@ export default function ConversationAi() {
                     ...TYPE_STYLE.micro,
                   }}
                 >
-                  {evidence.redactionNote}
+                  {primary.redactionNote}
                 </p>
               </div>
             )}
@@ -411,20 +428,19 @@ export default function ConversationAi() {
         </div>
       </div>
 
-      {/* Reuses the gallery lightbox: a one-item array works unchanged and
-          brings zoom-to-100% with it, which matters because DM text is small. */}
+      {/* Reuses the gallery lightbox — arrows, counter, thumbnail rail and
+          zoom-to-100% all come with it, which matters because CRM tags, n8n
+          canvases and the agent's prompt are all small text. */}
       {hasEvidence && lightboxOpen && (
         <GalleryLightbox
           open={lightboxOpen}
           onClose={() => setLightboxOpen(false)}
-          shots={[
-            {
-              src: evidence.src,
-              label: evidence.label,
-              caption: evidence.caption,
-            },
-          ]}
-          title={evidence.label}
+          shots={shots.map((e) => ({
+            src: e.src,
+            label: e.label,
+            caption: e.caption,
+          }))}
+          title={primary?.label ?? active.railLabel}
           startIndex={0}
         />
       )}

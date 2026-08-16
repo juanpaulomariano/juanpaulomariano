@@ -10,6 +10,10 @@ next-env.d.ts
 assets/GlowTheory Workflow Screenshots/
 assets/IronPulse Workflow Screensots/
 
+# Raw call recordings. The served copy lives in public/conversation/; keeping
+# the source here too would double 2.9MB in history for no benefit.
+assets/*.mp3
+
 # Vapi config backups (contain credentials)
 .vapi-backup/
 

@@ -97,7 +97,7 @@ export default function TranscriptRail({
 
   return (
     <div>
-      <ol className="transcript-reserve">
+      <ol>
         {lines.map((line, i) => {
           const past = settled || i < cursor;
           const current = !settled && i === cursor;

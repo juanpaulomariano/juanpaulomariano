@@ -124,23 +124,62 @@ export type Channel = VoiceChannel;
    estimated — Vapi's dashboard exports word-level timings, which beats
    hand-timing every time.
 
-   PENDING: audioSrc, durationSec, the lines, and the evidence dimensions are
-   placeholders until the recording is made. The section renders the
-   "not attached yet" state while audioSrc is empty. */
+   The recording is a real inbound call placed to the deployed agent on
+   2026-08-16, 3:06 long. The evidence screenshots are still pending owner
+   capture; those entries keep empty srcs and are filtered out on the page. */
 const VOICE: VoiceChannel = {
   kind: "voice",
   key: "voice",
   switchLabel: "Voice call",
   surfaceTitle: "Bright Hollow Family Dental",
-  railLabel: "A real inbound call, answered by the agent",
+  /* Names what the reader is looking at and dates it, because a recording
+     without a date invites the question. */
+  railLabel: "A real call to the agent, recorded 16 August 2026",
   speakerLabels: { bot: "Agent", lead: "Caller" },
-  audioSrc: "",
-  durationSec: 0,
-  /* PENDING: authored against the real call once the recording lands. Each
-     entry must name a write the workflows actually performed, at the second
-     the transcript shows it happening. */
-  tickerEvents: [],
-  lines: [],
+  audioSrc: "/conversation/bhfd-call.mp3",
+  durationSec: 186,
+  /* The four workflow executions Vapi logged during this call, at their
+     real completion times. Nothing here is illustrative. */
+  tickerEvents: [
+    { at: 67.69, text: "upsert_contact · Juan Paulo Mariano created" },
+    { at: 103.52, text: "resolve_appointment_type · new patient cleaning" },
+    { at: 114.62, text: "check_availability · three openings returned" },
+    { at: 151.2, text: "book_appointment · Monday, August 17 at 10:30 AM" },
+  ],
+  lines: [
+    { speaker: "bot", at: 1.6, text: "Thank you for calling Bright Hollow Family Dental. This is June. Can I help you today?" },
+    { speaker: "lead", at: 6.82, text: "Hey, June. Uh, so I've got an event coming out this month. And I'm thinking of like, get my teeth cleaned, you know, before the event." },
+    { speaker: "bot", at: 18.44, text: "Sure. I can help with that. Are you already a patient here, or would this be your first visit with us?" },
+    { speaker: "lead", at: 24.32, text: "Yes. This will be the first visit. And, actually, my my friend from work actually recommended your clinic." },
+    { speaker: "bot", at: 34.13, text: "Got it. Thank you for letting me know. I'll just need a few details to get you set up. Can I get your first and last name?" },
+    { speaker: "lead", at: 41.67, text: "It's Juan Paulo Mariano." },
+    { speaker: "bot", at: 44.76, text: "Thanks, Juan Paulo. And what's your date of birth?" },
+    { speaker: "lead", at: 48, text: "I was born on March 20 ninth of 2003." },
+    { speaker: "bot", at: 52.33, text: "Thank you. And what's the best phone number to reach you on?" },
+    { speaker: "lead", at: 56.64, text: "The best phone number to reach me on is plus 6 3 9 5 0 6 6 5 50 45." },
+    { speaker: "bot", at: 64.75, text: "Alright. Just getting you into the system here." },
+    { speaker: "bot", at: 69.46, text: "Thanks for waiting, Juan Paulo." },
+    { speaker: "bot", at: 71.12, text: "Are you just looking for a cleaning? Or would you also like a full checkup during your visit?" },
+    { speaker: "lead", at: 76.44, text: "I'm just looking for a cleaning. And, also, I would like to ask if you guys accept Cigna as an insurance because I have Cigna." },
+    { speaker: "bot", at: 85.58, text: "We do accept Cigna DPPO here. If you have your member ID handy, I can add that to your record for the team to verify. Do you have it with you, or would you like to provide it later?" },
+    { speaker: "lead", at: 96.77, text: "Now I'll just bring it on the day of my appointment." },
+    { speaker: "bot", at: 100.96, text: "That's fine. Team will go over your benefits with you when you come in." },
+    { speaker: "bot", at: 104.65, text: "Let me check our next openings for a new patient cleaning. 1 moment. Just a sec. Okay. Let me pull up the schedule." },
+    { speaker: "bot", at: 113.94, text: "See what we've got." },
+    { speaker: "bot", at: 115.98, text: "I have Monday, August seventeenth at 10 30 AM," },
+    { speaker: "bot", at: 118.77, text: "Tuesday, August eighteenth at 8 AM, or Wednesday, August nineteenth at 8 AM. Would any of those work for you?" },
+    { speaker: "lead", at: 126.19, text: "Wait. Hold on. Uh, let me check my schedule first." },
+    { speaker: "bot", at: 130.23, text: "Of course. Take your time. Let me know when you're ready." },
+    { speaker: "lead", at: 134.23, text: "Okay. I just I just saw it, and I think Monday works for me. Yeah. Yeah. Book that Monday 1 for me." },
+    { speaker: "bot", at: 140.82, text: "So that's Monday, August seventeenth at 10 30 AM. Shall I book that for you?" },
+    { speaker: "lead", at: 145.94, text: "Yes. Please proceed." },
+    { speaker: "bot", at: 148.98, text: "Perfect. Okay. Putting that in for you now." },
+    { speaker: "bot", at: 152.12, text: "You are all set. New patient exam on Monday, August seventeenth at 10 30 AM." },
+    { speaker: "bot", at: 158.13, text: "Else I can help you with, Juan Paulo?" },
+    { speaker: "lead", at: 160.89, text: "No. I I think that's all. So thank you so much." },
+    { speaker: "bot", at: 165.69, text: "You're very welcome, Juan Paulo. We're looking forward to meeting you. You'll be in good hands here. Have a great day. And we'll see you Monday." },
+    { speaker: "lead", at: 175.86, text: "Okay. Goodbye." },
+  ],
   /* PENDING: all srcs empty until the owner captures them. Captions are
      written when the images land — a caption describing an image that does
      not exist yet would drift from what the screenshot actually shows. */
@@ -372,15 +411,24 @@ export const SECTION = {
   lead:
     "A call nobody is free to answer still gets a real conversation: the agent collects the details, books the visit, and writes the record.",
   /** One operational fact, not a stat block: a demonstration practice has no
-      honest ROI numbers, and this page does not stage metrics. */
+      honest ROI numbers, and this page does not stage metrics. The per-minute
+      cost that used to sit here was removed rather than left to go stale —
+      an unverified number is worth less than no number on a page that trades
+      on being checkable. */
   factLine:
-    "Answers on the first ring, around the clock, at about $0.11 a minute.",
+    "Answers on the first ring, at two in the morning, on a public holiday.",
   /** Named under the Vapi wordmark. */
   stackNote: "Voice on Vapi. Every record lands in GoHighLevel.",
   /** The honest limitation, in the voice of the white-label section's. A
-      credibility instrument, not a disclaimer. */
+      credibility instrument, not a disclaimer.
+
+      The latency claim is measured from this recording, not estimated:
+      replies land in about 1.6 seconds, and the availability check runs 11
+      from "let me check" to the first slot offered. Saying "short pause"
+      would undersell what a listener actually hears, and a visitor who
+      counts is the reader this section is written for. */
   limitation:
-    "Bright Hollow is a demonstration practice I built to spec, not a client. The agent's short pause before it replies is it checking a real calendar.",
+    "Bright Hollow is a demonstration practice I built to spec, not a client. The agent replies in about a second and a half, and takes eleven to read the calendar out loud, which is what it sounds like when a booking is real.",
   /** The bridge to the page's one conversion control. A line, not a button:
       the page has exactly one filled button and it belongs to the final CTA. */
   bridgeText: "Want this answering your phones?",

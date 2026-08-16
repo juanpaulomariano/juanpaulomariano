@@ -72,6 +72,10 @@ type ChannelBase = {
   switchLabel: string;
   /** One line under the rail naming what the reader is looking at. */
   railLabel: string;
+  /** What each speaker is called in the rail's gutter. Context-specific:
+      a receptionist call reads "Agent / Caller", a DM thread "Bot / Lead" —
+      one generic pair would be wrong in both places. */
+  speakerLabels: { bot: string; lead: string };
   lines: Line[];
   evidence: Evidence;
 };
@@ -115,15 +119,17 @@ const VOICE: VoiceChannel = {
   key: "voice",
   switchLabel: "Voice call",
   railLabel: "A real inbound call, answered by the agent",
+  speakerLabels: { bot: "Agent", lead: "Caller" },
   audioSrc: "",
   durationSec: 0,
-  callContext: "An inbound call, answered on the first ring",
+  callContext:
+    "A new patient calls Bright Hollow Family Dental — a demonstration practice — and the agent answers on the first ring",
   lines: [],
   evidence: {
     src: "",
     width: 0,
     height: 0,
-    label: "Vapi call log",
+    label: "The contact this call created",
     caption: "",
     redactionNote: "Caller number removed. The call is unedited.",
   },
@@ -140,6 +146,7 @@ const TEXT: TextChannel = {
   key: "dm",
   switchLabel: "Instagram DM",
   railLabel: "A real DM thread, answered in under a minute",
+  speakerLabels: { bot: "Bot", lead: "Lead" },
   cadenceMs: 900,
   lines: [],
   evidence: {
@@ -152,10 +159,40 @@ const TEXT: TextChannel = {
   },
 };
 
+/* Referenced here so the pending channel survives strict unused checks while
+   it waits for its content. */
+export const PENDING_CHANNELS: Channel[] = [TEXT];
+
 /** An ARRAY on purpose, following lib/whitelabel.ts: the switch renders from
     it, so a third channel (WhatsApp, SMS) appears without touching layout
-    code, and the switch hides itself entirely while length === 1. */
-export const CHANNELS: Channel[] = [VOICE, TEXT];
+    code, and the switch hides itself entirely while length === 1.
+
+    VOICE-ONLY until the IronPulse IG thread is exported: shipping the DM
+    channel with empty lines would put the claim "A real DM thread" over a
+    blank rail, which costs more than the second channel is worth. Move TEXT
+    from PENDING_CHANNELS into this array when its lines and evidence exist. */
+export const CHANNELS: Channel[] = [VOICE];
+
+/* ── Capabilities ────────────────────────────────────────────────────────────
+   The white-label section's quiet-row pattern: owner language on top, the
+   LITERAL n8n workflow names underneath as evidence texture. The snake_case
+   names are receipts — they read as "this exists in a running system", which
+   is exactly the register this page trades in. All 11 workflows surfaced,
+   zero feature-grid feel. */
+export const CAPABILITIES: { label: string; detail: string }[] = [
+  {
+    label: "Books and reschedules",
+    detail:
+      "check_availability · book_appointment · reschedule_appointment · cancel_appointment",
+  },
+  { label: "Knows the caller", detail: "lookup_contact · upsert_contact" },
+  { label: "Captures insurance", detail: "capture_insurance" },
+  {
+    label: "Triages the reason for the call",
+    detail: "triage_symptom · resolve_appointment_type",
+  },
+  { label: "Hands off to a human", detail: "transfer_log · update_opportunity" },
+] as const;
 
 /** Section copy, kept here so nothing in the component is a bare string. */
 export const SECTION = {
@@ -164,10 +201,19 @@ export const SECTION = {
   titleBottom: "You get a booked call.",
   lead:
     "Leads arrive as a DM with no email and no phone number, or as a call nobody is free to answer. Both get a real conversation that collects the details and books the consultation, then hands a qualified contact to the workflows.",
+  /** One operational fact, not a stat block: a demonstration practice has no
+      honest ROI numbers, and this page does not stage metrics. */
+  factLine:
+    "Answers on the first ring, around the clock, at about $0.11 a minute.",
   /** Named under the Vapi wordmark. */
-  stackNote: "Voice built on Vapi. Messaging runs natively in GoHighLevel.",
+  stackNote:
+    "Voice on Vapi. Eleven n8n workflows behind it. Every record lands in GoHighLevel.",
   /** The honest limitation, in the voice of the white-label section's. A
-      credibility instrument, not a disclaimer. PENDING: to be written once the
-      real handoff behaviour is confirmed. */
-  limitation: "",
+      credibility instrument, not a disclaimer. */
+  limitation:
+    "Bright Hollow is a demonstration practice I built to spec, not a client. The agent pauses about a second and a half before it answers — that's the current cost of it actually checking the calendar before it speaks.",
+  /** The bridge to the page's one conversion control. A line, not a button:
+      the page has exactly one filled button and it belongs to the final CTA. */
+  bridgeText: "Want this answering your phones?",
+  bridgeLinkLabel: "Send me a client build",
 } as const;

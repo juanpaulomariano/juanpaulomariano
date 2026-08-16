@@ -382,12 +382,18 @@ export default function Hero() {
           Juan Paulo Mariano
         </a>
         <div className="flex items-center gap-7">
+          {/* Every link resolves to a real section id. "About" used to link to
+              an id that never existed, while the two showcase sections had no
+              nav entry at all — the inverse of what a visitor needs. */}
           <nav className="hidden items-center gap-7 sm:flex" aria-label="Primary">
             <a href="#work" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
               Work
             </a>
-            <a href="#about" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
-              About
+            <a href="#ai" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
+              AI agent
+            </a>
+            <a href="#whitelabel" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
+              White-label
             </a>
             <a href="#contact" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
               Contact

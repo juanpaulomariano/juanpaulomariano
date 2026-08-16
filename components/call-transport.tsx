@@ -65,8 +65,28 @@ export default function CallTransport({
 }: Props) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const rafRef = useRef<number | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [state, setState] = useState<State>(src ? "idle" : "unconfigured");
   const [elapsed, setElapsed] = useState(0);
+  const [primed, setPrimed] = useState(false);
+
+  /* Prime the play mark once, when the transport is actually on screen — the
+     same once-only swell the Selected Work poster uses, and for the same
+     reason: an audio control on a page of text needs one moment that says
+     "this is a thing you press". Visibility-tied, never a loop. */
+  useEffect(() => {
+    if (reduced || primed || !buttonRef.current || !src) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setPrimed(true);
+        io.disconnect();
+      },
+      { threshold: 0.5 },
+    );
+    io.observe(buttonRef.current);
+    return () => io.disconnect();
+  }, [reduced, primed, src]);
 
   /* Sync is an INTEGER, not a time. The loop reads currentTime every frame but
      only reports when the derived line index actually changes, so a 47-second
@@ -168,16 +188,24 @@ export default function CallTransport({
           }
           onEnded={() => {
             setState("ended");
-            /* Rest at the complete end state: rule full, every line revealed. */
+            /* Settle at the complete end state: rule full, every line PASSED
+               and none current — cursor past the last index, so the accent
+               does not park on the final line forever. */
             setElapsed(total);
-            onCursor(lines.length - 1);
+            onCursor(lines.length);
           }}
-          onError={() => setState("errored")}
+          onError={() => {
+            setState("errored");
+            /* The transcript is the artifact that survives this failure:
+               settle it to fully read rather than leaving it at rest. */
+            onCursor(lines.length);
+          }}
         />
       )}
 
       <div className="flex items-center gap-4">
         <button
+          ref={buttonRef}
           type="button"
           onClick={toggle}
           disabled={dead}
@@ -185,10 +213,14 @@ export default function CallTransport({
           aria-label={
             isPlaying ? "Pause the call" : `Play the call, ${clock(total)}`
           }
-          className="group flex h-11 w-11 shrink-0 items-center justify-center border transition-colors duration-200 disabled:cursor-default focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className={`group flex h-11 w-11 shrink-0 items-center justify-center border transition-[--hover-scale,border-color] duration-200 disabled:cursor-default focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 enabled:hover:[--hover-scale:1.08] enabled:focus-visible:[--hover-scale:1.08] ${
+            primed ? "play-prime" : ""
+          }`}
           style={{
             borderColor: dead ? TOKENS.hair : TOKENS.ink,
             background: TOKENS.white,
+            transform:
+              "scale(calc(var(--prime-scale, 1) * var(--hover-scale, 1)))",
           }}
         >
           {isPlaying ? (

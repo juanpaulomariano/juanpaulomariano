@@ -9,3 +9,6 @@ next-env.d.ts
 # public/works/ as WebP). Keep the originals local.
 assets/GlowTheory Workflow Screenshots/
 assets/IronPulse Workflow Screensots/
+
+# Vapi config backups (contain credentials)
+.vapi-backup/

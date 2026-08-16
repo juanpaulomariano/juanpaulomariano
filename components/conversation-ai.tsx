@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import CallTransport from "@/components/call-transport";
 import GalleryLightbox from "@/components/gallery-lightbox";
 import TranscriptRail from "@/components/transcript-rail";
-import { CHANNELS, SECTION } from "@/lib/conversation";
+import { CAPABILITIES, CHANNELS, SECTION } from "@/lib/conversation";
 import { EASE, TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -154,6 +154,19 @@ export default function ConversationAi() {
               {SECTION.lead}
             </p>
 
+            {/* One operational fact where a lesser page would put a stat
+                block. A demonstration practice has no honest ROI numbers. */}
+            <p
+              className="mt-4 max-w-[46ch]"
+              style={{
+                color: TOKENS.body,
+                fontSize: TYPE.small,
+                ...TYPE_STYLE.small,
+              }}
+            >
+              {SECTION.factLine}
+            </p>
+
             {/* The stack, named. The Vapi mark is already on the page in the
                 hero orbit, so it is not a new icon — and naming the stack is
                 what this audience actually wants to know. */}
@@ -176,6 +189,38 @@ export default function ConversationAi() {
               >
                 {SECTION.stackNote}
               </p>
+            </div>
+
+            {/* ── Capabilities: the white-label quiet-row pattern ──
+                Owner language on top, the literal n8n workflow names beneath
+                as evidence texture. Receipts, not a feature grid. */}
+            <div
+              className="mt-8 grid gap-y-5 border-t pt-6 sm:grid-cols-2 sm:gap-x-6 xl:grid-cols-1"
+              style={{ borderColor: TOKENS.line }}
+            >
+              {CAPABILITIES.map((c) => (
+                <div key={c.label}>
+                  <p
+                    style={{
+                      color: TOKENS.ink,
+                      fontSize: TYPE.small,
+                      ...TYPE_STYLE.small,
+                    }}
+                  >
+                    {c.label}
+                  </p>
+                  <p
+                    className="mt-1 break-words"
+                    style={{
+                      color: TOKENS.muted,
+                      fontSize: TYPE.micro,
+                      ...TYPE_STYLE.micro,
+                    }}
+                  >
+                    {c.detail}
+                  </p>
+                </div>
+              ))}
             </div>
 
             {/* ── Evidence: a citation, not a hero image ──
@@ -319,6 +364,7 @@ export default function ConversationAi() {
                 lines={active.lines}
                 cursor={cursor}
                 showTimestamps={active.kind === "voice"}
+                speakerLabels={active.speakerLabels}
                 reduced={reduced}
                 railLabel={active.railLabel}
               />
@@ -336,6 +382,27 @@ export default function ConversationAi() {
                 {SECTION.limitation}
               </p>
             )}
+
+            {/* Bridge to the page's one conversion control. A line, not a
+                second filled button. */}
+            <p
+              className="mt-7"
+              style={{
+                color: TOKENS.muted,
+                fontSize: TYPE.small,
+                ...TYPE_STYLE.small,
+              }}
+            >
+              {SECTION.bridgeText}{" "}
+              <a
+                href="#contact"
+                className="border-b pb-px transition-colors duration-200 hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+                style={{ color: TOKENS.ink, borderColor: TOKENS.ink }}
+              >
+                {SECTION.bridgeLinkLabel}
+              </a>{" "}
+              <span aria-hidden="true">→</span>
+            </p>
           </div>
         </div>
       </div>

@@ -125,7 +125,7 @@ export type Channel = VoiceChannel;
    hand-timing every time.
 
    The recording is a real inbound call placed to the deployed agent on
-   2026-08-16, 3:06 long. The evidence screenshots are still pending owner
+   2026-08-16, trimmed to 2:53 (dead lead-in and the closing goodbye cut). The evidence screenshots are still pending owner
    capture; those entries keep empty srcs and are filtered out on the page. */
 const VOICE: VoiceChannel = {
   kind: "voice",
@@ -137,55 +137,62 @@ const VOICE: VoiceChannel = {
   railLabel: "A real call to the agent, recorded 16 August 2026",
   speakerLabels: { bot: "Agent", lead: "Caller" },
   audioSrc: "/conversation/bhfd-call.mp3",
-  durationSec: 186,
+  durationSec: 173,
   /* The four workflow executions Vapi logged during this call.
 
      TIMING NOTE (applies to tickerEvents AND lines): the shipped audio is
-     the call captured from a screen recording, which starts 3.92s before
-     Vapi's clock does — the file holds digital silence until 5.52s, where
-     the agent's greeting begins, and Vapi logs that greeting at 1.60s. Every
-     value below is Vapi's timing PLUS 3.92s, verified against the audio's
-     own energy at seven points across the call. Do not "correct" these back
-     to the raw log values; that is what put the highlight out of sync. */
+     the call captured from a screen recording, then trimmed. Two edits moved
+     the clock away from Vapi's raw log values:
+
+       +3.92s  the screen recording starts before the call connects (the raw
+               file held silence until 5.52s, where the greeting begins,
+               against Vapi logging it at 1.60s)
+       -5.30s  the dead lead-in was cut from the head of the file
+
+     The tail was also cut at 177.90s of the untrimmed file, after the
+     agent's sign-off, which is why the caller's closing "Okay. Goodbye."
+     is absent from both the audio and this transcript. Verified against the
+     audio's own frame energy and in the browser. Do not "correct" these
+     back to the raw log values; that is what put the highlight out of sync
+     the first time. */
   tickerEvents: [
-    { at: 71.61, text: "upsert_contact · Juan Paulo Mariano created" },
-    { at: 107.44, text: "resolve_appointment_type · new patient cleaning" },
-    { at: 118.54, text: "check_availability · three openings returned" },
-    { at: 155.12, text: "book_appointment · Monday, August 17 at 10:30 AM" },
+    { at: 66.31, text: "upsert_contact · Juan Paulo Mariano created" },
+    { at: 102.14, text: "resolve_appointment_type · new patient cleaning" },
+    { at: 113.24, text: "check_availability · three openings returned" },
+    { at: 149.82, text: "book_appointment · Monday, August 17 at 10:30 AM" },
   ],
   lines: [
-    { speaker: "bot", at: 5.52, text: "Thank you for calling Bright Hollow Family Dental. This is June. Can I help you today?" },
-    { speaker: "lead", at: 10.74, text: "Hey, June. Uh, so I've got an event coming out this month. And I'm thinking of like, get my teeth cleaned, you know, before the event." },
-    { speaker: "bot", at: 22.36, text: "Sure. I can help with that. Are you already a patient here, or would this be your first visit with us?" },
-    { speaker: "lead", at: 28.24, text: "Yes. This will be the first visit. And, actually, my my friend from work actually recommended your clinic." },
-    { speaker: "bot", at: 38.05, text: "Got it. Thank you for letting me know. I'll just need a few details to get you set up. Can I get your first and last name?" },
-    { speaker: "lead", at: 45.59, text: "It's Juan Paulo Mariano." },
-    { speaker: "bot", at: 48.68, text: "Thanks, Juan Paulo. And what's your date of birth?" },
-    { speaker: "lead", at: 51.92, text: "I was born on March 20 ninth of 2003." },
-    { speaker: "bot", at: 56.25, text: "Thank you. And what's the best phone number to reach you on?" },
-    { speaker: "lead", at: 60.56, text: "The best phone number to reach me on is plus 6 3 9 5 0 6 6 5 50 45." },
-    { speaker: "bot", at: 68.67, text: "Alright. Just getting you into the system here." },
-    { speaker: "bot", at: 73.38, text: "Thanks for waiting, Juan Paulo." },
-    { speaker: "bot", at: 75.04, text: "Are you just looking for a cleaning? Or would you also like a full checkup during your visit?" },
-    { speaker: "lead", at: 80.36, text: "I'm just looking for a cleaning. And, also, I would like to ask if you guys accept Cigna as an insurance because I have Cigna." },
-    { speaker: "bot", at: 89.50, text: "We do accept Cigna DPPO here. If you have your member ID handy, I can add that to your record for the team to verify. Do you have it with you, or would you like to provide it later?" },
-    { speaker: "lead", at: 100.69, text: "Now I'll just bring it on the day of my appointment." },
-    { speaker: "bot", at: 104.88, text: "That's fine. Team will go over your benefits with you when you come in." },
-    { speaker: "bot", at: 108.57, text: "Let me check our next openings for a new patient cleaning. 1 moment. Just a sec. Okay. Let me pull up the schedule." },
-    { speaker: "bot", at: 117.86, text: "See what we've got." },
-    { speaker: "bot", at: 119.90, text: "I have Monday, August seventeenth at 10 30 AM," },
-    { speaker: "bot", at: 122.69, text: "Tuesday, August eighteenth at 8 AM, or Wednesday, August nineteenth at 8 AM. Would any of those work for you?" },
-    { speaker: "lead", at: 130.11, text: "Wait. Hold on. Uh, let me check my schedule first." },
-    { speaker: "bot", at: 134.15, text: "Of course. Take your time. Let me know when you're ready." },
-    { speaker: "lead", at: 138.15, text: "Okay. I just I just saw it, and I think Monday works for me. Yeah. Yeah. Book that Monday 1 for me." },
-    { speaker: "bot", at: 144.74, text: "So that's Monday, August seventeenth at 10 30 AM. Shall I book that for you?" },
-    { speaker: "lead", at: 149.86, text: "Yes. Please proceed." },
-    { speaker: "bot", at: 152.90, text: "Perfect. Okay. Putting that in for you now." },
-    { speaker: "bot", at: 156.04, text: "You are all set. New patient exam on Monday, August seventeenth at 10 30 AM." },
-    { speaker: "bot", at: 162.05, text: "Else I can help you with, Juan Paulo?" },
-    { speaker: "lead", at: 164.81, text: "No. I I think that's all. So thank you so much." },
-    { speaker: "bot", at: 169.61, text: "You're very welcome, Juan Paulo. We're looking forward to meeting you. You'll be in good hands here. Have a great day. And we'll see you Monday." },
-    { speaker: "lead", at: 179.78, text: "Okay. Goodbye." },
+    { speaker: "bot", at: 0.22, text: "Thank you for calling Bright Hollow Family Dental. This is June. Can I help you today?" },
+    { speaker: "lead", at: 5.44, text: "Hey, June. Uh, so I've got an event coming out this month. And I'm thinking of like, get my teeth cleaned, you know, before the event." },
+    { speaker: "bot", at: 17.06, text: "Sure. I can help with that. Are you already a patient here, or would this be your first visit with us?" },
+    { speaker: "lead", at: 22.94, text: "Yes. This will be the first visit. And, actually, my my friend from work actually recommended your clinic." },
+    { speaker: "bot", at: 32.75, text: "Got it. Thank you for letting me know. I'll just need a few details to get you set up. Can I get your first and last name?" },
+    { speaker: "lead", at: 40.29, text: "It's Juan Paulo Mariano." },
+    { speaker: "bot", at: 43.38, text: "Thanks, Juan Paulo. And what's your date of birth?" },
+    { speaker: "lead", at: 46.62, text: "I was born on March 20 ninth of 2003." },
+    { speaker: "bot", at: 50.95, text: "Thank you. And what's the best phone number to reach you on?" },
+    { speaker: "lead", at: 55.26, text: "The best phone number to reach me on is plus 6 3 9 5 0 6 6 5 50 45." },
+    { speaker: "bot", at: 63.37, text: "Alright. Just getting you into the system here." },
+    { speaker: "bot", at: 68.08, text: "Thanks for waiting, Juan Paulo." },
+    { speaker: "bot", at: 69.74, text: "Are you just looking for a cleaning? Or would you also like a full checkup during your visit?" },
+    { speaker: "lead", at: 75.06, text: "I'm just looking for a cleaning. And, also, I would like to ask if you guys accept Cigna as an insurance because I have Cigna." },
+    { speaker: "bot", at: 84.20, text: "We do accept Cigna DPPO here. If you have your member ID handy, I can add that to your record for the team to verify. Do you have it with you, or would you like to provide it later?" },
+    { speaker: "lead", at: 95.39, text: "Now I'll just bring it on the day of my appointment." },
+    { speaker: "bot", at: 99.58, text: "That's fine. Team will go over your benefits with you when you come in." },
+    { speaker: "bot", at: 103.27, text: "Let me check our next openings for a new patient cleaning. 1 moment. Just a sec. Okay. Let me pull up the schedule." },
+    { speaker: "bot", at: 112.56, text: "See what we've got." },
+    { speaker: "bot", at: 114.60, text: "I have Monday, August seventeenth at 10 30 AM," },
+    { speaker: "bot", at: 117.39, text: "Tuesday, August eighteenth at 8 AM, or Wednesday, August nineteenth at 8 AM. Would any of those work for you?" },
+    { speaker: "lead", at: 124.81, text: "Wait. Hold on. Uh, let me check my schedule first." },
+    { speaker: "bot", at: 128.85, text: "Of course. Take your time. Let me know when you're ready." },
+    { speaker: "lead", at: 132.85, text: "Okay. I just I just saw it, and I think Monday works for me. Yeah. Yeah. Book that Monday 1 for me." },
+    { speaker: "bot", at: 139.44, text: "So that's Monday, August seventeenth at 10 30 AM. Shall I book that for you?" },
+    { speaker: "lead", at: 144.56, text: "Yes. Please proceed." },
+    { speaker: "bot", at: 147.60, text: "Perfect. Okay. Putting that in for you now." },
+    { speaker: "bot", at: 150.74, text: "You are all set. New patient exam on Monday, August seventeenth at 10 30 AM." },
+    { speaker: "bot", at: 156.75, text: "Else I can help you with, Juan Paulo?" },
+    { speaker: "lead", at: 159.51, text: "No. I I think that's all. So thank you so much." },
+    { speaker: "bot", at: 164.31, text: "You're very welcome, Juan Paulo. We're looking forward to meeting you. You'll be in good hands here. Have a great day. And we'll see you Monday." },
   ],
   /* PENDING: all srcs empty until the owner captures them. Captions are
      written when the images land — a caption describing an image that does

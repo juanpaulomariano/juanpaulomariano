@@ -118,17 +118,21 @@ export default function ConversationAi() {
           </div>
         </div>
 
-        {/* Right-heavy 38/62, the mirror of white-label's left-heavy split, so
-            two adjacent white sections have opposite centres of gravity rather
-            than rhyming into one long stripe. */}
-        {/* 44/56 rather than the 38/62 first drafted: at the section title size
-            "You get a booked call." wrapped to three lines in a 38fr track and
-            orphaned the last word. Still right-heavy, so it remains the mirror
-            of white-label's left-heavy split and the two white sections keep
-            opposite centres of gravity. */}
-        <div className="mt-10 xl:grid xl:grid-cols-[48fr_52fr] xl:gap-12 2xl:grid-cols-[44fr_56fr] 2xl:gap-14">
+        {/* THE DEMO SITS LEFT, the written case right — the true mirror of
+            white-label's text-left/artifact-right. An earlier draft mirrored
+            only the track WIDTHS, which left three consecutive sections
+            (dark work, this, white-label) all reading text-left/artifact-right
+            — one long stripe. Flipping the artifact side is what actually
+            breaks the rhyme: 02 artifact-right → 03 artifact-LEFT → 04
+            artifact-right.
+
+            Flipped with `order` at xl, not DOM order: the DOM keeps the
+            written case first so mobile stacks headline-before-demo and
+            screen readers meet the claim before the transcript. Track widths
+            keep the demo's larger share (52/56fr), now as the FIRST track. */}
+        <div className="mt-10 xl:grid xl:grid-cols-[52fr_48fr] xl:gap-12 2xl:grid-cols-[56fr_44fr] 2xl:gap-14">
           {/* ── The written case ── */}
-          <div className="min-w-0">
+          <div className="min-w-0 xl:order-2">
             <h2
               style={{
                 fontFamily: "var(--font-grotesk)",
@@ -288,7 +292,7 @@ export default function ConversationAi() {
           </div>
 
           {/* ── The demo ── */}
-          <div className="mt-10 min-w-0 xl:mt-0">
+          <div className="mt-10 min-w-0 xl:order-1 xl:mt-0">
             {/* Channel switch. Hidden entirely while there is one channel:
                 a toggle over a single option is filler. */}
             {multiple && (

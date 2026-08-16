@@ -36,6 +36,20 @@ export const TOKENS = {
   /** Hairlines on dark, in the same two weights as the light surface. */
   darkLine: "rgba(255,255,255,0.20)",
   darkHair: "rgba(255,255,255,0.10)",
+
+  /* ── The call stage ────────────────────────────────────────────────────
+     Conversation AI's night surface. This is a PANEL inside a white section,
+     not a second dark section — the "one dark section" law binds section
+     grounds, and the page rhythm (white · black · white · white) is intact.
+     The cast is deliberately blue-black, not the Selected Work #0A0A0A: the
+     two dark surfaces must never read as the same material, because one is
+     a gallery wall and this one is a phone at night. */
+  stageBg: "#0D1117",
+  stageInk: "#F2F4F7",
+  stageBody: "#B6BEC9",
+  stageMuted: "#8B93A1",
+  stageLine: "rgba(255,255,255,0.16)",
+  stageHair: "rgba(255,255,255,0.08)",
 } as const;
 
 /* ── Type scale ──────────────────────────────────────────────────────────────

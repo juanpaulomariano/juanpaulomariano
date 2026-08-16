@@ -12,3 +12,6 @@ assets/IronPulse Workflow Screensots/
 
 # Vapi config backups (contain credentials)
 .vapi-backup/
+
+# Impeccable working files: review captures are evidence, not assets
+.impeccable/review/

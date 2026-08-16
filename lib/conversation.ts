@@ -89,6 +89,17 @@ type ChannelBase = {
   evidence: Evidence[];
 };
 
+/** A CRM write the call performed, shown in the stage's status ticker at the
+    moment it happened. `at` follows the same ascending-seconds contract as
+    Line.at. These are REAL events (contact created, slot checked, appointment
+    written) at their real transcript moments — the ticker is receipts in
+    motion, and an invented event would be the section lying at its most
+    visible moment. */
+export type TickerEvent = {
+  at: number;
+  text: string;
+};
+
 export type VoiceChannel = ChannelBase & {
   kind: "voice";
   /** Path under /public. An empty string renders the "not attached yet" state
@@ -99,8 +110,9 @@ export type VoiceChannel = ChannelBase & {
       rule BEFORE metadata loads, since preload="none" means duration is NaN
       until the user presses play. A wrong value makes the fill rule jump. */
   durationSec: number;
-  /** Named so the reader knows what they are about to hear. */
-  callContext: string;
+  /** The CRM writes, in playback order. Empty until the recording lands and
+      the moments can be authored against the real call. */
+  tickerEvents: TickerEvent[];
 };
 
 export type TextChannel = ChannelBase & {
@@ -132,7 +144,10 @@ const VOICE: VoiceChannel = {
   speakerLabels: { bot: "Agent", lead: "Caller" },
   audioSrc: "",
   durationSec: 0,
-  callContext: "A new patient calls. The agent answers on the first ring.",
+  /* PENDING: authored against the real call once the recording lands. Each
+     entry must name a write the workflows actually performed, at the second
+     the transcript shows it happening. */
+  tickerEvents: [],
   lines: [],
   /* PENDING: all srcs empty until the owner captures them. Captions are
      written when the images land — a caption describing an image that does
@@ -180,7 +195,7 @@ const VOICE: VoiceChannel = {
       src: "/conversation/n8n-lookup_contact.webp",
       width: 1824,
       height: 648,
-      label: "BHFD — lookup_contact",
+      label: "BHFD · lookup_contact",
       caption:
         "Runs first on every call. The caller's number gets looked up in GoHighLevel, and a returning patient is greeted by name instead of being asked questions the practice already answered.",
       redactionNote: "Cropped to the canvas. Nothing else changed.",
@@ -189,7 +204,7 @@ const VOICE: VoiceChannel = {
       src: "/conversation/n8n-upsert_contact.webp",
       width: 1835,
       height: 570,
-      label: "BHFD — upsert_contact",
+      label: "BHFD · upsert_contact",
       caption:
         "One tool covers create and update, so the agent can't pick the wrong one. It also refuses incomplete phone numbers rather than saving a record nobody can call back.",
       redactionNote: "Cropped to the canvas. Nothing else changed.",
@@ -198,7 +213,7 @@ const VOICE: VoiceChannel = {
       src: "/conversation/n8n-resolve_appointment_type.webp",
       width: 952,
       height: 679,
-      label: "BHFD — resolve_appointment_type",
+      label: "BHFD · resolve_appointment_type",
       caption:
         "Three nodes and no CRM call. It maps what the caller said to one of 7 visit types and the minutes each needs; anything that sounds like pain gets sent to triage before booking.",
       redactionNote: "Cropped to the canvas. Nothing else changed.",
@@ -207,7 +222,7 @@ const VOICE: VoiceChannel = {
       src: "/conversation/n8n-triage_symptom.webp",
       width: 2131,
       height: 665,
-      label: "BHFD — triage_symptom",
+      label: "BHFD · triage_symptom",
       caption:
         "Plain code decides how soon a dental problem needs to be seen, from ER down to routine, and writes the urgency onto the record so staff see it even if the caller hangs up. Same symptoms, same answer, every time.",
       redactionNote: "Cropped to the canvas. Nothing else changed.",
@@ -216,7 +231,7 @@ const VOICE: VoiceChannel = {
       src: "/conversation/n8n-check_availability.webp",
       width: 1761,
       height: 638,
-      label: "BHFD — check_availability",
+      label: "BHFD · check_availability",
       caption:
         "Asks the calendar for real openings in the next 10 days and returns up to 3, spread across different days, already worded the way a receptionist would say them out loud.",
       redactionNote: "Cropped to the canvas. Nothing else changed.",
@@ -225,7 +240,7 @@ const VOICE: VoiceChannel = {
       src: "/conversation/n8n-book_appointment.webp",
       width: 2128,
       height: 611,
-      label: "BHFD — book_appointment",
+      label: "BHFD · book_appointment",
       caption:
         "The core loop. It verifies the patient and the slot, creates the appointment in GoHighLevel, then confirms to the caller; tags and pipeline stage sync right after. Nothing is confirmed unless the booking actually succeeded.",
       redactionNote: "Cropped to the canvas. Nothing else changed.",
@@ -234,7 +249,7 @@ const VOICE: VoiceChannel = {
       src: "/conversation/n8n-reschedule_appointment.webp",
       width: 2131,
       height: 758,
-      label: "BHFD — reschedule_appointment",
+      label: "BHFD · reschedule_appointment",
       caption:
         "Fetches the appointment before touching it. Moved means confirmed at the new time; a taken slot restarts the search; a missing appointment gets admitted, not papered over.",
       redactionNote: "Cropped to the canvas. Nothing else changed.",
@@ -243,7 +258,7 @@ const VOICE: VoiceChannel = {
       src: "/conversation/n8n-cancel_appointment.webp",
       width: 2122,
       height: 457,
-      label: "BHFD — cancel_appointment",
+      label: "BHFD · cancel_appointment",
       caption:
         "Cancelled, never deleted. The practice keeps the appointment history for follow-ups and no-show tracking, and the record's stage and tags update in the same run.",
       redactionNote: "Cropped to the canvas. Nothing else changed.",
@@ -252,7 +267,7 @@ const VOICE: VoiceChannel = {
       src: "/conversation/n8n-capture_insurance.webp",
       width: 2173,
       height: 674,
-      label: "BHFD — capture_insurance",
+      label: "BHFD · capture_insurance",
       caption:
         "Saves the carrier, checks it against the accepted list, and queues a human to verify benefits. The agent never quotes coverage or prices on the phone.",
       redactionNote: "Cropped to the canvas. Nothing else changed.",
@@ -261,7 +276,7 @@ const VOICE: VoiceChannel = {
       src: "/conversation/n8n-update_opportunity.webp",
       width: 1528,
       height: 619,
-      label: "BHFD — update_opportunity",
+      label: "BHFD · update_opportunity",
       caption:
         "Moves the patient through the intake pipeline, from new inquiry to completed. The caller never waits on it; the reply goes out first and the CRM catches up in the background.",
       redactionNote: "Cropped to the canvas. Nothing else changed.",
@@ -270,7 +285,7 @@ const VOICE: VoiceChannel = {
       src: "/conversation/n8n-transfer_log.webp",
       width: 1777,
       height: 544,
-      label: "BHFD — transfer_log",
+      label: "BHFD · transfer_log",
       caption:
         "A voice agent can't brief the front desk out loud, so this writes the handover instead: why the call is being passed, noted on the record and tagged, before the transfer happens.",
       redactionNote: "Cropped to the canvas. Nothing else changed.",
@@ -361,31 +376,30 @@ export const CAPABILITIES: {
   },
 ] as const;
 
-/* ── The call's journey ─────────────────────────────────────────────────────
-   Five stages, rendered through the SAME LivingPipeline track that Selected
-   Work uses for lead journeys — one dot travels through once and rests. The
-   prose explanations this replaced were the section's biggest wall of text;
-   the labels carry the story and the transcript carries the detail. */
-export const CALL_STAGES: string[] = [
-  "Call comes in",
-  "Agent answers",
-  "Workflows fire",
-  "CRM updated",
-  "Handoff if needed",
-];
-
-/* ── Proof wall previews ────────────────────────────────────────────────────
-   The four canvases shown small on the page, same device as Selected Work's
-   proof wall: a sentence, a few thumbnails, one "see all" control. Chosen for
-   coverage, not order — the booking core, contact handling, triage, and
-   insurance — so the row samples the system instead of repeating one theme.
-   Matched against Evidence.label with `includes`, like galleryTarget. */
-export const PROOF_PREVIEWS: string[] = [
-  "book_appointment",
-  "lookup_contact",
-  "triage_symptom",
-  "capture_insurance",
-];
+/* ── The stage ──────────────────────────────────────────────────────────────
+   Copy for the incoming-call staging. The stage is a presentation device and
+   every string on it must still be true: the caller really is a new patient,
+   the practice really is Bright Hollow, and the answer control really plays
+   a recording (the rail label under the transcript says so in as many
+   words). No "connecting…" theater, no invented time-of-day. */
+export const STAGE = {
+  /** Small line above the caller's name. */
+  incomingLabel: "Incoming call",
+  /** Who is calling. The recording's caller identifies as a new patient. */
+  callerLabel: "New patient",
+  /** Under the caller's name: where the call is landing. */
+  calleeLine: "for Bright Hollow Family Dental",
+  /** The answer control's label while a recording is attached. The real
+      duration is appended by the component. */
+  answerLabel: "Answer the call",
+  /** Honest pending state, same contract as before the redesign. */
+  pendingNote: "Recording not attached yet",
+  /** Header status once the run settles. */
+  endedLabel: "Call ended",
+  /** The receipts strip under the stage. */
+  receiptsLine:
+    "Behind this call: 11 documented n8n workflows writing to GoHighLevel.",
+} as const;
 
 /** Section copy, kept here so nothing in the component is a bare string. */
 export const SECTION = {
@@ -403,10 +417,9 @@ export const SECTION = {
   /** The honest limitation, in the voice of the white-label section's. A
       credibility instrument, not a disclaimer. */
   limitation:
-    "Bright Hollow is a demonstration practice I built to spec, not a client. The agent's short pause before answering is it checking a real calendar.",
+    "Bright Hollow is a demonstration practice I built to spec, not a client. The agent's short pause before it replies is it checking a real calendar.",
   /** The bridge to the page's one conversion control. A line, not a button:
       the page has exactly one filled button and it belongs to the final CTA. */
-  proofSentence: "All 11 workflows, documented on the canvas.",
   bridgeText: "Want this answering your phones?",
   bridgeLinkLabel: "Send me a client build",
 } as const;

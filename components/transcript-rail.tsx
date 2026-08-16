@@ -39,6 +39,24 @@ function clock(sec: number) {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+/* The rail renders on the white page and on the call stage's night panel.
+   Same grammar both places — colour encodes state, opacity encodes nothing —
+   so only the colour values swap. */
+const SURFACES = {
+  light: {
+    ink: TOKENS.ink,
+    body: TOKENS.body,
+    muted: TOKENS.muted,
+    hair: TOKENS.hair,
+  },
+  dark: {
+    ink: TOKENS.stageInk,
+    body: TOKENS.stageBody,
+    muted: TOKENS.stageMuted,
+    hair: TOKENS.stageHair,
+  },
+} as const;
+
 type Props = {
   lines: Line[];
   /** Index of the line currently being spoken. -1 before anything starts;
@@ -54,6 +72,8 @@ type Props = {
   reduced: boolean;
   /** Names what the reader is looking at, under the rail. */
   railLabel: string;
+  /** Which ground the rail sits on. Default preserves the light rendering. */
+  surface?: keyof typeof SURFACES;
 };
 
 export default function TranscriptRail({
@@ -63,7 +83,9 @@ export default function TranscriptRail({
   speakerLabels,
   reduced,
   railLabel,
+  surface = "light",
 }: Props) {
+  const S = SURFACES[surface];
   /* With reduced motion the whole transcript is simply settled: no highlight
      tracking. That is the same end state the run reaches, so nothing is
      withheld — only the motion is. */
@@ -92,7 +114,7 @@ export default function TranscriptRail({
                  marked current so the highlighted line stays in view. */
               data-current={current || undefined}
               className="flex gap-4 border-t py-3 first:border-t-0 sm:gap-6"
-              style={{ borderColor: TOKENS.hair }}
+              style={{ borderColor: S.hair }}
             >
               {/* Gutter: a timestamp for voice, a speaker for text. Fixed width
                   and tabular figures so the text column starts on the same
@@ -103,8 +125,8 @@ export default function TranscriptRail({
                   color: accentNow
                     ? TOKENS.accent
                     : current
-                      ? TOKENS.ink
-                      : TOKENS.muted,
+                      ? S.ink
+                      : S.muted,
                   fontSize: TYPE.micro,
                   ...TYPE_STYLE.micro,
                   transition: reduced ? "none" : "color 220ms ease",
@@ -122,7 +144,7 @@ export default function TranscriptRail({
                 <span
                   className="w-[2.5rem] shrink-0"
                   style={{
-                    color: accentNow ? TOKENS.accent : TOKENS.muted,
+                    color: accentNow ? TOKENS.accent : S.muted,
                     fontSize: TYPE.micro,
                     ...TYPE_STYLE.micro,
                     transition: reduced ? "none" : "color 220ms ease",
@@ -136,10 +158,10 @@ export default function TranscriptRail({
                 className="min-w-0"
                 style={{
                   color: current
-                    ? TOKENS.ink
+                    ? S.ink
                     : past
-                      ? TOKENS.body
-                      : TOKENS.muted,
+                      ? S.body
+                      : S.muted,
                   fontSize: TYPE.body,
                   ...TYPE_STYLE.body,
                   transition: reduced ? "none" : "color 220ms ease",
@@ -155,7 +177,7 @@ export default function TranscriptRail({
       <p
         className="mt-4"
         style={{
-          color: TOKENS.muted,
+          color: S.muted,
           fontSize: TYPE.small,
           ...TYPE_STYLE.small,
         }}

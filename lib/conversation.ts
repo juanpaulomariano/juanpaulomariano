@@ -164,18 +164,36 @@ const VOICE: VoiceChannel = {
       src: "",
       width: 0,
       height: 0,
-      label: "book_appointment, opened",
+      label: "The agent's configuration",
       caption: "",
-      redactionNote: "Credentials and webhook URLs cropped.",
+      redactionNote:
+        "Account details cropped. The prompt shown is the prompt that runs.",
     },
-    {
+    /* ── The 11 workflow canvases, in the order the life of a call meets
+       them — not alphabetical. Captured AFTER the sticky-note documentation
+       lands on each canvas, so every screenshot reads as an engineering
+       document rather than a bare node graph. Captions written per canvas
+       when the images exist. */
+    ...[
+      "lookup_contact",
+      "upsert_contact",
+      "resolve_appointment_type",
+      "triage_symptom",
+      "check_availability",
+      "book_appointment",
+      "reschedule_appointment",
+      "cancel_appointment",
+      "capture_insurance",
+      "update_opportunity",
+      "transfer_log",
+    ].map((name) => ({
       src: "",
       width: 0,
       height: 0,
-      label: "The agent's configuration",
+      label: `BHFD — ${name}`,
       caption: "",
-      redactionNote: "Account details cropped. The prompt shown is the prompt that runs.",
-    },
+      redactionNote: "Credentials and webhook URLs are not visible at canvas zoom.",
+    })),
   ],
 };
 

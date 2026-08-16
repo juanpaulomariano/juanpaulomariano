@@ -13,5 +13,12 @@ assets/IronPulse Workflow Screensots/
 # Vapi config backups (contain credentials)
 .vapi-backup/
 
+# Secrets. .env.local holds the GoHighLevel PIT and location id; it is written
+# by scripts/set-ghl-env.mjs and must never be committed. The .example file is
+# the committed template and carries no values.
+.env
+.env.local
+.env.*.local
+
 # Impeccable working files: review captures are evidence, not assets
 .impeccable/review/

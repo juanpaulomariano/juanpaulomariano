@@ -3,36 +3,40 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import CallTransport from "@/components/call-transport";
 import GalleryLightbox from "@/components/gallery-lightbox";
+import LivingPipeline from "@/components/living-pipeline";
 import TranscriptRail from "@/components/transcript-rail";
-import { CAPABILITIES, CHANNELS, SECTION, SYSTEM_MAP } from "@/lib/conversation";
+import {
+  CALL_STAGES,
+  CAPABILITIES,
+  CHANNELS,
+  PROOF_PREVIEWS,
+  SECTION,
+} from "@/lib/conversation";
 import { EASE, TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Conversation AI — reconstructed around progressive disclosure.
+   Conversation AI — compressed to one laptop viewport.
 
-   THREE BLOCKS, ONE GRID. The DOM order is the mobile and screen-reader
-   order: intro (what is this) → demo (experience it) → proof (capabilities,
-   evidence, close). At xl the demo takes the left track spanning both rows
-   and the intro/proof stack on the right, which keeps this section's
-   artifact-LEFT/text-RIGHT mirror of white-label intact.
+   The previous build explained the system in prose: a five-row system map,
+   an evidence citation with captions, an explainer per group. Reading it
+   required scrolling inside the section, which kills the overview (the page's
+   rule is section-per-screen). This build moves every explanation into an
+   artifact the reader already knows how to use:
 
-   THE CALL SURFACE is a framed product panel, the same device as the
-   white-label browser frame: a hairline frame that depicts a product, not a
-   decorative card. Header names the practice like a caller ID; the transport
-   and transcript live inside. While the recording is pending the frame still
-   reads as a designed state, not a broken one.
+   · the SYSTEM MAP became the LivingPipeline track from Selected Work — five
+     labels and a travelling dot, armed by an IntersectionObserver so the
+     one-shot run happens in view, not off-screen;
+   · the TRANSCRIPT lives in a fixed-height pane that scrolls internally and
+     follows the current line during playback, so a long call cannot grow the
+     section;
+   · the EVIDENCE block became Selected Work's proof-wall grammar — one
+     sentence, four small canvases, one "see all" control. The captions still
+     exist; they live in the lightbox where the reader asked for them.
 
-   THE SYSTEM MAP is the "behind the scenes" layer: five numbered steps in
-   the transcript rail's own row grammar (hairline rows, gutter, content).
-   Step 03 links straight into the gallery at the named workflow canvases —
-   wayfinding for the agency reader without a single icon.
-
-   CAPABILITIES ARE BUTTONS. Clicking one opens the gallery at the canvas
-   that implements it. The interaction teaches: claims become receipts.
-
-   Still no waveform, still white, still one bold element (the transcript
-   inking in sync with a real voice once the recording lands). See the
-   design-law notes in lib/tokens.ts.
+   DOM order is mobile/screen-reader order: intro → demo → proof. At xl the
+   demo owns the left track across both rows and the text stacks on the
+   right, keeping this section's artifact-LEFT/text-RIGHT mirror of
+   white-label.
 ──────────────────────────────────────────────────────────────────────────── */
 
 export default function ConversationAi() {
@@ -41,6 +45,11 @@ export default function ConversationAi() {
   const [reduced, setReduced] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [galleryStart, setGalleryStart] = useState(0);
+  /* The pipeline holds at stage one until the track is actually visible —
+     a one-shot travel spent off-screen is motion nobody saw. */
+  const [pipelineArmed, setPipelineArmed] = useState(false);
+  const pipelineRef = useRef<HTMLDivElement | null>(null);
+  const paneRef = useRef<HTMLDivElement | null>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const active = CHANNELS.find((c) => c.key === activeKey) ?? CHANNELS[0];
@@ -52,6 +61,24 @@ export default function ConversationAi() {
     const onChange = () => setReduced(mq.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  /* Arm the pipeline once it scrolls into view. Fires once, then disconnects:
+     replay after that belongs to the track's own Replay control. */
+  useEffect(() => {
+    const el = pipelineRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setPipelineArmed(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
   }, []);
 
   /* The text channel advances on a timer, the same shape as the living
@@ -85,18 +112,39 @@ export default function ConversationAi() {
     };
   }, [active, reduced]);
 
+  /* Follow the current line inside the pane. Manual scrollTop math instead of
+     scrollIntoView: scrollIntoView walks every scrollable ancestor and would
+     yank the PAGE toward the pane during playback, which is exactly the kind
+     of scroll theft this pane exists to prevent. */
+  useEffect(() => {
+    const pane = paneRef.current;
+    if (!pane || cursor < 0) return;
+    const row = pane.querySelector<HTMLElement>("[data-current]");
+    if (!row) return;
+    const pr = pane.getBoundingClientRect();
+    const rr = row.getBoundingClientRect();
+    if (rr.top < pr.top || rr.bottom > pr.bottom) {
+      pane.scrollTo({
+        top: pane.scrollTop + (rr.top - pr.top) - pr.height / 2 + rr.height / 2,
+        behavior: reduced ? "auto" : "smooth",
+      });
+    }
+  }, [cursor, reduced]);
+
   /* Stable identity so the transport's rAF effect does not tear down and
      restart on every parent render. */
   const handleCursor = useCallback((i: number) => setCursor(i), []);
 
-  /* The citation shows the first captured shot; the lightbox carries every
-     captured shot. While nothing is captured, the whole block unmounts. */
+  /* The lightbox carries every captured shot; the page shows only the proof
+     wall's four previews. While nothing is captured, both unmount. */
   const shots = active.evidence.filter((e) => e.src);
-  const primary = shots[0];
   const hasEvidence = shots.length > 0;
+  const previews = PROOF_PREVIEWS.map((name) =>
+    shots.find((s) => s.label.includes(name)),
+  ).filter((s): s is NonNullable<typeof s> => Boolean(s));
 
   /* Open the gallery at a named workflow's canvas (or at the start). The
-     capabilities rows and the system map both route through this. */
+     capabilities rows and the proof wall both route through this. */
   const openGallery = (target?: string) => {
     let index = 0;
     if (target) {
@@ -131,11 +179,8 @@ export default function ConversationAi() {
           </div>
         </div>
 
-        {/* DOM: intro → demo → proof (the mobile priority order).
-            xl: demo owns the left track across both rows; intro and proof
-            stack on the right. */}
-        <div className="mt-10 xl:grid xl:grid-cols-[52fr_48fr] xl:gap-x-12 2xl:grid-cols-[56fr_44fr] 2xl:gap-x-14">
-          {/* ── LEVEL 1: what this is ── */}
+        <div className="mt-8 xl:grid xl:grid-cols-[52fr_48fr] xl:gap-x-12 2xl:grid-cols-[56fr_44fr] 2xl:gap-x-14">
+          {/* ── Intro: what this is ── */}
           <div className="min-w-0 xl:col-start-2 xl:row-start-1">
             <h2
               style={{
@@ -152,7 +197,7 @@ export default function ConversationAi() {
             </h2>
 
             <p
-              className="mt-5 max-w-[46ch]"
+              className="mt-4 max-w-[46ch]"
               style={{
                 color: TOKENS.muted,
                 fontSize: TYPE.body,
@@ -165,7 +210,7 @@ export default function ConversationAi() {
             {/* One operational fact where a lesser page would put a stat
                 block. A demonstration practice has no honest ROI numbers. */}
             <p
-              className="mt-4 max-w-[46ch]"
+              className="mt-3 max-w-[46ch]"
               style={{
                 color: TOKENS.body,
                 fontSize: TYPE.small,
@@ -175,7 +220,7 @@ export default function ConversationAi() {
               {SECTION.factLine}
             </p>
 
-            <div className="mt-7 flex items-center gap-3">
+            <div className="mt-5 flex items-center gap-3">
               <img
                 src="/logos/vapi.svg"
                 alt="Vapi"
@@ -197,8 +242,8 @@ export default function ConversationAi() {
             </div>
           </div>
 
-          {/* ── LEVEL 2: the demonstration ── */}
-          <div className="mt-10 min-w-0 xl:col-start-1 xl:row-span-2 xl:row-start-1 xl:mt-0">
+          {/* ── Demo: the call surface, then the call's journey ── */}
+          <div className="mt-8 min-w-0 xl:col-start-1 xl:row-span-2 xl:row-start-1 xl:mt-0">
             {multiple && (
               <div
                 role="group"
@@ -295,180 +340,113 @@ export default function ConversationAi() {
                   </div>
                 )}
 
-                <TranscriptRail
-                  lines={active.lines}
-                  cursor={cursor}
-                  showTimestamps={active.kind === "voice"}
-                  speakerLabels={active.speakerLabels}
-                  reduced={reduced}
-                  railLabel={active.railLabel}
-                />
+                {/* Fixed-height pane: a long call scrolls IN HERE and the
+                    section keeps its height. During playback the pane follows
+                    the current line (effect above); at rest the whole
+                    transcript is still reachable by the reader's own scroll. */}
+                <div
+                  ref={paneRef}
+                  className="max-h-[300px] overflow-y-auto overscroll-contain"
+                >
+                  <TranscriptRail
+                    lines={active.lines}
+                    cursor={cursor}
+                    showTimestamps={active.kind === "voice"}
+                    speakerLabels={active.speakerLabels}
+                    reduced={reduced}
+                    railLabel={active.railLabel}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* ── LEVEL 3: the system, in call order ──
-                The transcript rail's row grammar reused: hairline rows, a
-                gutter, content. The map reads as a transcript of the system
-                itself. */}
-            <div className="mt-9">
-              <p
-                className="uppercase tracking-[0.16em]"
-                style={{
-                  color: TOKENS.muted,
-                  fontSize: TYPE.micro,
-                  ...TYPE_STYLE.micro,
-                }}
-              >
-                What happens during a call
-              </p>
-              <ol className="mt-2">
-                {SYSTEM_MAP.map((s) => (
-                  <li
-                    key={s.step}
-                    className="flex gap-4 border-t py-3.5 first:border-t-0 sm:gap-6"
-                    style={{ borderColor: TOKENS.hair }}
-                  >
-                    <span
-                      className="w-[3.25rem] shrink-0 tabular-nums"
-                      style={{
-                        color: TOKENS.muted,
-                        fontSize: TYPE.micro,
-                        ...TYPE_STYLE.micro,
-                      }}
-                    >
-                      {s.step}
-                    </span>
-                    <div className="min-w-0">
-                      <p
-                        style={{
-                          color: TOKENS.ink,
-                          fontSize: TYPE.small,
-                          fontWeight: 500,
-                          lineHeight: TYPE_STYLE.small.lineHeight,
-                        }}
-                      >
-                        {s.label}
-                      </p>
-                      <p
-                        className="mt-0.5 max-w-[52ch]"
-                        style={{
-                          color: TOKENS.muted,
-                          fontSize: TYPE.small,
-                          ...TYPE_STYLE.small,
-                        }}
-                      >
-                        {s.detail}
-                      </p>
-                      {s.links && hasEvidence && (
-                        <p
-                          className="mt-1.5"
-                          style={{
-                            fontSize: TYPE.micro,
-                            ...TYPE_STYLE.micro,
-                          }}
-                        >
-                          {s.links.map((name) => (
-                            <button
-                              key={name}
-                              type="button"
-                              onClick={() => openGallery(name)}
-                              className="mr-3 border-b pb-px transition-colors duration-200 hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                              style={{
-                                color: TOKENS.body,
-                                borderColor: TOKENS.line,
-                              }}
-                            >
-                              {name}
-                            </button>
-                          ))}
-                        </p>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ol>
+            {/* The call's journey: the same living track Selected Work uses
+                for lead journeys, on the light surface. Five labels and one
+                travelling dot replace what used to be five rows of prose. */}
+            <div ref={pipelineRef} className="mt-8">
+              <LivingPipeline
+                stages={CALL_STAGES}
+                runKey={active.key}
+                surface="light"
+                title="What happens during a call"
+                armed={pipelineArmed}
+              />
             </div>
 
-            {/* Evidence citation rides the demo track: it is an artifact, and
-                here it balances the columns instead of stacking a second
-                gallery entry point beside the capabilities. */}
-            {hasEvidence && primary && (
-              <div className="mt-9 border-t pt-6" style={{ borderColor: TOKENS.hair }}>
+            {/* Proof wall, in Selected Work's grammar and position: under the
+                pipeline in the demo column — one sentence, four small
+                canvases, one ruled "see all" control. The captions the page
+                used to carry live in the lightbox now. */}
+            {hasEvidence && (
+              <div className="mt-8 border-t pt-5" style={{ borderColor: TOKENS.hair }}>
+                <p
+                  style={{
+                    color: TOKENS.body,
+                    fontSize: TYPE.ui,
+                    ...TYPE_STYLE.ui,
+                  }}
+                >
+                  {SECTION.proofSentence}
+                </p>
+
+                <div className="mt-3.5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {previews.map((s) => (
+                    <button
+                      key={s.label}
+                      type="button"
+                      onClick={() => openGallery(s.label)}
+                      aria-label={`Open ${s.label} in the gallery`}
+                      className="group/thumb text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    >
+                      <span
+                        className="block aspect-[16/10] overflow-hidden border"
+                        style={{
+                          borderColor: TOKENS.line,
+                          background: TOKENS.white,
+                        }}
+                      >
+                        <img
+                          src={s.src}
+                          alt=""
+                          loading="lazy"
+                          decoding="async"
+                          className="h-full w-full object-cover object-left opacity-80 transition-opacity duration-200 group-hover/thumb:opacity-100"
+                        />
+                      </span>
+                      <span
+                        className="mt-1.5 block truncate text-[11px] transition-colors duration-200 group-hover/thumb:text-[#111111]"
+                        style={{ color: TOKENS.muted }}
+                      >
+                        {s.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
                 <button
                   type="button"
                   onClick={() => openGallery()}
-                  aria-label={
-                    shots.length > 1
-                      ? `Open ${primary.label} and ${shots.length - 1} more screenshots`
-                      : `Open ${primary.label} full size`
-                  }
-                  className="group block w-full max-w-[24rem] text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  className="group/all mt-4 inline-flex items-center gap-3 border-b pb-1.5 text-[13px] transition-colors duration-300 hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+                  style={{ borderColor: TOKENS.ink, color: TOKENS.ink }}
                 >
+                  See all {shots.length} screenshots
                   <span
-                    className="block overflow-hidden border"
-                    style={{
-                      borderColor: TOKENS.line,
-                      aspectRatio: `${primary.width} / ${primary.height}`,
-                    }}
+                    aria-hidden="true"
+                    className="transition-transform duration-300 group-hover/all:translate-x-1"
                   >
-                    <img
-                      src={primary.src}
-                      alt=""
-                      className="h-full w-full object-cover object-top transition-opacity duration-200 group-hover:opacity-90"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </span>
-                  <span
-                    className="mt-2 block"
-                    style={{
-                      color: TOKENS.ink,
-                      fontSize: TYPE.small,
-                      ...TYPE_STYLE.small,
-                    }}
-                  >
-                    {primary.label}
-                    {shots.length > 1 && (
-                      <span style={{ color: TOKENS.muted }}>
-                        {" "}
-                        · {shots.length} screenshots
-                      </span>
-                    )}
+                    →
                   </span>
                 </button>
-
-                <p
-                  className="mt-1 max-w-[42ch]"
-                  style={{
-                    color: TOKENS.muted,
-                    fontSize: TYPE.small,
-                    ...TYPE_STYLE.small,
-                  }}
-                >
-                  {primary.caption}
-                </p>
-                <p
-                  className="mt-1 max-w-[42ch]"
-                  style={{
-                    color: TOKENS.muted,
-                    fontSize: TYPE.micro,
-                    ...TYPE_STYLE.micro,
-                  }}
-                >
-                  {primary.redactionNote}
-                </p>
               </div>
             )}
           </div>
 
-          {/* ── LEVELS 4-5: receipts, honesty, close ── */}
-          <div className="mt-10 min-w-0 xl:col-start-2 xl:row-start-2 xl:mt-9">
+          {/* ── Proof: receipts, evidence, honesty, close ── */}
+          <div className="mt-8 min-w-0 xl:col-start-2 xl:row-start-2 xl:mt-7">
             {/* Capabilities open the gallery at the canvas that implements
                 them: the row is the claim, the click is the receipt. ONE
-                explainer line carries the affordance for the whole group —
-                five identical arrows at rest were noise, so the arrow now
-                appears only on the row under the pointer. */}
-            <div className="border-t pt-6" style={{ borderColor: TOKENS.line }}>
+                explainer line carries the affordance for the whole group. */}
+            <div className="border-t pt-5" style={{ borderColor: TOKENS.line }}>
               {hasEvidence && (
                 <p
                   className="uppercase tracking-[0.16em]"
@@ -481,7 +459,9 @@ export default function ConversationAi() {
                   Each row opens the workflow that runs it
                 </p>
               )}
-              <div className="mt-4 grid gap-y-4 sm:grid-cols-2 sm:gap-x-6 xl:grid-cols-1">
+              {/* Two columns at every width with room for them: five rows in
+                  one column was a third of the section's height. */}
+              <div className="mt-4 grid gap-y-3.5 sm:grid-cols-2 sm:gap-x-6">
                 {CAPABILITIES.map((c) => (
                   <button
                     key={c.label}
@@ -530,7 +510,7 @@ export default function ConversationAi() {
 
             {SECTION.limitation && (
               <p
-                className="mt-8 max-w-[58ch] border-t pt-6"
+                className="mt-6 max-w-[58ch] border-t pt-5"
                 style={{
                   borderColor: TOKENS.hair,
                   color: TOKENS.muted,
@@ -543,7 +523,7 @@ export default function ConversationAi() {
             )}
 
             <p
-              className="mt-6"
+              className="mt-5"
               style={{
                 color: TOKENS.muted,
                 fontSize: TYPE.small,
@@ -573,7 +553,7 @@ export default function ConversationAi() {
             label: e.label,
             caption: e.caption,
           }))}
-          title={primary?.label ?? active.railLabel}
+          title={active.railLabel}
           startIndex={galleryStart}
         />
       )}

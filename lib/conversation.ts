@@ -132,8 +132,7 @@ const VOICE: VoiceChannel = {
   speakerLabels: { bot: "Agent", lead: "Caller" },
   audioSrc: "",
   durationSec: 0,
-  callContext:
-    "A new patient calls Bright Hollow Family Dental — a demonstration practice — and the agent answers on the first ring",
+  callContext: "A new patient calls. The agent answers on the first ring.",
   lines: [],
   /* PENDING: all srcs empty until the owner captures them. Captions are
      written when the images land — a caption describing an image that does
@@ -362,48 +361,31 @@ export const CAPABILITIES: {
   },
 ] as const;
 
-/* ── The system map ─────────────────────────────────────────────────────────
-   What happens during one call, in order. This is the "behind the scenes"
-   layer for a visitor who wants the machinery without opening a single
-   screenshot; step 03 links into the gallery for the ones who want more.
-   Every line is grounded in the deployed system. Nothing here is aspiration. */
-export const SYSTEM_MAP: {
-  step: string;
-  label: string;
-  detail: string;
-  /** Workflow names rendered as gallery links under the detail line. */
-  links?: string[];
-}[] = [
-  {
-    step: "01",
-    label: "A call comes in",
-    detail: "Answered on the first ring, any hour of the day.",
-  },
-  {
-    step: "02",
-    label: "The agent holds the conversation",
-    detail:
-      "It greets returning patients by name, asks what a receptionist would ask, and pauses about a second and a half when it checks something real.",
-  },
-  {
-    step: "03",
-    label: "Eleven workflows do the work",
-    detail:
-      "Each thing the agent needs to know or do during the call is one webhook away.",
-  },
-  {
-    step: "04",
-    label: "GoHighLevel gets the record",
-    detail:
-      "Contact, appointment, tags and pipeline stage, written while the caller is still on the line.",
-  },
-  {
-    step: "05",
-    label: "A person steps in when it matters",
-    detail:
-      "Billing questions and emergencies transfer out, with the reason written to the record first.",
-  },
-] as const;
+/* ── The call's journey ─────────────────────────────────────────────────────
+   Five stages, rendered through the SAME LivingPipeline track that Selected
+   Work uses for lead journeys — one dot travels through once and rests. The
+   prose explanations this replaced were the section's biggest wall of text;
+   the labels carry the story and the transcript carries the detail. */
+export const CALL_STAGES: string[] = [
+  "Call comes in",
+  "Agent answers",
+  "Workflows fire",
+  "CRM updated",
+  "Handoff if needed",
+];
+
+/* ── Proof wall previews ────────────────────────────────────────────────────
+   The four canvases shown small on the page, same device as Selected Work's
+   proof wall: a sentence, a few thumbnails, one "see all" control. Chosen for
+   coverage, not order — the booking core, contact handling, triage, and
+   insurance — so the row samples the system instead of repeating one theme.
+   Matched against Evidence.label with `includes`, like galleryTarget. */
+export const PROOF_PREVIEWS: string[] = [
+  "book_appointment",
+  "lookup_contact",
+  "triage_symptom",
+  "capture_insurance",
+];
 
 /** Section copy, kept here so nothing in the component is a bare string. */
 export const SECTION = {
@@ -411,7 +393,7 @@ export const SECTION = {
   titleTop: "The bot talks.",
   titleBottom: "You get a booked call.",
   lead:
-    "Leads arrive as a DM with no email and no phone number, or as a call nobody is free to answer. Both get a real conversation that collects the details and books the consultation, then hands a qualified contact to the workflows.",
+    "A call nobody is free to answer still gets a real conversation: the agent collects the details, books the visit, and writes the record.",
   /** One operational fact, not a stat block: a demonstration practice has no
       honest ROI numbers, and this page does not stage metrics. */
   factLine:
@@ -421,9 +403,10 @@ export const SECTION = {
   /** The honest limitation, in the voice of the white-label section's. A
       credibility instrument, not a disclaimer. */
   limitation:
-    "Bright Hollow is a demonstration practice I built to spec, not a client. The agent pauses about a second and a half before it answers — that's the current cost of it actually checking the calendar before it speaks.",
+    "Bright Hollow is a demonstration practice I built to spec, not a client. The agent's short pause before answering is it checking a real calendar.",
   /** The bridge to the page's one conversion control. A line, not a button:
       the page has exactly one filled button and it belongs to the final CTA. */
+  proofSentence: "All 11 workflows, documented on the canvas.",
   bridgeText: "Want this answering your phones?",
   bridgeLinkLabel: "Send me a client build",
 } as const;

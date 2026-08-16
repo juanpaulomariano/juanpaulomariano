@@ -22,13 +22,48 @@ import { EASE, TOKENS } from "@/lib/tokens";
 const SEGMENT_MS = 1000;
 const START_DELAY_MS = 260;
 
+/* The track renders on two grounds: the dark Selected Work panel (its home)
+   and the white Conversation AI section. Same geometry, same run, different
+   token set — a third colour scheme would be a redesign, so the map stays a
+   strict light/dark swap of the existing tokens. */
+const SURFACES = {
+  dark: {
+    line: TOKENS.darkLine,
+    ink: TOKENS.darkInk,
+    muted: TOKENS.darkMuted,
+    bg: TOKENS.darkBg,
+  },
+  light: {
+    line: TOKENS.line,
+    ink: TOKENS.ink,
+    muted: TOKENS.muted,
+    bg: TOKENS.white,
+  },
+} as const;
+
 type Props = {
   stages: string[];
   /** Changing this key restarts the run (used when the project switches). */
   runKey: string;
+  /** Which ground the track sits on. Defaults preserve Selected Work. */
+  surface?: keyof typeof SURFACES;
+  /** The small label above the track. */
+  title?: string;
+  /** While false the run holds at the first stage — used to wait for the
+      track to scroll into view so the one-shot travel is not spent
+      off-screen. Flipping to true starts the run. Reduced motion ignores
+      this and renders settled, as always. */
+  armed?: boolean;
 };
 
-export default function LivingPipeline({ stages, runKey }: Props) {
+export default function LivingPipeline({
+  stages,
+  runKey,
+  surface = "dark",
+  title = "Lead journey",
+  armed = true,
+}: Props) {
+  const T = SURFACES[surface];
   const last = stages.length - 1;
   const [step, setStep] = useState(0);
   const [reduced, setReduced] = useState(false);
@@ -55,6 +90,8 @@ export default function LivingPipeline({ stages, runKey }: Props) {
     }
 
     setStep(0);
+    if (!armed) return; // hold at the start until the caller arms the run
+
     for (let s = 1; s <= last; s++) {
       timers.current.push(
         setTimeout(() => setStep(s), START_DELAY_MS + s * SEGMENT_MS),
@@ -64,7 +101,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
       timers.current.forEach(clearTimeout);
       timers.current = [];
     };
-  }, [runKey, runId, reduced, last]);
+  }, [runKey, runId, reduced, last, armed]);
 
   const done = step >= last;
   /* Track spans between the first and last node centers, so the fill starts
@@ -75,13 +112,13 @@ export default function LivingPipeline({ stages, runKey }: Props) {
     <div>
       <div
         className="flex items-baseline justify-between border-t pt-4"
-        style={{ borderColor: TOKENS.darkLine }}
+        style={{ borderColor: T.line }}
       >
         {/* Sentence case, not a tracked uppercase eyebrow: this section had
             five small caps labels competing at the same pitch, and this one
             names a diagram rather than titling a section. */}
-        <p className="text-[13px]" style={{ color: TOKENS.darkMuted }}>
-          Lead journey
+        <p className="text-[13px]" style={{ color: T.muted }}>
+          {title}
         </p>
         {!reduced && (
           <button
@@ -89,7 +126,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
             onClick={() => setRunId((v) => v + 1)}
             disabled={!done}
             className="text-[12.5px] transition-opacity duration-200 disabled:opacity-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-            style={{ color: TOKENS.darkMuted }}
+            style={{ color: T.muted }}
           >
             Replay
           </button>
@@ -107,7 +144,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
           style={{
             left: `${50 / stages.length}%`,
             right: `${50 / stages.length}%`,
-            background: TOKENS.darkLine,
+            background: T.line,
           }}
         >
           {/* Traversed rail is ink, not red: red is reserved for the lead's
@@ -116,7 +153,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
           <div
             className="h-full origin-left"
             style={{
-              background: TOKENS.darkInk,
+              background: T.ink,
               transform: `scaleX(${pct / 100})`,
               transition: reduced
                 ? "none"
@@ -154,13 +191,13 @@ export default function LivingPipeline({ stages, runKey }: Props) {
                     background: current
                       ? TOKENS.accent
                       : lit
-                        ? TOKENS.darkInk
-                        : TOKENS.darkBg,
+                        ? T.ink
+                        : T.bg,
                     borderColor: current
                       ? TOKENS.accent
                       : lit
-                        ? TOKENS.darkInk
-                        : TOKENS.darkLine,
+                        ? T.ink
+                        : T.line,
                     transition: reduced
                       ? "none"
                       : `background-color 320ms ${EASE.enter}, border-color 320ms ${EASE.enter}`,
@@ -173,7 +210,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
                 <span
                   className="px-1 text-[12px] leading-[1.35] tracking-[0.01em]"
                   style={{
-                    color: lit ? TOKENS.darkInk : TOKENS.darkMuted,
+                    color: lit ? T.ink : T.muted,
                     transition: reduced ? "none" : "color 320ms ease",
                   }}
                 >
@@ -198,7 +235,7 @@ export default function LivingPipeline({ stages, runKey }: Props) {
                   className="absolute left-[5px] top-[13px] w-px"
                   style={{
                     bottom: 0,
-                    background: i < step ? TOKENS.darkInk : TOKENS.darkLine,
+                    background: i < step ? T.ink : T.line,
                     transition: reduced ? "none" : "background-color 320ms ease",
                   }}
                 />
@@ -209,19 +246,19 @@ export default function LivingPipeline({ stages, runKey }: Props) {
                   background: current
                     ? TOKENS.accent
                     : lit
-                      ? TOKENS.darkInk
-                      : TOKENS.darkBg,
+                      ? T.ink
+                      : T.bg,
                   borderColor: current
                     ? TOKENS.accent
                     : lit
-                      ? TOKENS.darkInk
-                      : TOKENS.darkLine,
+                      ? T.ink
+                      : T.line,
                   transition: reduced ? "none" : `background-color 320ms ${EASE.enter}`,
                 }}
               />
               <span
                 className="text-[10px] uppercase leading-[15px] tracking-[0.13em]"
-                style={{ color: lit ? TOKENS.darkInk : TOKENS.darkMuted }}
+                style={{ color: lit ? T.ink : T.muted }}
               >
                 {label}
               </span>

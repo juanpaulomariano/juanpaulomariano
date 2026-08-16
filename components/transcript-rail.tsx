@@ -88,6 +88,9 @@ export default function TranscriptRail({
           return (
             <li
               key={`${line.speaker}-${i}`}
+              /* Hook for the caller's scroll pane: the pane follows the row
+                 marked current so the highlighted line stays in view. */
+              data-current={current || undefined}
               className="flex gap-4 border-t py-3 first:border-t-0 sm:gap-6"
               style={{ borderColor: TOKENS.hair }}
             >

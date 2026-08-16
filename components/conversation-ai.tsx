@@ -41,9 +41,10 @@ export default function ConversationAi() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [galleryStart, setGalleryStart] = useState(0);
 
-  /* This section stages the voice channel only; a future DM channel gets its
-     own treatment rather than a switch bolted onto a phone. */
-  const voice = CHANNELS.find((c): c is VoiceChannel => c.kind === "voice");
+  /* This section stages the voice channel. A text surface is section 04's
+     live GHL widget, which gets its own treatment rather than a switch
+     bolted onto a phone. */
+  const voice: VoiceChannel | undefined = CHANNELS[0];
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");

@@ -389,8 +389,14 @@ export default function Hero() {
             <a href="#work" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
               Work
             </a>
+            {/* Voice and chat are named by their surface, not both as "AI":
+                once the page carries two conversation sections, one generic
+                label sends the visitor to the wrong one. */}
             <a href="#ai" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
-              AI agent
+              Voice AI
+            </a>
+            <a href="#chat" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
+              Chat AI
             </a>
             <a href="#whitelabel" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
               White-label

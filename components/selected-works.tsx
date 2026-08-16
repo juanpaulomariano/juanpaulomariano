@@ -85,7 +85,7 @@ export default function SelectedWorks() {
             eyebrow and the pipeline label, so several things whispered at the
             same pitch and nothing led. The headline says what the section is.
 
-            The numeral stays because the page numbers its sections 01-05 and a
+            The numeral stays because the page numbers its sections 01-06 and a
             single figure against a rule cannot compete with a headline. */}
         <div className="border-t pt-5" style={{ borderColor: TOKENS.darkLine }}>
           <div className="flex justify-end">

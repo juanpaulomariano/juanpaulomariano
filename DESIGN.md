@@ -193,7 +193,7 @@ Roles, not sizes — defined in `TYPE` / `TYPE_STYLE` in `lib/tokens.ts`. Two el
 ### Named Rules
 **The Role Rule.** If you need a size that is not in `TYPE`, you are either adding a genuinely new role (add it to `lib/tokens.ts` and name it) or you are re-drifting (use the closest existing role). Do not inline a one-off px value.
 
-**The Numeral Rule.** The page numbers its sections (01–05); it does not label them. No text eyebrows, no small-caps kickers above titles — a right-aligned tabular numeral (micro, 0.2em tracking, muted) over the section's opening rule is the entire header apparatus. The headline itself says what the section is.
+**The Numeral Rule.** The page numbers its sections (01–06); it does not label them. No text eyebrows, no small-caps kickers above titles — a right-aligned tabular numeral (micro, 0.2em tracking, muted) over the section's opening rule is the entire header apparatus. The headline itself says what the section is.
 
 ## Layout
 

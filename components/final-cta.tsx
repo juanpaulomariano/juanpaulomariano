@@ -29,7 +29,7 @@ export default function FinalCta() {
                 ...TYPE_STYLE.micro,
               }}
             >
-              05
+              06
             </span>
           </div>
         </div>

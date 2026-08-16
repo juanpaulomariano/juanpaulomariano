@@ -143,7 +143,7 @@ export default function Whitelabel() {
                 ...TYPE_STYLE.micro,
               }}
             >
-              04
+              05
             </span>
           </div>
         </div>

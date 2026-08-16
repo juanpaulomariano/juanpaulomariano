@@ -1,29 +1,27 @@
 /* ────────────────────────────────────────────────────────────────────────────
-   Conversation AI section content.
+   Conversation AI section content (section 03): the recorded Vapi voice call.
 
-   Two channels — a real Vapi voice call and a real Instagram DM thread —
-   rendered through the SAME transcript rail. That is the whole idea of the
-   section: it is one machine that qualifies a lead, and the channel is a
-   variable, not a second product. A visitor who reads the IronPulse
-   description in lib/works.ts has just been told the system "runs two bots
-   that hold a real conversation to collect the details". This section is where
-   that claim gets proved.
+   The section stages ONE call — a new patient phoning Bright Hollow Family
+   Dental, a demonstration practice — and lets the visitor answer it. The
+   website chat surface lives in section 04 as a live GoHighLevel widget;
+   these are deliberately different objects (a recording you replay versus a
+   bot you type to) and they do not share a component.
 
    Nothing in this file touches layout.
 
    The voice transcript is PRIMARY CONTENT, not a caption track. `at` is the
    second each line begins in the recording and the rail highlights from it,
    but if the audio is missing or fails to load the transcript still renders
-   complete and readable. That is deliberate — see components/call-transport.tsx.
+   complete and readable. That is deliberate — see components/call-stage.tsx.
 
    Line order is playback order and `at` must be ASCENDING. The sync loop finds
    the last line whose `at` has passed, so an out-of-order entry silently
    breaks the highlight without erroring.
 
-   All prose here is REAL: a verbatim transcription of a recorded call and of a
-   redacted thread. Do not rewrite, tighten, or "improve" any line. If a line
-   is awkward or has a false start, that is what was actually said, and
-   cleaning it up is the fastest way to make the section look fabricated.
+   All prose here is REAL: a verbatim transcription of the recorded call. Do
+   not rewrite, tighten, or "improve" any line. If a line is awkward or has a
+   false start, that is what was actually said, and cleaning it up is the
+   fastest way to make the section look fabricated.
 
    REDACTION CONTRACT: where a value is masked in the screenshot, the transcript
    must carry the SAME placeholder text. A reader who compares the rail against
@@ -75,8 +73,8 @@ type ChannelBase = {
   /** Name shown in the call surface header, like a caller ID. */
   surfaceTitle: string;
   /** What each speaker is called in the rail's gutter. Context-specific:
-      a receptionist call reads "Agent / Caller", a DM thread "Bot / Lead" —
-      one generic pair would be wrong in both places. */
+      a receptionist call reads "Agent / Caller", which a generic pair like
+      "Bot / User" would flatten into interface language. */
   speakerLabels: { bot: string; lead: string };
   lines: Line[];
   /** An evidence SET, not a single image. The page stays calm — only the
@@ -115,17 +113,11 @@ export type VoiceChannel = ChannelBase & {
   tickerEvents: TickerEvent[];
 };
 
-export type TextChannel = ChannelBase & {
-  kind: "text";
-  /** Milliseconds between lines during the one-shot reveal. */
-  cadenceMs: number;
-};
-
-/** Discriminated union on `kind`, matching `Project`'s union on `type` in
-    lib/works.ts. TypeScript then guarantees only the voice channel carries
-    audio and only the text channel carries a cadence, so a text channel
-    cannot accidentally grow a playhead. */
-export type Channel = VoiceChannel | TextChannel;
+/** One channel kind today. Kept as a named type (rather than using
+    VoiceChannel everywhere) because CHANNELS is still an array and a future
+    surface would join it here — but it is no longer a union pretending a
+    second kind exists. */
+export type Channel = VoiceChannel;
 
 /* ── Voice ───────────────────────────────────────────────────────────────────
    Built on Vapi. `at` values are transcribed from the recording, not
@@ -293,45 +285,16 @@ const VOICE: VoiceChannel = {
   ],
 };
 
-/* ── Text ────────────────────────────────────────────────────────────────────
-   The IronPulse DM bot: the conversation lib/works.ts describes as "two bots
-   that hold a real conversation to collect the details".
+/** An ARRAY on purpose, following lib/whitelabel.ts: the section renders
+    from it, so an added surface needs no layout change, and the channel
+    switch hides itself entirely while length === 1.
 
-   PENDING: lines and evidence are placeholders until the redacted thread is
-   supplied. */
-const TEXT: TextChannel = {
-  kind: "text",
-  key: "dm",
-  switchLabel: "Instagram DM",
-  surfaceTitle: "IronPulse Fitness",
-  railLabel: "A real DM thread, answered in under a minute",
-  speakerLabels: { bot: "Bot", lead: "Lead" },
-  cadenceMs: 900,
-  lines: [],
-  evidence: [
-    {
-      src: "",
-      width: 0,
-      height: 0,
-      label: "Instagram DM",
-      caption: "",
-      redactionNote: "Name and handle removed. The conversation is unedited.",
-    },
-  ],
-};
-
-/* Referenced here so the pending channel survives strict unused checks while
-   it waits for its content. */
-export const PENDING_CHANNELS: Channel[] = [TEXT];
-
-/** An ARRAY on purpose, following lib/whitelabel.ts: the switch renders from
-    it, so a third channel (WhatsApp, SMS) appears without touching layout
-    code, and the switch hides itself entirely while length === 1.
-
-    VOICE-ONLY until the IronPulse IG thread is exported: shipping the DM
-    channel with empty lines would put the claim "A real DM thread" over a
-    blank rail, which costs more than the second channel is worth. Move TEXT
-    from PENDING_CHANNELS into this array when its lines and evidence exist. */
+    The IronPulse Instagram DM channel that once waited here has been
+    retired: that account is no longer accessible, so the thread cannot be
+    exported, and the work stays documented in Selected Work rather than
+    promising a demo that will never arrive. The website chat surface is
+    section 04's live GoHighLevel bot, which is a different object from a
+    replayed transcript. */
 export const CHANNELS: Channel[] = [VOICE];
 
 /* ── Capabilities ────────────────────────────────────────────────────────────

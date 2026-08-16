@@ -381,19 +381,6 @@ export default function ConversationAi() {
                               {name}
                             </button>
                           ))}
-                          <button
-                            type="button"
-                            onClick={() =>
-                              openGallery("The 11 n8n workflows")
-                            }
-                            className="border-b pb-px transition-colors duration-200 hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                            style={{
-                              color: TOKENS.body,
-                              borderColor: TOKENS.line,
-                            }}
-                          >
-                            all 11 →
-                          </button>
                         </p>
                       )}
                     </div>
@@ -401,65 +388,12 @@ export default function ConversationAi() {
                 ))}
               </ol>
             </div>
-          </div>
 
-          {/* ── LEVELS 4-5: receipts, evidence, honesty, close ── */}
-          <div className="mt-10 min-w-0 xl:col-start-2 xl:row-start-2 xl:mt-9">
-            {/* Capabilities open the gallery at the canvas that implements
-                them: the row is the claim, the click is the receipt. */}
-            <div
-              className="grid gap-y-4 border-t pt-6 sm:grid-cols-2 sm:gap-x-6 xl:grid-cols-1"
-              style={{ borderColor: TOKENS.line }}
-            >
-              {CAPABILITIES.map((c) => (
-                <button
-                  key={c.label}
-                  type="button"
-                  onClick={() => openGallery(c.galleryTarget)}
-                  disabled={!hasEvidence}
-                  aria-label={`Open the ${c.galleryTarget} workflow in the gallery`}
-                  className="group/cap block text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
-                >
-                  <span
-                    className="flex items-baseline gap-2"
-                    style={{
-                      color: TOKENS.ink,
-                      fontSize: TYPE.small,
-                      fontWeight: 500,
-                      lineHeight: TYPE_STYLE.small.lineHeight,
-                    }}
-                  >
-                    <span className="transition-colors duration-200 group-hover/cap:text-[#C0392B]">
-                      {c.label}
-                    </span>
-                    {hasEvidence && (
-                      <span
-                        aria-hidden="true"
-                        className="translate-x-0 transition-transform duration-200 group-hover/cap:translate-x-1"
-                        style={{ color: TOKENS.muted, fontSize: TYPE.micro }}
-                      >
-                        →
-                      </span>
-                    )}
-                  </span>
-                  <span
-                    className="mt-0.5 block break-words"
-                    style={{
-                      color: TOKENS.muted,
-                      fontSize: TYPE.micro,
-                      ...TYPE_STYLE.micro,
-                    }}
-                  >
-                    {c.detail}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {/* Evidence citation: outcome on the page, machinery one click
-                deeper in the same lightbox. */}
+            {/* Evidence citation rides the demo track: it is an artifact, and
+                here it balances the columns instead of stacking a second
+                gallery entry point beside the capabilities. */}
             {hasEvidence && primary && (
-              <div className="mt-8">
+              <div className="mt-9 border-t pt-6" style={{ borderColor: TOKENS.hair }}>
                 <button
                   type="button"
                   onClick={() => openGallery()}
@@ -525,6 +459,74 @@ export default function ConversationAi() {
                 </p>
               </div>
             )}
+          </div>
+
+          {/* ── LEVELS 4-5: receipts, honesty, close ── */}
+          <div className="mt-10 min-w-0 xl:col-start-2 xl:row-start-2 xl:mt-9">
+            {/* Capabilities open the gallery at the canvas that implements
+                them: the row is the claim, the click is the receipt. ONE
+                explainer line carries the affordance for the whole group —
+                five identical arrows at rest were noise, so the arrow now
+                appears only on the row under the pointer. */}
+            <div className="border-t pt-6" style={{ borderColor: TOKENS.line }}>
+              {hasEvidence && (
+                <p
+                  className="uppercase tracking-[0.16em]"
+                  style={{
+                    color: TOKENS.muted,
+                    fontSize: TYPE.micro,
+                    ...TYPE_STYLE.micro,
+                  }}
+                >
+                  Each row opens the workflow that runs it
+                </p>
+              )}
+              <div className="mt-4 grid gap-y-4 sm:grid-cols-2 sm:gap-x-6 xl:grid-cols-1">
+                {CAPABILITIES.map((c) => (
+                  <button
+                    key={c.label}
+                    type="button"
+                    onClick={() => openGallery(c.galleryTarget)}
+                    disabled={!hasEvidence}
+                    aria-label={`Open the ${c.galleryTarget} workflow in the gallery`}
+                    className="group/cap block text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
+                  >
+                    <span
+                      className="flex items-baseline gap-2"
+                      style={{
+                        color: TOKENS.ink,
+                        fontSize: TYPE.small,
+                        fontWeight: 500,
+                        lineHeight: TYPE_STYLE.small.lineHeight,
+                      }}
+                    >
+                      <span className="transition-colors duration-200 group-hover/cap:text-[#C0392B]">
+                        {c.label}
+                      </span>
+                      {hasEvidence && (
+                        <span
+                          aria-hidden="true"
+                          className="opacity-0 transition-[opacity,transform] duration-200 group-hover/cap:translate-x-1 group-hover/cap:opacity-100 group-focus-visible/cap:opacity-100"
+                          style={{ color: TOKENS.accent, fontSize: TYPE.micro }}
+                        >
+                          →
+                        </span>
+                      )}
+                    </span>
+                    <span
+                      className="mt-0.5 block break-words"
+                      style={{
+                        color: TOKENS.muted,
+                        fontSize: TYPE.micro,
+                        ...TYPE_STYLE.micro,
+                      }}
+                    >
+                      {c.detail}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {SECTION.limitation && (
               <p

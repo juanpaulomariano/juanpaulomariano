@@ -390,7 +390,6 @@ export const SYSTEM_MAP: {
     label: "Eleven workflows do the work",
     detail:
       "Each thing the agent needs to know or do during the call is one webhook away.",
-    links: ["lookup_contact", "check_availability", "book_appointment"],
   },
   {
     step: "04",
@@ -418,8 +417,7 @@ export const SECTION = {
   factLine:
     "Answers on the first ring, around the clock, at about $0.11 a minute.",
   /** Named under the Vapi wordmark. */
-  stackNote:
-    "Voice on Vapi. Eleven n8n workflows behind it. Every record lands in GoHighLevel.",
+  stackNote: "Voice on Vapi. Every record lands in GoHighLevel.",
   /** The honest limitation, in the voice of the white-label section's. A
       credibility instrument, not a disclaimer. */
   limitation:

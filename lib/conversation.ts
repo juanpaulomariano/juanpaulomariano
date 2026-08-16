@@ -153,11 +153,12 @@ const VOICE: VoiceChannel = {
       redactionNote: "Caller number removed.",
     },
     {
-      src: "",
-      width: 0,
-      height: 0,
+      src: "/conversation/n8n-workflows-list.webp",
+      width: 1456,
+      height: 1069,
       label: "The 11 n8n workflows behind the agent",
-      caption: "",
+      caption:
+        "Every workflow the agent can call, published and versioned. This folder is the whole toolbox; nothing else sits behind the phone line.",
       redactionNote: "Shown as deployed. Nothing staged.",
     },
     {
@@ -170,30 +171,108 @@ const VOICE: VoiceChannel = {
         "Account details cropped. The prompt shown is the prompt that runs.",
     },
     /* ── The 11 workflow canvases, in the order the life of a call meets
-       them — not alphabetical. Captured AFTER the sticky-note documentation
-       lands on each canvas, so every screenshot reads as an engineering
-       document rather than a bare node graph. Captions written per canvas
-       when the images exist. */
-    ...[
-      "lookup_contact",
-      "upsert_contact",
-      "resolve_appointment_type",
-      "triage_symptom",
-      "check_availability",
-      "book_appointment",
-      "reschedule_appointment",
-      "cancel_appointment",
-      "capture_insurance",
-      "update_opportunity",
-      "transfer_log",
-    ].map((name) => ({
-      src: "",
-      width: 0,
-      height: 0,
-      label: `BHFD — ${name}`,
-      caption: "",
-      redactionNote: "Credentials and webhook URLs are not visible at canvas zoom.",
-    })),
+       them — not alphabetical. Each canvas carries its own documentation
+       note, written in n8n; the crop is the canvas content only, lossless,
+       verified pixel-identical to the source capture. */
+    {
+      src: "/conversation/n8n-lookup_contact.webp",
+      width: 1824,
+      height: 648,
+      label: "BHFD — lookup_contact",
+      caption:
+        "Runs first on every call. The caller's number gets looked up in GoHighLevel, and a returning patient is greeted by name instead of being asked questions the practice already answered.",
+      redactionNote: "Cropped to the canvas. Nothing else changed.",
+    },
+    {
+      src: "/conversation/n8n-upsert_contact.webp",
+      width: 1835,
+      height: 570,
+      label: "BHFD — upsert_contact",
+      caption:
+        "One tool covers create and update, so the agent can't pick the wrong one. It also refuses incomplete phone numbers rather than saving a record nobody can call back.",
+      redactionNote: "Cropped to the canvas. Nothing else changed.",
+    },
+    {
+      src: "/conversation/n8n-resolve_appointment_type.webp",
+      width: 952,
+      height: 679,
+      label: "BHFD — resolve_appointment_type",
+      caption:
+        "Three nodes and no CRM call. It maps what the caller said to one of 7 visit types and the minutes each needs; anything that sounds like pain gets sent to triage before booking.",
+      redactionNote: "Cropped to the canvas. Nothing else changed.",
+    },
+    {
+      src: "/conversation/n8n-triage_symptom.webp",
+      width: 2131,
+      height: 665,
+      label: "BHFD — triage_symptom",
+      caption:
+        "Plain code decides how soon a dental problem needs to be seen, from ER down to routine, and writes the urgency onto the record so staff see it even if the caller hangs up. Same symptoms, same answer, every time.",
+      redactionNote: "Cropped to the canvas. Nothing else changed.",
+    },
+    {
+      src: "/conversation/n8n-check_availability.webp",
+      width: 1761,
+      height: 638,
+      label: "BHFD — check_availability",
+      caption:
+        "Asks the calendar for real openings in the next 10 days and returns up to 3, spread across different days, already worded the way a receptionist would say them out loud.",
+      redactionNote: "Cropped to the canvas. Nothing else changed.",
+    },
+    {
+      src: "/conversation/n8n-book_appointment.webp",
+      width: 2128,
+      height: 611,
+      label: "BHFD — book_appointment",
+      caption:
+        "The core loop. It verifies the patient and the slot, creates the appointment in GoHighLevel, then confirms to the caller; tags and pipeline stage sync right after. Nothing is confirmed unless the booking actually succeeded.",
+      redactionNote: "Cropped to the canvas. Nothing else changed.",
+    },
+    {
+      src: "/conversation/n8n-reschedule_appointment.webp",
+      width: 2131,
+      height: 758,
+      label: "BHFD — reschedule_appointment",
+      caption:
+        "Fetches the appointment before touching it. Moved means confirmed at the new time; a taken slot restarts the search; a missing appointment gets admitted, not papered over.",
+      redactionNote: "Cropped to the canvas. Nothing else changed.",
+    },
+    {
+      src: "/conversation/n8n-cancel_appointment.webp",
+      width: 2122,
+      height: 457,
+      label: "BHFD — cancel_appointment",
+      caption:
+        "Cancelled, never deleted. The practice keeps the appointment history for follow-ups and no-show tracking, and the record's stage and tags update in the same run.",
+      redactionNote: "Cropped to the canvas. Nothing else changed.",
+    },
+    {
+      src: "/conversation/n8n-capture_insurance.webp",
+      width: 2173,
+      height: 674,
+      label: "BHFD — capture_insurance",
+      caption:
+        "Saves the carrier, checks it against the accepted list, and queues a human to verify benefits. The agent never quotes coverage or prices on the phone.",
+      redactionNote: "Cropped to the canvas. Nothing else changed.",
+    },
+    {
+      src: "/conversation/n8n-update_opportunity.webp",
+      width: 1528,
+      height: 619,
+      label: "BHFD — update_opportunity",
+      caption:
+        "Moves the patient through the intake pipeline, from new inquiry to completed. The caller never waits on it; the reply goes out first and the CRM catches up in the background.",
+      redactionNote: "Cropped to the canvas. Nothing else changed.",
+    },
+    {
+      src: "/conversation/n8n-transfer_log.webp",
+      width: 1777,
+      height: 544,
+      label: "BHFD — transfer_log",
+      caption:
+        "A voice agent can't brief the front desk out loud, so this writes the handover instead: why the call is being passed, noted on the record and tagged, before the transfer happens.",
+      redactionNote: "Cropped to the canvas. Nothing else changed.",
+    },
   ],
 };
 

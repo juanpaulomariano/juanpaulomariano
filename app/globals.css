@@ -255,3 +255,45 @@ button:focus-visible {
     animation: none;
   }
 }
+
+/* ── The answer control's ring ───────────────────────────────────────────────
+   A phone that is ringing should look like it. The lift is a ring CADENCE,
+   not a generic float: up, settle, up, settle, then a pause the length of the
+   silence between rings — the rhythm your ear already knows. Three cycles
+   when the stage arrives, then it rests, because this page never loops
+   uninvited.
+
+   The handset tilts with the lift (the small rock a ringing receiver makes)
+   and the ring pulses fire on the same cadence, so the whole control reads as
+   one event rather than three effects sharing a corner. */
+
+@keyframes stage-ring-lift {
+  0%,  62%, 100% { transform: translateY(0); }
+  8%,  22%       { transform: translateY(-4px); }
+  15%            { transform: translateY(0); }
+  30%            { transform: translateY(0); }
+}
+
+@keyframes stage-handset-rock {
+  0%,  62%, 100% { transform: rotate(0deg); }
+  8%,  22%       { transform: rotate(-9deg); }
+  15%            { transform: rotate(0deg); }
+  30%            { transform: rotate(0deg); }
+}
+
+.stage-ringing {
+  /* Same 1.9s beat as .stage-ring, three cycles, then rest. */
+  animation: stage-ring-lift 1.9s cubic-bezier(0.22, 1, 0.36, 1) 3;
+}
+
+.stage-handset {
+  animation: stage-handset-rock 1.9s cubic-bezier(0.22, 1, 0.36, 1) 3;
+  transform-origin: 50% 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-ringing,
+  .stage-handset {
+    animation: none;
+  }
+}

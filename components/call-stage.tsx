@@ -60,6 +60,69 @@ function clock(sec: number) {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+/* The handset: two earpieces joined by a bar, tilted the way a receiver hangs.
+   Drawn from three divs and a rotation because this site imports no icon
+   library and ships no decorative SVG — the play triangle, the pause bars, and
+   the arrows are all CSS geometry, and the one glyph that says "answer" is
+   built the same way. It rocks with the lift while the call is ringing. */
+function Handset({ color, rocking }: { color: string; rocking: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`block ${rocking ? "stage-handset" : ""}`}
+      style={{ transform: "rotate(0deg)" }}
+    >
+      <span
+        className="relative block"
+        style={{ width: 22, height: 22, transform: "rotate(-45deg)" }}
+      >
+        {/* The neck: a thick arc bowing to the LEFT, drawn as a ring with its
+            left half kept and its right half cut away. The two pads cap its
+            ends on the right, so the silhouette is the receiver everyone
+            knows: pads facing one way, the body curving the other. A straight
+            bar between two pads reads as a dumbbell at this size. */}
+        <span
+          className="absolute"
+          style={{
+            top: 2,
+            left: 6,
+            width: 13,
+            height: 18,
+            border: `2.5px solid ${color}`,
+            borderRadius: "50%",
+            borderRightColor: "transparent",
+            borderTopColor: "transparent",
+            borderBottomColor: "transparent",
+          }}
+        />
+        {/* Earpiece and mouthpiece: the flared ends capping the arc. */}
+        <span
+          className="absolute"
+          style={{
+            top: 1,
+            left: 5,
+            width: 10,
+            height: 6.5,
+            background: color,
+            borderRadius: "3.25px",
+          }}
+        />
+        <span
+          className="absolute"
+          style={{
+            bottom: 1,
+            left: 5,
+            width: 10,
+            height: 6.5,
+            background: color,
+            borderRadius: "3.25px",
+          }}
+        />
+      </span>
+    </span>
+  );
+}
+
 type Props = {
   channel: VoiceChannel;
   reduced: boolean;
@@ -216,6 +279,10 @@ export default function CallStage({ channel, reduced, onPhase }: Props) {
   const pct = total > 0 ? Math.min(100, (elapsed / total) * 100) : 0;
   const isLive = state === "live";
   const overlayHidden = answered;
+  /* The control rings only when there is genuinely a call to answer: a phone
+     that rings and cannot be picked up is the section lying in its loudest
+     moment. So the pending state stays still, and so does reduced motion. */
+  const ringing = hasAudio && armed && !reduced && state === "incoming";
   /* Reduced motion never auto-runs anything, but the states themselves are
      all reachable; only the transitions are cut. */
   const fade = reduced ? "none" : `opacity 480ms ${EASE.enter}, transform 480ms ${EASE.enter}`;
@@ -476,9 +543,17 @@ export default function CallStage({ channel, reduced, onPhase }: Props) {
           </p>
 
           {/* The answer control. Square, like every control on this site; the
-              rings are scaled copies of its own outline. */}
-          <div className="relative mt-9">
-            {hasAudio && armed && !reduced && (
+              rings are scaled copies of its own outline, and the whole control
+              lifts on a ring cadence while a call is waiting.
+
+              NOT green, and not a play triangle. Green-answer is phone-OS
+              chrome and would make this stage read as a mockup of a phone
+              rather than a real system, which is the one thing this section
+              cannot afford; it would also spend a second colour meaning on a
+              panel where red already means "the call is live". The glyph is a
+              handset because the verb here is answer, not play. */}
+          <div className={`relative mt-9 ${ringing ? "stage-ringing" : ""}`}>
+            {ringing && (
               <>
                 <span aria-hidden="true" className="stage-ring" />
                 <span aria-hidden="true" className="stage-ring stage-ring--late" />
@@ -499,14 +574,9 @@ export default function CallStage({ channel, reduced, onPhase }: Props) {
                 color: TOKENS.stageInk,
               }}
             >
-              <span
-                aria-hidden="true"
-                className="ml-[3px] block h-0 w-0"
-                style={{
-                  borderTop: "7px solid transparent",
-                  borderBottom: "7px solid transparent",
-                  borderLeft: `12px solid ${hasAudio ? TOKENS.stageInk : TOKENS.stageMuted}`,
-                }}
+              <Handset
+                color={hasAudio ? TOKENS.stageInk : TOKENS.stageMuted}
+                rocking={ringing}
               />
             </button>
           </div>

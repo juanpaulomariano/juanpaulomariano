@@ -1,0 +1,124 @@
+{
+  "$comment": "Machine-readable extension of DESIGN.md, recorded from the built code. lib/tokens.ts is normative; where this file and the code disagree, the code wins.",
+  "name": "juanpaulomariano.com",
+  "register": "brand",
+  "motion": {
+    "easing": {
+      "enter": "cubic-bezier(0.22, 1, 0.36, 1)",
+      "move": "cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    "durations": {
+      "colorState": 220,
+      "response": 200,
+      "hover": 300,
+      "toggleKnob": 420,
+      "stageSwap": 420,
+      "rackFocus": 480,
+      "overlayCollapse": 480,
+      "assemble": 500,
+      "crossfade": 550,
+      "playPrime": 620,
+      "pipelineSegment": 1000,
+      "flashHold": 1200,
+      "stageRing": 1900,
+      "orbitRevolution": 110000
+    },
+    "laws": [
+      "Play once, then rest. Nothing loops uninvited; the hero orbit and its scroll cue are the only resident motion.",
+      "One bold element per section.",
+      "Transform and opacity only. Travel is translateX/scaleX, never left.",
+      "Arm one-shot moments on IntersectionObserver visibility (thresholds 0.35-0.5).",
+      "Every animation ships a reduced-motion end state; states stay reachable, only motion is withheld.",
+      "Two effects never fight over one transform: each drives a registered custom property and the element composes them."
+    ],
+    "oneShots": {
+      "stageRing": { "iterations": 3, "note": "a call just arrived; a loop would nag" },
+      "playPrime": { "iterations": 1 },
+      "livingPipeline": { "iterations": 1, "control": "Replay appears when done" },
+      "liveDot": { "condition": "only while user-started audio is playing" }
+    }
+  },
+  "shadows": {
+    "layout": "none",
+    "orbitTile": "0 20px 40px -16px rgba(10,10,10,var(--tile-shadow-a)), 0 2px 8px -2px rgba(10,10,10,0.06)",
+    "leadHalo": "0 0 0 3px rgba(192,57,43,0.12)"
+  },
+  "focus": {
+    "default": "outline: 2px solid #0A0A0A; outline-offset: 3px",
+    "onDark": "outline color #FFFFFF, scoped to #work in app/globals.css"
+  },
+  "breakpoints": {
+    "sm": 640,
+    "lg": 1024,
+    "xl": 1280,
+    "2xl": 1536,
+    "note": "Showcase sections split two-column at xl, not lg: measured, 1024 leaves ~32ch text columns; 1280 holds at ~48ch."
+  },
+  "layout": {
+    "container": "max-w-[1320px]",
+    "gutter": { "base": 24, "sm": 40 },
+    "sectionPadding": { "base": 80, "sm": 96 },
+    "gridTracks": {
+      "selected-works": "xl:grid-cols-[42fr_58fr]",
+      "conversation-ai": "xl:grid-cols-[42fr_58fr]",
+      "whitelabel": "xl:grid-cols-[58fr_42fr] 2xl:grid-cols-[52fr_48fr]"
+    },
+    "oneViewportRule": {
+      "target": 900,
+      "measuredAt": "1440x900",
+      "current": { "work": 894, "ai": 955, "whitelabel": 863 }
+    },
+    "reservedHeights": {
+      "stage-reserve": { "sm": 799, "xl": 548, "unit": "px", "note": "measured at each range's narrowest width; lives in globals.css because Tailwind cannot see interpolated classes" },
+      "transcript-reserve": { "status": "pending real transcripts" },
+      "callStageBody": { "base": 430, "sm": 416, "unit": "px" }
+    }
+  },
+  "surfaces": {
+    "page": { "bg": "#FFFFFF", "ink": "#0A0A0A", "body": "#444444", "muted": "#767676", "line": "#E4E4E4", "hair": "#EFEFEF" },
+    "darkSection": { "bg": "#0A0A0A", "ink": "#FFFFFF", "body": "#B4B4B4", "muted": "#8A8A8A", "line": "rgba(255,255,255,0.20)", "hair": "rgba(255,255,255,0.10)", "usedBy": ["selected-works"], "rule": "exactly one dark section ground on the site" },
+    "stagePanel": { "bg": "#0D1117", "ink": "#F2F4F7", "body": "#B6BEC9", "muted": "#8B93A1", "line": "rgba(255,255,255,0.16)", "hair": "rgba(255,255,255,0.08)", "usedBy": ["call-stage"], "rule": "a panel inside a white section, never a section ground; blue-black so it never reads as the same material as darkSection" }
+  },
+  "accent": {
+    "value": "#C0392B",
+    "rule": "one meaning per context",
+    "meanings": {
+      "hero": "headline emphasis and filled-button hover",
+      "selected-works-rail": "active marker and the words 'In progress'",
+      "living-pipeline": "the lead's current position only; traversed rail stays ink",
+      "transcript-rail": "the agent is speaking right now",
+      "call-stage": "the call is live",
+      "gallery-lightbox": "current thumbnail",
+      "links": "ruled text link hover"
+    }
+  },
+  "shapes": {
+    "default": "square, 0px radius, 1px hairline borders",
+    "pill": { "radius": 9999, "scope": "conversion controls only: nav Book a call, hero CTA pair, final CTA pair, lightbox floating overlay buttons" },
+    "circle": { "scope": "diagram dots only: pipeline nodes 11px, travelling lead 7px, live dot 6px, browser chrome dots 9px" },
+    "exception": { "orbitTile": { "size": 80, "radius": 12, "border": "1px rgba(0,0,0,0.10)", "scope": "hero orbit world only" } }
+  },
+  "icons": {
+    "policy": "none",
+    "detail": "No icon fonts, no Lucide/Heroicons, no decorative SVG. Play is a CSS border triangle, pause is two 3px bars, arrows are the characters -> and <-. Real brand logos in /public/logos/ and the hero orbit geometry are the only SVG.",
+    "detectorNote": "detect.mjs flags the border-triangle play glyphs as 'side-tab accent border' (borderLeft 9px/12px solid). False positive: they render as triangles, not stripes."
+  },
+  "contentContracts": {
+    "requiredFields": { "Shot": ["label", "caption"], "Evidence": ["label", "caption", "redactionNote", "width", "height"] },
+    "laws": [
+      "An uncaptioned screenshot is texture, not evidence.",
+      "Transcript prose is verbatim, including false starts; do not tighten it.",
+      "Masked values match verbatim between transcript and screenshot (redaction contract).",
+      "Ticker events are real CRM writes at their transcribed moments.",
+      "Empty src renders a stated pending placeholder; captions are written only once the image exists.",
+      "Evidence order is outcome, then provenance, then machinery.",
+      "Arrays gate chrome: switches and nav dots render only at length > 1.",
+      "No invented metrics; numbers live inside sentences."
+    ]
+  },
+  "typographyFamilies": {
+    "display": { "name": "Space Grotesk", "var": "--font-grotesk", "scope": "section titles, subsection titles, rail index items, the call stage caller name" },
+    "body": { "name": "Manrope", "var": "--font-sans", "scope": "everything else, including the hero headline at weight 800" },
+    "loadedUnused": { "name": "Instrument Serif", "var": "--font-serif", "note": "a switchable hero alternate (HEADLINE_FONT in components/hero.tsx); ships nowhere" }
+  }
+}

@@ -23,6 +23,10 @@ import { EASE, TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
 export default function ChatAi() {
   const [phase, setPhase] = useState<ChatPhase>("rest");
   const [reduced, setReduced] = useState(false);
+  /* Set once the visitor has engaged the widget. The section then offers a
+     next step: this is the page's only live system, and it used to end in
+     silence while the recorded call got a bridge to the contact form. */
+  const [engaged, setEngaged] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -33,6 +37,7 @@ export default function ChatAi() {
   }, []);
 
   const handlePhase = useCallback((p: ChatPhase) => setPhase(p), []);
+  const handleEngage = useCallback(() => setEngaged(true), []);
 
   /* Rack focus, the same gesture as section 03: while the visitor is talking
      to the agent, everything that is not the conversation recedes. Opacity
@@ -123,7 +128,37 @@ export default function ChatAi() {
               the pending sentence on the left simply tells the truth. */}
           <div className="mt-9 min-w-0 xl:mt-0">
             {CHAT_EMBED.enabled && (
-              <ChatStage reduced={reduced} onPhase={handlePhase} />
+              <ChatStage
+                reduced={reduced}
+                onPhase={handlePhase}
+                onEngage={handleEngage}
+              />
+            )}
+
+            {/* The close. Arrives after engagement, not on load, so it reads
+                as a response to the conversation rather than a banner that
+                was always sitting there. It stays out of the rack-focus dim:
+                this is the one thing that should get brighter, not dimmer,
+                once someone has been convinced. */}
+            {CHAT_EMBED.enabled && engaged && (
+              <p
+                className={`mt-4 ${reduced ? "" : "chat-close-in"}`}
+                style={{
+                  color: TOKENS.muted,
+                  fontSize: TYPE.small,
+                  ...TYPE_STYLE.small,
+                }}
+              >
+                {CHAT.closeText}{" "}
+                <a
+                  href="#contact"
+                  className="press relative border-b pb-px transition-colors duration-200 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+                  style={{ color: TOKENS.ink, borderColor: TOKENS.ink }}
+                >
+                  {CHAT.closeLinkLabel}
+                </a>{" "}
+                <span aria-hidden="true">→</span>
+              </p>
             )}
           </div>
         </div>

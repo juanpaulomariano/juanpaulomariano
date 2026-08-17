@@ -38,9 +38,14 @@ export type ChatPhase = "rest" | "live";
 type Props = {
   reduced: boolean;
   onPhase: (phase: ChatPhase) => void;
+  /** Fires once the visitor has actually engaged with the widget, so the
+      section can offer them a next step. The widget's own conversation is in
+      a shadow root we cannot read, so engagement is the honest proxy: they
+      clicked or focused into it, which on this panel means they typed. */
+  onEngage?: () => void;
 };
 
-export default function ChatStage({ reduced, onPhase }: Props) {
+export default function ChatStage({ reduced, onPhase, onEngage }: Props) {
   const [state, setState] = useState<State>("idle");
   /* Rack focus keys off ENGAGEMENT, not readiness. The widget goes live on
      scroll for everyone, and dimming the claim column — including the privacy
@@ -57,14 +62,17 @@ export default function ChatStage({ reduced, onPhase }: Props) {
   useEffect(() => {
     const el = rootRef.current;
     if (!el || engaged) return;
-    const mark = () => setEngaged(true);
+    const mark = () => {
+      setEngaged(true);
+      onEngage?.();
+    };
     el.addEventListener("pointerdown", mark, { once: true });
     el.addEventListener("focusin", mark, { once: true });
     return () => {
       el.removeEventListener("pointerdown", mark);
       el.removeEventListener("focusin", mark);
     };
-  }, [engaged]);
+  }, [engaged, onEngage]);
 
   /* Arm on visibility. Fires once, then disconnects. */
   useEffect(() => {
@@ -83,8 +91,19 @@ export default function ChatStage({ reduced, onPhase }: Props) {
     return () => io.disconnect();
   }, [state]);
 
+  /* Holds the hatch face mounted for exactly one wake cycle after the widget
+     goes live, so the sweep has a surface to leave. Without it React unmounts
+     the face on the same tick and there is nothing to animate. */
+  const [waking, setWaking] = useState(false);
+
   const handleStatus = useCallback((status: "ready" | "failed") => {
-    setState(status === "ready" ? "live" : "failed");
+    if (status !== "ready") {
+      setState("failed");
+      return;
+    }
+    setState("live");
+    setWaking(true);
+    window.setTimeout(() => setWaking(false), 560);
   }, []);
 
   const fade = reduced ? "none" : `opacity 420ms ${EASE.enter}`;
@@ -141,9 +160,18 @@ export default function ChatStage({ reduced, onPhase }: Props) {
       {/* Fixed height, matching the widget's configured height in GHL, so the
           panel never resizes as the widget mounts or fails. */}
       <div className="relative" style={{ height: CHAT_EMBED.heightPx }}>
+        {/* The panel WAKES rather than cross-fades: the hatch sweeps off while
+            the chat surface comes up beneath it, so the widget arriving reads
+            as a screen powering on instead of one thing swapping for another.
+            The two overlap by design — see the keyframes in globals.css. */}
         <div
-          className="h-full w-full"
-          style={{ opacity: state === "live" ? 1 : 0, transition: fade }}
+          className={`h-full w-full ${
+            state === "live" && !reduced ? "chat-wake-surface" : ""
+          }`}
+          style={{
+            opacity: state === "live" ? 1 : 0,
+            transition: reduced ? "none" : fade,
+          }}
         >
           {state !== "idle" && state !== "failed" && (
             <ChatEmbed onStatus={handleStatus} />
@@ -151,11 +179,18 @@ export default function ChatStage({ reduced, onPhase }: Props) {
         </div>
 
         {/* Loading and failure both render here, over the hatch, so the panel
-            is never an empty dark rectangle with no explanation. */}
-        {state !== "live" && (
+            is never an empty dark rectangle with no explanation. The face is
+            kept mounted for one wake cycle after going live so the hatch has
+            something to sweep off; `waking` unmounts it when the sweep ends. */}
+        {(state !== "live" || waking) && (
           <div
-            className="chat-lock absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
-            style={{ background: TOKENS.stageBg }}
+            className={`chat-lock absolute inset-0 flex flex-col items-center justify-center px-6 text-center ${
+              state === "live" && !reduced ? "chat-wake" : ""
+            }`}
+            style={{
+              background: TOKENS.stageBg,
+              pointerEvents: state === "live" ? "none" : "auto",
+            }}
           >
             <p
               className="max-w-[46ch]"

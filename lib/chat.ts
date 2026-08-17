@@ -41,6 +41,16 @@ export const CHAT = {
   lockedTitle: "Bright Hollow Family Dental",
   loadingNote: "Loading the chat agent.",
 
+  /* ── The close ──
+     The section used to end in silence: a visitor could talk to the live
+     agent, be convinced, and then be offered nothing — while section 03,
+     which only replays a recording, closes with a bridge to the contact
+     form. This arrives after the visitor actually engages, so it reads as a
+     response to what they just did rather than a banner that was always
+     there. */
+  closeText: "That's the same agent that answers the phone.",
+  closeLinkLabel: "Have one built for your business",
+
   /** Under the panel once the chat is live. */
   liveNote:
     "This is a live GoHighLevel Conversation AI agent answering as Bright Hollow Family Dental, a demonstration practice I built to spec. Loading it contacts GoHighLevel, and what you type is processed by GoHighLevel and OpenAI. Don't type anything you wouldn't send a stranger.",

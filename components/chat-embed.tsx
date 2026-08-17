@@ -37,6 +37,42 @@ const WATCHDOG_MS = 6000;
    side effect, so its guard belongs at page level. */
 let loaderAppended = false;
 
+/* Every page load starts a fresh conversation.
+
+   The widget persists its session and transcript in localStorage, so a
+   returning visitor would land on their old ended chat with a "fetch older
+   conversations" link above it. On a portfolio that is wrong twice: the
+   section is a demonstration a visitor should be able to run from the top,
+   and a shared machine would show one person's conversation to the next.
+
+   The keys are written by GoHighLevel and are not documented, so this
+   matches on their observed shape (a v2_/v3_ prefix, or the location id in
+   the key) rather than a fixed list, and a rename on their side degrades to
+   the old behaviour instead of throwing. Wrapped because storage access
+   throws outright in Safari's private mode. */
+function clearWidgetSession() {
+  /* Match the widget's own keys only — never clear() — so anything this site
+     stores is untouched. Observed shapes:
+       v2_session_history_<locationId>
+       v2_history_<locationId>
+       v2_contact_session_<locationId>_session_id
+       v3_first_session_event_<locationId>
+       <locationId>_<widgetId>_request_token   (sessionStorage) */
+  const mine = (key: string) =>
+    /^v\d+_/.test(key) || key.includes(CHAT_EMBED.widgetId);
+
+  for (const store of [window.localStorage, window.sessionStorage]) {
+    try {
+      for (const key of Object.keys(store)) {
+        if (mine(key)) store.removeItem(key);
+      }
+    } catch {
+      /* Storage throws outright in Safari private mode. A stale session is a
+         cosmetic problem, not a broken one, so there is nothing to recover. */
+    }
+  }
+}
+
 type Props = {
   /** Reports "ready" once the widget paints, "failed" on error or timeout. */
   onStatus: (status: "ready" | "failed") => void;
@@ -96,6 +132,7 @@ export default function ChatEmbed({ onStatus }: Props) {
        after its cleanup), while the loader must not be added twice. */
     if (!loaderAppended) {
       loaderAppended = true;
+      clearWidgetSession();
       const script = document.createElement("script");
       script.src = CHAT_EMBED.loaderSrc;
       script.setAttribute("data-resources-url", CHAT_EMBED.resourcesSrc);

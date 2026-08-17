@@ -82,6 +82,43 @@ export const CHAT = {
   },
 } as const;
 
+/* ── What the chat agent runs on ────────────────────────────────────────────
+   The same grammar as section 03's CAPABILITIES: a plain claim over the
+   literal machine names underneath. There it reads check_availability ·
+   book_appointment; here it reads the GoHighLevel objects and the knowledge
+   base that actually back this widget.
+
+   This exists because section 04's text column ran 225px shorter than its
+   panel, which made the live section — the one thing on the page a visitor
+   can operate — read as thinner than the recorded one beside it. The honest
+   fix was not padding; it was that section 03 had five receipts and section
+   04 had none, while both are the same receptionist.
+
+   EVERY LINE IS CHECKABLE against assets/bright-hollow-bot-prompts.md and
+   assets/bright-hollow-knowledge-base.md. Nothing here is aspirational: the
+   calendar id and sub-account are in the prompts file, the knowledge base is
+   seven topic sections and ~1,060 words, and the last row states the two
+   limits rather than hiding them. If a value changes in GoHighLevel, it
+   changes in those files and then here. */
+export const CHAT_STACK: { label: string; detail: string }[] = [
+  {
+    label: "Books into a real calendar",
+    detail: "GoHighLevel Conversation AI · 60-minute new-patient slots",
+  },
+  {
+    label: "Answers from a written knowledge base",
+    detail: "Seven topics: hours, location, services, insurance, team, safety",
+  },
+  {
+    label: "Same receptionist as the phone",
+    detail: "June · one prompt, versioned in assets/",
+  },
+  {
+    label: "Stops where the demo stops",
+    detail: "No confirmation email · conversation capped at 12 messages",
+  },
+];
+
 /* ── The embed ──────────────────────────────────────────────────────────────
    Config for the live widget, kept as data so the section can be turned off
    in one edit.

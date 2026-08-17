@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import ChatStage, { type ChatPhase } from "@/components/chat-stage";
-import { CHAT, CHAT_EMBED } from "@/lib/chat";
+import { CHAT, CHAT_EMBED, CHAT_STACK } from "@/lib/chat";
 import { EASE, TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -143,6 +143,55 @@ export default function ChatAi() {
               >
                 {CHAT.pendingNote}
               </p>
+            )}
+
+            {/* ── What it runs on ──
+                Section 03's capability ledger, in the same grammar: plain
+                claim over the literal machine names. It is not interactive
+                here — 03's rows open a workflow canvas, and these have
+                nothing to open, so making them look pressable would be a
+                lie the cursor tells.
+
+                This is also the section's structural fix. The text column
+                was ending 225px above the panel, which read as the live
+                section being thinner than the recorded one beside it. The
+                cause was that 03 carried five receipts and 04 carried none,
+                while both are the same receptionist. */}
+            {CHAT_EMBED.enabled && (
+              <div
+                className="mt-6 border-t pt-4 xl:mt-4"
+                style={{ borderColor: TOKENS.line }}
+              >
+                {CHAT_STACK.map((c) => (
+                  <div
+                    key={c.label}
+                    className="border-t py-2 first:border-t-0"
+                    style={{ borderColor: TOKENS.hair }}
+                  >
+                    <span
+                      className="block"
+                      style={{
+                        color: TOKENS.ink,
+                        fontSize: TYPE.small,
+                        fontWeight: 500,
+                        lineHeight: TYPE_STYLE.small.lineHeight,
+                      }}
+                    >
+                      {c.label}
+                    </span>
+                    <span
+                      className="mt-0.5 block break-words"
+                      style={{
+                        color: TOKENS.muted,
+                        fontSize: TYPE.micro,
+                        ...TYPE_STYLE.micro,
+                      }}
+                    >
+                      {c.detail}
+                    </span>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
 

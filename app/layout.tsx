@@ -19,10 +19,29 @@ const instrumentSerif = Instrument_Serif({
   variable: "--font-serif",
 });
 
+/* `metadataBase` is required for the generated opengraph-image to resolve to
+   an absolute URL. Without it Next emits a relative path and every social
+   platform silently drops the preview. */
 export const metadata: Metadata = {
+  metadataBase: new URL("https://juanpaulomariano.com"),
   title: "Juan Paulo Mariano — GoHighLevel automation architect",
   description:
     "CRM, automation, and custom code for when the platform runs out. Built under your brand, handed off clean.",
+  openGraph: {
+    title: "Juan Paulo Mariano — GoHighLevel automation architect",
+    description:
+      "CRM, automation, and custom code for when the platform runs out. Built under your brand, handed off clean.",
+    url: "https://juanpaulomariano.com",
+    siteName: "Juan Paulo Mariano",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Juan Paulo Mariano — GoHighLevel automation architect",
+    description:
+      "CRM, automation, and custom code for when the platform runs out. Built under your brand, handed off clean.",
+  },
 };
 
 export default function RootLayout({

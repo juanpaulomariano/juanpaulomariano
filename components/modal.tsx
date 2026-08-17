@@ -138,9 +138,15 @@ export default function Modal({
         className="absolute inset-0 h-full w-full cursor-default bg-[#0A0A0A]/70"
       />
 
+      {/* max-h-full budgets the WHOLE panel — header, content, everything —
+          against the padded viewport. Before this, only the gallery's image
+          pane was budgeted, so at 1440x900 the panel ran to ~940px and the
+          Close button rode half off-screen while the focus trap could still
+          focus it. min-h-0 on the content wrapper is what lets the gallery's
+          image pane shrink instead of pushing the caption and rail out. */}
       <div
         ref={panelRef}
-        className={`relative flex w-full flex-col ${
+        className={`relative flex max-h-full w-full flex-col ${
           variant === "media" ? "max-w-5xl" : "max-w-6xl"
         }`}
       >
@@ -158,18 +164,19 @@ export default function Modal({
               </p>
             )}
           </div>
+          {/* min-h-11 = the 44px touch floor; this was ~27px tall. */}
           <button
             ref={closeRef}
             type="button"
             onClick={onClose}
-            className="shrink-0 rounded-full border border-white/25 px-3 py-1 text-[12px] text-white transition-colors duration-200 hover:border-white/60 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="flex min-h-11 shrink-0 items-center rounded-full border border-white/25 px-4 text-[12px] text-white transition-colors duration-200 hover:border-white/60 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             Close
           </button>
         </div>
 
         <div
-          className="overflow-hidden rounded-lg"
+          className="flex min-h-0 flex-col overflow-hidden rounded-lg"
           style={{ background: variant === "media" ? "#000" : TOKENS.white }}
         >
           {children}

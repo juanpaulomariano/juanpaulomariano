@@ -437,7 +437,7 @@ export default function CallStage({ channel, reduced, onPhase }: Props) {
                     ? "Replay the recording"
                     : "Resume the recording"
               }
-              className="flex h-10 w-10 shrink-0 items-center justify-center border transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
+              className="flex h-11 w-11 shrink-0 items-center justify-center border transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
               style={{
                 borderColor:
                   state === "errored" ? TOKENS.stageHair : TOKENS.stageLine,

@@ -73,7 +73,10 @@ export default function GalleryLightbox({
       title={title}
       subtitle={`${position} / ${total}`}
     >
-      <div className="relative">
+      {/* min-h-0 down this chain lets the image pane absorb a short viewport
+          so the caption and thumbnail rail stay visible; before this the pane
+          held its full height and pushed them past the fold at 1440x900. */}
+      <div className="relative flex min-h-0 flex-col">
         {/* Two viewing modes:
             FIT  — whole canvas, scaled down to the viewport (orientation)
             100% — native pixels in a scrollable pane (reading node labels)
@@ -82,7 +85,11 @@ export default function GalleryLightbox({
         {/* Not a flex container when zoomed: a flex item shrinks to fit even
             with max-w-none, which silently caps the image below 100%. */}
         <div
-          className={zoomed ? "overflow-auto" : "flex items-center justify-center"}
+          className={
+            zoomed
+              ? "min-h-0 overflow-auto overscroll-contain"
+              : "flex min-h-0 items-center justify-center"
+          }
           style={{
             background: TOKENS.white,
             height: "min(78vh, 780px)",
@@ -98,7 +105,7 @@ export default function GalleryLightbox({
               className={
                 zoomed
                   ? "block max-w-none"
-                  : "max-h-[min(78vh,780px)] w-auto max-w-full object-contain"
+                  : "max-h-full w-auto max-w-full object-contain"
               }
               /* Explicit width at 100% so nothing can scale it down. */
               style={zoomed ? { width: "auto" } : undefined}
@@ -114,7 +121,7 @@ export default function GalleryLightbox({
           <button
             type="button"
             onClick={() => setZoomed((v) => !v)}
-            className="absolute right-3 top-3 rounded-full border bg-white/95 px-3 py-1.5 text-[12px] transition-colors duration-200 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="absolute right-3 top-3 flex min-h-11 items-center rounded-full border bg-white/95 px-4 text-[12px] transition-colors duration-200 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ borderColor: TOKENS.line, color: TOKENS.ink }}
           >
             {zoomed ? "Fit to screen" : "Zoom to 100%"}
@@ -136,7 +143,7 @@ export default function GalleryLightbox({
 
       {/* Caption + counter */}
       <div
-        className="flex items-center justify-between gap-4 border-t px-4 py-3"
+        className="flex shrink-0 items-center justify-between gap-4 border-t px-4 py-3"
         style={{ borderColor: TOKENS.line, background: "#FFFFFF" }}
       >
         {/* The caption is what makes a deliberately zoomed-out canvas
@@ -166,7 +173,7 @@ export default function GalleryLightbox({
       {/* Thumbnail rail */}
       <div
         ref={railRef}
-        className="flex gap-2 overflow-x-auto border-t px-3 py-3"
+        className="flex shrink-0 gap-2 overflow-x-auto overscroll-contain border-t px-3 py-3"
         style={{ borderColor: TOKENS.line, background: "#FFFFFF" }}
       >
         {shots.map((s, n) => (
@@ -221,7 +228,7 @@ function NavButton({
       type="button"
       onClick={onClick}
       aria-label={side === "left" ? "Previous workflow" : "Next workflow"}
-      className={`absolute top-1/2 -translate-y-1/2 rounded-full border bg-white/90 px-3 py-2 text-[14px] transition-colors duration-200 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+      className={`absolute top-1/2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full border bg-white/90 px-3 text-[14px] transition-colors duration-200 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
         side === "left" ? "left-3" : "right-3"
       }`}
       style={{ borderColor: TOKENS.line, color: TOKENS.ink }}

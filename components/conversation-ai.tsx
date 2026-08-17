@@ -244,10 +244,13 @@ export default function ConversationAi() {
                   >
                     {STAGE.receiptsLine}
                   </p>
+                  {/* The before: pseudo expands the tap area to ~44px without
+                      touching the ruled-text visual; measured 21.9px tall
+                      before, which is half the touch floor. */}
                   <button
                     type="button"
                     onClick={() => openGallery()}
-                    className="group/all inline-flex shrink-0 items-center gap-2 border-b pb-0.5 transition-colors duration-300 hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+                    className="group/all relative inline-flex shrink-0 items-center gap-2 border-b pb-0.5 transition-colors duration-300 before:absolute before:-inset-x-1 before:-inset-y-3 before:content-[''] hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
                     style={{
                       borderColor: TOKENS.ink,
                       color: TOKENS.ink,
@@ -290,7 +293,7 @@ export default function ConversationAi() {
                 {SECTION.bridgeText}{" "}
                 <a
                   href="#contact"
-                  className="border-b pb-px transition-colors duration-200 hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+                  className="relative border-b pb-px transition-colors duration-200 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
                   style={{ color: TOKENS.ink, borderColor: TOKENS.ink }}
                 >
                   {SECTION.bridgeLinkLabel}

@@ -88,12 +88,19 @@ button:focus-visible {
    far to the left of the stage, so clicking a project changed a region the eye
    was not looking at and the new content simply appeared. A short rise-and-fade
    confirms the swap and gives the eye something to follow across the gap.
-   Keyed on the project, so it replays per selection. */
+   Keyed on the project, so it replays per selection.
+
+   DIRECTIONAL: `--stage-from` is signed by the direction the selection moved
+   along the rail, so choosing a project further down brings the new stage up
+   from below, and choosing one above drops it in from over the top. The swap
+   then carries the same spatial information the rail does — it answers "which
+   way did I just move?" instead of only "something changed". Falls back to
+   the original upward rise if the property is absent. */
 
 @keyframes stage-in {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(var(--stage-from, 6px));
   }
   to {
     opacity: 1;
@@ -322,6 +329,131 @@ button:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .chat-prime {
+    animation: none;
+  }
+}
+
+/* ── Press feedback ──────────────────────────────────────────────────────────
+   The site had 24 hover states and no press states. Hover is a mouse-only
+   affordance: on a phone, every control here gave no acknowledgement at all
+   between the tap and whatever it caused, which reads as a dropped input on
+   anything that takes a moment (opening the gallery, loading a widget).
+
+   One rule, every control. 90ms in on press, released on the site's own enter
+   curve so the return is the graceful half — the asymmetry that makes a press
+   feel instant and the release feel unhurried.
+
+   Composed through a custom property rather than `transform` directly: the
+   video poster's play mark already composes --prime-scale and --hover-scale,
+   and an inline transform on the same element would silently win over both.
+   Anything that sets --press-scale participates; anything that does not is
+   untouched. */
+
+@property --press-scale {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+button:not(:disabled):active,
+a:active {
+  --press-scale: 0.97;
+}
+
+/* Applied where a scale is safe: excludes the full-bleed backdrop button and
+   anything whose layout depends on its own transform. */
+button:not(:disabled),
+a[href] {
+  transition: --press-scale 140ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.press {
+  transform: scale(var(--press-scale, 1));
+}
+
+/* The poster's mark composes three scales; press must join, not replace. */
+.play-prime.press {
+  transform: scale(
+    calc(var(--prime-scale, 1) * var(--hover-scale, 1) * var(--press-scale, 1))
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled),
+  a[href] {
+    transition: none;
+  }
+  button:not(:disabled):active,
+  a:active {
+    --press-scale: 1;
+  }
+}
+
+/* ── Chat AI: the panel wakes ────────────────────────────────────────────────
+   The widget used to cross-fade in, which reads as a swap rather than an
+   arrival. A screen coming on is the truer image: the hatch lifts away while
+   the surface brightens under it, so the panel looks powered rather than
+   replaced.
+
+   The hatch sweeps on its own mask instead of fading, so it appears to be
+   drawn off rather than dissolved. 520ms sits with the site's entrance band
+   (420-620ms) rather than its response band, which is right for an arrival. */
+
+@keyframes chat-wake-hatch {
+  from {
+    opacity: 1;
+    -webkit-mask-position: 0% 0;
+            mask-position: 0% 0;
+  }
+  to {
+    opacity: 0;
+    -webkit-mask-position: 140% 0;
+            mask-position: 140% 0;
+  }
+}
+
+.chat-wake {
+  -webkit-mask-image: linear-gradient(
+    100deg,
+    transparent 0 12%,
+    black 30% 100%
+  );
+          mask-image: linear-gradient(100deg, transparent 0 12%, black 30% 100%);
+  -webkit-mask-size: 250% 100%;
+          mask-size: 250% 100%;
+  animation: chat-wake-hatch 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* The surface underneath comes up as the hatch leaves: a shorter, later fade
+   so the two overlap rather than hand off. */
+@keyframes chat-wake-surface {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.chat-wake-surface {
+  animation: chat-wake-surface 380ms cubic-bezier(0.22, 1, 0.36, 1) 140ms both;
+}
+
+/* The closing line, after a real exchange. Rises rather than appears, because
+   it is arriving in response to something the visitor did. */
+@keyframes chat-close-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.chat-close-in {
+  animation: chat-close-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The panel still wakes; it just no longer sweeps to get there. */
+  .chat-wake {
+    animation: none;
+    opacity: 0;
+  }
+  .chat-wake-surface,
+  .chat-close-in {
     animation: none;
   }
 }

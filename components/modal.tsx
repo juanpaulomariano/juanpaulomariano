@@ -169,7 +169,7 @@ export default function Modal({
             ref={closeRef}
             type="button"
             onClick={onClose}
-            className="flex min-h-11 shrink-0 items-center rounded-full border border-white/25 px-4 text-[12px] text-white transition-colors duration-200 hover:border-white/60 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="press flex min-h-11 shrink-0 items-center rounded-full border border-white/25 px-4 text-[12px] text-white transition-colors duration-200 hover:border-white/60 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             Close
           </button>

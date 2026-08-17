@@ -179,7 +179,7 @@ export default function ConversationAi() {
                   onClick={() => openGallery(c.galleryTarget)}
                   disabled={!hasEvidence}
                   aria-label={`${c.label}. Opens the ${c.galleryTarget} workflow in the gallery.`}
-                  className="group/cap block w-full border-t py-2 text-left first:border-t-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
+                  className="press group/cap block w-full border-t py-2 text-left first:border-t-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
                   style={{ borderColor: TOKENS.hair }}
                 >
                   <span
@@ -250,7 +250,7 @@ export default function ConversationAi() {
                   <button
                     type="button"
                     onClick={() => openGallery()}
-                    className="group/all relative inline-flex shrink-0 items-center gap-2 border-b pb-0.5 transition-colors duration-300 before:absolute before:-inset-x-1 before:-inset-y-3 before:content-[''] hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+                    className="press group/all relative inline-flex shrink-0 items-center gap-2 border-b pb-0.5 transition-colors duration-300 before:absolute before:-inset-x-1 before:-inset-y-3 before:content-[''] hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
                     style={{
                       borderColor: TOKENS.ink,
                       color: TOKENS.ink,

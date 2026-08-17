@@ -141,7 +141,7 @@ export default function ConversationAi() {
             {/* One operational fact where a lesser page would put a stat
                 block. A demonstration practice has no honest ROI numbers. */}
             <p
-              className="mt-3 max-w-[46ch]"
+              className="mt-3 max-w-[46ch] xl:mt-2"
               style={{
                 color: TOKENS.body,
                 fontSize: TYPE.small,
@@ -151,7 +151,7 @@ export default function ConversationAi() {
               {SECTION.factLine}
             </p>
 
-            <div className="mt-5 flex items-center gap-3">
+            <div className="mt-5 flex items-center gap-3 xl:mt-4">
               <img
                 src="/logos/vapi.svg"
                 alt="Vapi"
@@ -176,8 +176,14 @@ export default function ConversationAi() {
                 real workflow names, each row opening the canvas that runs
                 it. One column — the stage carries the section's weight now,
                 and these read as a ledger, not a feature grid. */}
+            {/* The ledger's top gap is where this column's length is tuned.
+                The gallery opposite ends 51px above the last ledger row at
+                its natural spacing, and the fix belongs here rather than on
+                the gallery: pushing the thumbnails DOWN to meet the ledger
+                opened a dead gap under the receipts line, which reads worse
+                than a small difference in column length ever did. */}
             <div
-              className="mt-6 border-t pt-4"
+              className="mt-6 border-t pt-4 xl:mt-2 xl:pt-2"
               style={{ borderColor: TOKENS.line }}
             >
               {CAPABILITIES.map((c) => (
@@ -278,34 +284,32 @@ export default function ConversationAi() {
               )}
 
               {/* ── The workflow gallery ──
-                  This replaced a limitation paragraph and a bridge line.
-                  Eleven canvases a visitor can open are a better argument
-                  than a sentence saying the agent is fast, and the section
-                  already had the screenshots — they were reachable only
-                  through a text control most visitors never pressed.
+                  Under the stage, replacing a limitation paragraph and a
+                  bridge line. Eleven canvases a visitor can open are a
+                  better argument than a sentence claiming the agent is
+                  fast, and the section already had the screenshots — they
+                  were reachable only through a text control most visitors
+                  never pressed.
 
                   Deliberately not a card grid: no borders, no shadows, no
-                  rounded corners. Each thumbnail is the raster itself on the
-                  section's white, separated by the same hairline the
-                  capability ledger uses. The canvases are dark, so they read
+                  rounded corners. Each thumbnail is the raster itself on
+                  the section's white. The canvases are dark, so they read
                   as a row of windows rather than a component.
 
-                  Bottom-aligned with the text column by construction — see
-                  the height calculation in the wrapper below. */}
+                  The row is the last thing in this column, and its bottom
+                  is what aligns with the capability ledger opposite. */}
               {hasEvidence && (
                 <div className="mt-5 xl:mt-2">
-                  {/* One row of four. Two rows of four ran the left column
-                      ~64px past the capability ledger opposite; six across
-                      aligned but shrank each canvas to ~112px, where an n8n
-                      graph is a dark smudge rather than evidence. Four lands
-                      ~172px, which is the smallest a canvas can be and still
-                      read as a workflow, and one row keeps the bottom on the
-                      ledger's baseline. The rest stay one press away in the
-                      lightbox. */}
-                  {/* Two across on phones. Four across at 375px puts each
-                      canvas at 76px, which is a texture swatch rather than a
-                      screenshot; the row has no ledger to align to once the
-                      columns stack, so it is free to be legible instead. */}
+                  {/* One row of four. Two rows of four ran this column ~64px
+                      past the ledger opposite; six across aligned but shrank
+                      each canvas to ~112px, where an n8n graph is a dark
+                      smudge rather than evidence. Four lands ~174px, the
+                      smallest a canvas can be and still read as a workflow.
+                      The rest stay one press away in the lightbox.
+
+                      Two across on phones: four at 375px puts each canvas at
+                      76px, a texture swatch rather than a screenshot, and a
+                      stacked column has no ledger to align to anyway. */}
                   <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-x-3">
                     {shots.slice(0, 4).map((s, i) => (
                       <li key={s.label} className="min-w-0">
@@ -318,13 +322,8 @@ export default function ConversationAi() {
                           aria-label={`Open ${s.label} in the gallery`}
                           className="group/shot block w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                         >
-                          {/* Fixed aspect so a tall canvas cannot push the
-                              row out of alignment with the text column.
-                              4:3 rather than 16:10: at six across the
-                              thumbnails are ~112px wide, and the squarer
-                              crop both shows more of each canvas and lands
-                              the column's bottom on the ledger's baseline
-                              opposite. */}
+                          {/* Fixed aspect so one tall canvas cannot set the
+                              height of the whole row. */}
                           <span
                             className="block w-full overflow-hidden"
                             style={{
@@ -344,17 +343,6 @@ export default function ConversationAi() {
                       </li>
                     ))}
                   </ul>
-
-                  <p
-                    className="mt-3 max-w-[64ch]"
-                    style={{
-                      color: TOKENS.muted,
-                      fontSize: TYPE.micro,
-                      ...TYPE_STYLE.micro,
-                    }}
-                  >
-                    {SECTION.galleryNote}
-                  </p>
                 </div>
               )}
             </div>

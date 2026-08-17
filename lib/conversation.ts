@@ -433,33 +433,17 @@ export const SECTION = {
     "Answers on the first ring, at two in the morning, on a public holiday.",
   /** Named under the Vapi wordmark. */
   stackNote: "Voice on Vapi. Every record lands in GoHighLevel.",
-  /** The limitation paragraph and the bridge line were both cut when the
-      workflow gallery took the space under the stage. The gallery is the
-      stronger argument: eleven canvases a visitor can open beat a sentence
-      claiming the agent is fast.
+  /* Three things used to sit under the stage and are deliberately gone: a
+     limitation paragraph, a bridge line to the contact form, and a
+     demonstration-practice note under the thumbnails. The workflow gallery
+     holds that space now — eleven canvases a visitor can open beat a
+     sentence claiming the agent is fast.
 
-      What the paragraph carried that the gallery must not lose is the
-      demonstration-practice disclosure — the only one section 03 had. It
-      now rides on `galleryNote` below, which sits under the thumbnails
-      where the paragraph used to be, so the fact stays on screen at the
-      same moment in the read.
+     Cut with them: the measured latency (~1.6s reply, 11s calendar read).
+     Both numbers are real and measured from the recording; if they are
+     ever wanted back, they belong on the stage next to the clock.
 
-      Cut with it: the measured latency (~1.6s reply, 11s calendar read).
-      Both numbers are real and measured from the recording; if they are
-      ever wanted back, they belong on the stage next to the clock, not in
-      a paragraph. */
-  limitation: "",
-  /** Under the gallery. Carries ONLY the disclosure the cut paragraph used
-      to hold.
-
-      It used to open "The eleven workflows behind the call", which was the
-      third time that count appeared in one column: the receipts line above
-      the thumbnails already says "11 documented n8n workflows", and the
-      first thumbnail's own label is "The 11 n8n workflows behind the agent".
-      A visible row of canvases does not need to be counted in prose. The
-      receipts line keeps the number because it is making the claim; this
-      line keeps the disclosure because nothing else in the section carries
-      it. */
-  galleryNote:
-    "Bright Hollow is a demonstration practice I built to spec, not a client.",
+     The demonstration-practice fact is still disclosed elsewhere on the
+     page: the widget header in section 04 names it, and the stage's own
+     rail line says the recording is a real call to the agent. */
 } as const;

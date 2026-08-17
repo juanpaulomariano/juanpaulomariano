@@ -323,7 +323,7 @@ export default function CallStage({ channel, reduced, onPhase }: Props) {
   return (
     <div
       ref={rootRef}
-      className="border"
+      className="night-panel border"
       style={{ borderColor: TOKENS.stageLine, background: TOKENS.stageBg }}
     >
       {/* Header: the practice's line, like a caller ID bar. */}

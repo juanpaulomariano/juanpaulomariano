@@ -29,6 +29,15 @@ button:focus-visible {
   outline-color: #ffffff;
 }
 
+/* The same problem on the two night panels: the call stage in #ai and the
+   chat panel in #chat both sit on #0D1117, where the near-black ring is
+   invisible. Scoped to the panel rather than the section, because the rest
+   of both sections is white and must keep the dark ring. */
+.night-panel a:focus-visible,
+.night-panel button:focus-visible {
+  outline-color: #ffffff;
+}
+
 /* ── Assembly (on load): fade + scale 0.9 → 1, staggered per logo ────────── */
 
 @keyframes assemble {
@@ -273,6 +282,46 @@ button:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .stage-ringing,
   .stage-handset {
+    animation: none;
+  }
+}
+
+/* ── Chat AI: the locked panel ───────────────────────────────────────────────
+   A diagonal hairline hatch, drawn in the panel's own faint rule weight. The
+   drafting convention for "reserved, not yet built", which is exactly what
+   the face means: the widget is there, it just has not been loaded yet.
+
+   NOT a blur. Blur would need something to blur, and every candidate — a
+   screenshot of a real conversation, a mocked-up chat window — puts invented
+   UI on a site whose whole argument is that nothing is staged. Blur is also
+   banned as a resting treatment by the design system's flat-depth rule. */
+
+.chat-lock {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.055) 0,
+    rgba(255, 255, 255, 0.055) 1px,
+    transparent 1px,
+    transparent 8px
+  );
+}
+
+/* The caret blinks twice, then rests. Two, not three: three is the ring's
+   count in the call stage and belongs to it, and a caret's natural cadence is
+   a blink rather than a pulse. This is the section's one motion, deliberately
+   quieter than section 03's — a live thing you can type into does not need
+   movement to be the loudest object on the page. */
+@keyframes chat-prime {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.15; }
+}
+
+.chat-prime {
+  animation: chat-prime 1.4s ease-in-out 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-prime {
     animation: none;
   }
 }

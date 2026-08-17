@@ -79,7 +79,18 @@ export default function FinalCta() {
           style={{ borderColor: TOKENS.hair, color: TOKENS.muted }}
         >
           <span>Juan Paulo Mariano</span>
-          <span>GoHighLevel automation architect · Full-stack developer</span>
+          <span className="flex items-center gap-4">
+            <span>GoHighLevel automation architect · Full-stack developer</span>
+            {/* Section 04 sends visitor input to a third party, so where it
+                goes has to be reachable from every page. */}
+            <a
+              href="/privacy"
+              className="border-b pb-px transition-colors duration-200 hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+              style={{ borderColor: TOKENS.line }}
+            >
+              Privacy
+            </a>
+          </span>
         </div>
       </div>
     </section>

@@ -20,11 +20,11 @@
 export const CHAT = {
   titleTop: "Same practice.",
   titleBottom: "Now type to it.",
-  /* Short on purpose. This section centres, and centred text has no fixed
-     left edge for the eye to return to, so every extra line costs more here
-     than it would in a column. The earlier lead spent two of its three
-     sentences explaining sub-account architecture to a reader whose only job
-     is to start typing.
+  /* Short on purpose. This section's text column is the narrow one — the
+     panel takes the wide track — so every extra line costs more here than it
+     would in section 03. The earlier lead spent two of its three sentences
+     explaining sub-account architecture to a reader whose only job is to
+     start typing.
 
      What was cut: "on a client build, voice and chat share one calendar and
      one contact record". That precision existed to stop the section claiming

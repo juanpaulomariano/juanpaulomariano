@@ -50,10 +50,7 @@ export default function ChatAi() {
   return (
     <section
       id="chat"
-      /* py trimmed at xl for the same reason Selected Work trims it: centred,
-         this section stacks its headline, lead, disclosure and a 416px panel
-         in one column, and the padding is the only slack that isn't content. */
-      className="px-6 py-20 sm:px-10 sm:py-24 xl:py-[68px]"
+      className="px-6 py-20 sm:px-10 sm:py-24"
       style={{ background: TOKENS.white }}
     >
       <div className="mx-auto max-w-[1320px]">
@@ -72,16 +69,33 @@ export default function ChatAi() {
           </div>
         </div>
 
-        {/* CENTRED, alone among the demonstration sections. Two reasons, and
-            they agree. Compositionally the page now travels middle → left →
-            right → middle rather than anchoring four sections to one edge.
-            And hierarchically this is the only thing on the page a visitor
-            operates directly, so it earns the frame to itself: a text column
-            beside it would be competing with the argument rather than
-            carrying it. */}
-        <div className="mt-8 flex flex-col items-center text-center">
+        {/* Argument LEFT, panel right.
+
+            The page's text column alternates edges: work LEFT, ai RIGHT,
+            chat LEFT, white-label LEFT. Not a perfect zigzag — white-label's
+            grid is tuned to its own headline wrap and browser frame and is
+            not worth breaking for symmetry — but the two sections that
+            actually invited the "this looks like the one above it" complaint
+            were 03 and 04, which had become pixel-identical: text at 849,
+            dark panel at 60, same ratio, same gap. Mirroring 04 separates
+            the pair, and the two dark panels now sit on opposite sides so
+            the eye tracks a switch rather than a repeat.
+
+            Centring this was tried first and was worse: a centred column
+            needs every block to share an axis AND a rough width, and the
+            panel is locked to the widget's 760px, so it sat under a much
+            narrower centred paragraph with nothing lining up.
+
+            The panel column is sized to the widget, not to a fraction. The
+            GoHighLevel widget is configured at 760px and does not shrink the
+            way section 03's stage does, so an fr ratio let its white chat
+            body bleed past the dark frame and past the 1320px content edge.
+            `minmax(0, 760px)` gives it its natural width and lets it fall
+            back gracefully on narrower screens; the text column absorbs
+            whatever is left. */}
+        <div className="mt-8 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,760px)] xl:items-start xl:gap-x-10 2xl:gap-x-16">
           {/* ── The claim ── */}
-          <div className="min-w-0 max-w-[42rem]" style={recede}>
+          <div className="min-w-0" style={recede}>
             <h2
               style={{
                 fontFamily: "var(--font-grotesk)",
@@ -96,12 +110,8 @@ export default function ChatAi() {
               <span className="block text-balance">{CHAT.titleBottom}</span>
             </h2>
 
-            {/* text-balance rather than a measure cap: the lead is now two
-                short sentences, and balancing them across two even lines
-                reads as one statement instead of a paragraph that happens to
-                be centred. */}
             <p
-              className="mx-auto mt-4 max-w-[54ch] text-balance"
+              className="mt-4 max-w-[46ch]"
               style={{
                 color: TOKENS.muted,
                 fontSize: TYPE.body,
@@ -112,11 +122,8 @@ export default function ChatAi() {
             </p>
 
             {CHAT_EMBED.enabled ? (
-              /* The disclosure sits directly above the panel, close enough to
-                 read as a label on the thing rather than a paragraph in the
-                 section. Two sentences, balanced, so it never stacks. */
               <p
-                className="mx-auto mt-5 max-w-[62ch] text-balance"
+                className="mt-5 max-w-[46ch]"
                 style={{
                   color: TOKENS.muted,
                   fontSize: TYPE.micro,
@@ -127,7 +134,7 @@ export default function ChatAi() {
               </p>
             ) : (
               <p
-                className="mx-auto mt-4 max-w-[52ch]"
+                className="mt-4 max-w-[46ch]"
                 style={{
                   color: TOKENS.muted,
                   fontSize: TYPE.small,
@@ -142,12 +149,8 @@ export default function ChatAi() {
           {/* ── The panel ──
               Absent entirely while the embed is disabled: an empty dark box
               saying "not configured" advertises an unfinished feature, where
-              the pending sentence above simply tells the truth.
-
-              Capped at the widget's own 760px: the panel is a window onto a
-              third-party surface of exactly that width, so a wider frame
-              would be dark margin pretending to be design. */}
-          <div className="mt-8 w-full min-w-0 max-w-[760px] text-left">
+              the pending sentence above simply tells the truth. */}
+          <div className="mt-9 min-w-0 xl:mt-0">
             {CHAT_EMBED.enabled && (
               <ChatStage
                 reduced={reduced}

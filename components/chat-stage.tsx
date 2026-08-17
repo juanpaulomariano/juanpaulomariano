@@ -42,11 +42,29 @@ type Props = {
 
 export default function ChatStage({ reduced, onPhase }: Props) {
   const [state, setState] = useState<State>("idle");
+  /* Rack focus keys off ENGAGEMENT, not readiness. The widget goes live on
+     scroll for everyone, and dimming the claim column — including the privacy
+     disclosure a visitor should read BEFORE typing — on mere arrival punished
+     everyone for a conversation they had not started. The room darkens when
+     someone actually sits down: first pointer or focus inside the panel. */
+  const [engaged, setEngaged] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    onPhase(state === "live" ? "live" : "rest");
-  }, [state, onPhase]);
+    onPhase(state === "live" && engaged ? "live" : "rest");
+  }, [state, engaged, onPhase]);
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el || engaged) return;
+    const mark = () => setEngaged(true);
+    el.addEventListener("pointerdown", mark, { once: true });
+    el.addEventListener("focusin", mark, { once: true });
+    return () => {
+      el.removeEventListener("pointerdown", mark);
+      el.removeEventListener("focusin", mark);
+    };
+  }, [engaged]);
 
   /* Arm on visibility. Fires once, then disconnects. */
   useEffect(() => {

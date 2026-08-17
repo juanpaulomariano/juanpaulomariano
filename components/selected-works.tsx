@@ -130,7 +130,7 @@ export default function SelectedWorks() {
             role="tablist"
             aria-label="Selected projects"
             aria-orientation="horizontal"
-            className="flex shrink-0 overflow-x-auto pb-2 lg:w-[236px] lg:flex-col lg:overflow-visible lg:pb-0"
+            className="flex shrink-0 overflow-x-auto pb-2 [mask-image:linear-gradient(to_right,black_calc(100%-2.5rem),transparent)] lg:w-[236px] lg:flex-col lg:overflow-visible lg:pb-0 lg:[mask-image:none]"
           >
             {PROJECTS.map((p) => {
               const selected = p.key === activeKey;
@@ -324,7 +324,7 @@ function Stage({
           without it the thumbnail row would push the column wider than its
           track instead of fitting inside it. */}
       <div className="min-w-0">
-        <StageIntro project={project} />
+        <StageIntro project={project} inGrid />
       </div>
       <div className="mt-7 min-w-0 xl:mt-0">{media}</div>
     </div>
@@ -332,8 +332,17 @@ function Stage({
 }
 
 /* The written half of every stage. Shared so the one-column and two-column
-   layouts can never drift apart. */
-function StageIntro({ project }: { project: Project }) {
+   layouts can never drift apart. `inGrid` releases the measure cap only when
+   a 42fr track is actually doing the measuring — the text-only in-progress
+   stage is single-column, and releasing the cap there ran the description
+   at ~140 characters per line across the full stage width. */
+function StageIntro({
+  project,
+  inGrid = false,
+}: {
+  project: Project;
+  inGrid?: boolean;
+}) {
   return (
     <>
       {/* Title first. The category used to sit above it as a third small
@@ -380,9 +389,10 @@ function StageIntro({ project }: { project: Project }) {
       </p>
 
       {/* Capped at 46em while the stage is one column; from xl the grid track
-          is the measure, so the cap is released rather than fighting it. */}
+          is the measure, so the cap is released rather than fighting it —
+          but only inside the grid. */}
       <p
-        className="mt-4 max-w-[46em] xl:max-w-none"
+        className={inGrid ? "mt-4 max-w-[46em] xl:max-w-none" : "mt-4 max-w-[46em]"}
         style={{
           color: TOKENS.darkBody,
           fontSize: TYPE.body,
@@ -644,7 +654,11 @@ function ProofWall({
               )}
             </span>
             <span
-              className="mt-1.5 block truncate text-[11px] transition-colors duration-200 group-hover/thumb:text-white"
+              /* line-clamp-2, never truncate: these labels ARE the receipts,
+                 and lib/conversation.ts states the site's own law — a cut-off
+                 name is texture. Two lines holds the wall's rhythm while
+                 keeping every workflow name legible. */
+              className="mt-1.5 line-clamp-2 block text-[11px] transition-colors duration-200 group-hover/thumb:text-white"
               style={{ color: TOKENS.darkMuted }}
             >
               {s.label}

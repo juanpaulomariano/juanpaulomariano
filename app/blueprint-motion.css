@@ -1,0 +1,260 @@
+/* ────────────────────────────────────────────────────────────────────────────
+   Blueprint Motion Kit — "the drawing drafts itself."
+
+   Hairlines stroke in, labels stamp, content rises. No bounces, no parallax,
+   no ambient loops (the scroll tick is the one cadence element, replacing the
+   old cue-wheel loop like-for-like).
+
+   AUTHORED FROM SPEC: the original kit files never shipped alongside
+   IMPLEMENTATION.md, so this file implements that document's contract —
+   class names, variants, timings and rules — against this site's tokens.
+
+   Rules this file must keep honoring:
+   - Only `transform` and `opacity` animate. The single exception is the
+     white-label clip-path wipe, which is compositor-friendly.
+   - No `transition: all`.
+   - Reveals fire once; the hook disconnects its observer.
+   - The hero entrance is the only mount animation added by this kit.
+   - The reduced-motion block at the bottom ships intact: everything visible,
+     nothing moves.
+
+   JS-failure safety: scroll-reveal hidden states are gated on `.reveal-armed`,
+   which only `useReveal` adds. No JS → nothing is ever hidden. This is why
+   the selectors look heavier than a bare `.reveal`.
+──────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Steep start, slow settle — the kit's two voices. */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-draft: cubic-bezier(0.19, 1, 0.22, 1);
+  /* Sibling stagger step for scroll reveals. */
+  --reveal-step: 90ms;
+}
+
+/* ── Hero entrance ─────────────────────────────────────────────────────────
+   Staggered one-time mount: eyebrow → headline → sub → CTAs. Pure CSS, no
+   observer — it must run even before hydration. `both` keeps the pre-delay
+   frames hidden and the end state pinned. */
+@keyframes bp-hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-enter [data-hero] {
+  animation: bp-hero-rise 700ms var(--ease-out-quint) both;
+  animation-delay: calc(var(--i, 0) * 120ms);
+}
+
+/* ── Scroll reveal system ──────────────────────────────────────────────────
+   `useReveal` adds `.reveal-armed` on mount and `.is-revealed` on first
+   intersection, then disconnects. Variants:
+
+     stamp — the section numeral settles into place (no overshoot artifacts:
+             it lands exactly at scale 1 on a decelerating curve)
+     draw  — a hairline strokes in, origin left
+     rise  — headings, paragraphs and content blocks lift in
+     print — short rows appear top-down, faster than rise
+
+   Hidden state and transition are split so the transition also governs the
+   reveal itself; `transition-delay` carries the sibling stagger. */
+.reveal.reveal-armed:not(.is-revealed) [data-reveal] {
+  opacity: 0;
+}
+.reveal.reveal-armed:not(.is-revealed) [data-reveal="rise"] {
+  transform: translateY(14px);
+}
+.reveal.reveal-armed:not(.is-revealed) [data-reveal="print"] {
+  transform: translateY(8px);
+}
+.reveal.reveal-armed:not(.is-revealed) [data-reveal="stamp"] {
+  transform: scale(1.12);
+}
+.reveal.reveal-armed:not(.is-revealed) [data-reveal="draw"] {
+  transform: scaleX(0);
+}
+
+.reveal [data-reveal="rise"] {
+  transition:
+    opacity 650ms var(--ease-out-quint),
+    transform 650ms var(--ease-out-quint);
+  transition-delay: calc(var(--i, 0) * var(--reveal-step));
+}
+.reveal [data-reveal="print"] {
+  transition:
+    opacity 420ms var(--ease-out-quint),
+    transform 420ms var(--ease-out-quint);
+  transition-delay: calc(var(--i, 0) * var(--reveal-step));
+}
+.reveal [data-reveal="stamp"] {
+  transition:
+    opacity 480ms var(--ease-out-quint),
+    transform 480ms var(--ease-out-quint);
+  transition-delay: calc(var(--i, 0) * var(--reveal-step));
+}
+.reveal [data-reveal="draw"] {
+  transform-origin: left center;
+  transition:
+    opacity 180ms linear,
+    transform 640ms var(--ease-draft);
+  transition-delay: calc(var(--i, 0) * var(--reveal-step));
+}
+
+/* ── Logo marquee ──────────────────────────────────────────────────────────
+   Kept for kit completeness; UNWIRED on this site. The hero's logos are an
+   orbital system on desktop and an `.assemble` row on mobile — both already
+   animate, and restructuring either into a strip would be a redesign. If a
+   flat logo strip ever ships, this is ready: two identical sets inside
+   `.marquee-track`, no trailing margin on the last item, duplicate set
+   aria-hidden. */
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: bp-marquee 36s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes bp-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ── Nav underline ─────────────────────────────────────────────────────────
+   Draws in from the left on hover, leaves toward the right — the origin swap
+   is what makes rapid hover on/off retarget instead of restarting, because
+   the transition picks up the current scale wherever it is. */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 240ms var(--ease-out-quint);
+}
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+/* ── Arrow nudge ───────────────────────────────────────────────────────────
+   For links that already carry an arrow glyph. The glyph gets wrapped in
+   `.arrow` so only it moves. */
+.link-arrow .arrow {
+  display: inline-block;
+  transition: transform 240ms var(--ease-out-quint);
+}
+.link-arrow:hover .arrow,
+.link-arrow:focus-visible .arrow {
+  transform: translateX(4px);
+}
+
+/* ── White-label wipe ──────────────────────────────────────────────────────
+   Kept for kit completeness; UNWIRED on this site — the before/after swap is
+   already an animated opacity crossfade, and the integration doc's own rule
+   for that case is "leave it alone entirely." The kit's single clip-path
+   exception lives here. */
+.wl-stack {
+  position: relative;
+}
+.wl-stack .wl-top {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 600ms var(--ease-draft);
+}
+.wl-stack.show-alt .wl-top {
+  clip-path: inset(0 0 0 100%);
+}
+
+/* ── Scroll indicator ──────────────────────────────────────────────────────
+   A tick drifting down a hairline rail. Replaces the mouse-outline cue
+   like-for-like: same footprint, same one quiet loop. */
+.scroll-rail {
+  position: relative;
+  width: 1px;
+  height: 34px;
+  background: rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+.scroll-tick {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 3px;
+  height: 8px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.35);
+  animation: bp-scroll-tick 2.2s var(--ease-out-quint) infinite;
+}
+@keyframes bp-scroll-tick {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  25% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(34px);
+  }
+}
+
+/* ── Reduced motion: everything visible, nothing moves ──────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .hero-enter [data-hero] {
+    animation: none;
+  }
+  .reveal.reveal-armed:not(.is-revealed) [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal [data-reveal] {
+    transition: none;
+  }
+  .marquee-track {
+    animation: none;
+  }
+  .nav-link::after {
+    transition: none;
+  }
+  .link-arrow .arrow {
+    transition: none;
+  }
+  .wl-stack .wl-top {
+    transition: none;
+  }
+  .scroll-tick {
+    animation: none;
+    opacity: 1;
+    transform: translateY(13px);
+  }
+}

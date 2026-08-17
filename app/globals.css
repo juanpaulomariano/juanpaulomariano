@@ -1,4 +1,8 @@
 @import "tailwindcss";
+/* Blueprint motion kit — hero entrance, scroll reveals, nav underline,
+   arrow nudge, scroll tick. After the Tailwind layers so its rules win at
+   equal specificity. See IMPLEMENTATION.md at the repo root. */
+@import "./blueprint-motion.css";
 
 body {
   background: #ffffff;

@@ -1,0 +1,18 @@
+# Source material, not shipped assets. The site serves from public/ only;
+# assets/ holds raw screenshots, the original call recording, client
+# documents, and the bot's prompt and knowledge-base files. Uploading 47MB of
+# it on every deploy is wasted time, and the client documents in particular
+# have no business leaving this machine.
+assets/
+
+# Working files: plan output, review captures, design decisions.
+.impeccable/
+
+# Local tooling and scratch.
+scripts/
+docs/
+
+# Never. Belt and braces on top of .gitignore.
+.env
+.env.local
+.env.*.local

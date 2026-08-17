@@ -449,8 +449,17 @@ export const SECTION = {
       ever wanted back, they belong on the stage next to the clock, not in
       a paragraph. */
   limitation: "",
-  /** Under the gallery. Carries the disclosure the cut paragraph used to
-      hold, plus what the thumbnails are, in one line. */
+  /** Under the gallery. Carries ONLY the disclosure the cut paragraph used
+      to hold.
+
+      It used to open "The eleven workflows behind the call", which was the
+      third time that count appeared in one column: the receipts line above
+      the thumbnails already says "11 documented n8n workflows", and the
+      first thumbnail's own label is "The 11 n8n workflows behind the agent".
+      A visible row of canvases does not need to be counted in prose. The
+      receipts line keeps the number because it is making the claim; this
+      line keeps the disclosure because nothing else in the section carries
+      it. */
   galleryNote:
-    "The eleven workflows behind the call. Bright Hollow is a demonstration practice I built to spec, not a client.",
+    "Bright Hollow is a demonstration practice I built to spec, not a client.",
 } as const;

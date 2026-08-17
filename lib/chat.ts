@@ -96,10 +96,19 @@ export const CHAT = {
 
    EVERY LINE IS CHECKABLE against assets/bright-hollow-bot-prompts.md and
    assets/bright-hollow-knowledge-base.md. Nothing here is aspirational: the
-   calendar id and sub-account are in the prompts file, the knowledge base is
-   seven topic sections and ~1,060 words, and the last row states the two
-   limits rather than hiding them. If a value changes in GoHighLevel, it
-   changes in those files and then here. */
+   calendar id and sub-account are in the prompts file, and the knowledge
+   base is seven topic sections and ~1,060 words. If a value changes in
+   GoHighLevel, it changes in those files and then here.
+
+   DO NOT reintroduce "no confirmation email" here. It was on the last row
+   and was cut, for two reasons. It advertises an absence — GoHighLevel
+   sends confirmations natively from a calendar setting, so the line read as
+   "this build lacks a basic feature" to exactly the visitor deciding
+   whether to hire someone to build one. And it was never verified: it came
+   from a sentence in the bot's post-booking script, not from checking the
+   calendar's notification toggle. The bot saying it mid-conversation is
+   honest context for someone who just booked; a ledger row saying it is a
+   spec sheet listing what is missing. */
 export const CHAT_STACK: { label: string; detail: string }[] = [
   {
     label: "Books into a real calendar",
@@ -114,8 +123,8 @@ export const CHAT_STACK: { label: string; detail: string }[] = [
     detail: "June · one prompt, versioned in assets/",
   },
   {
-    label: "Stops where the demo stops",
-    detail: "No confirmation email · conversation capped at 12 messages",
+    label: "Bounded on purpose",
+    detail: "Conversation capped at 12 messages",
   },
 ];
 

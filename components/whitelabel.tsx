@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useReveal } from "@/hooks/useReveal";
 import { EASE, TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
 import {
   CAPABILITIES,
@@ -47,6 +48,9 @@ export default function Whitelabel() {
   const [nudgeOn, setNudgeOn] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /* Blueprint reveal shares the section element with the flip-nudge
+     observer's ref — merged in the ref callback on the <section>. */
+  const reveal = useReveal<HTMLElement>();
 
   const example = WHITELABEL_EXAMPLES[0];
   const multiple = WHITELABEL_EXAMPLES.length > 1;
@@ -112,7 +116,10 @@ export default function Whitelabel() {
 
   return (
     <section
-      ref={sectionRef}
+      ref={(node) => {
+        sectionRef.current = node;
+        reveal(node);
+      }}
       id="whitelabel"
       className="px-6 py-20 sm:px-10 sm:py-24"
       style={{ background: TOKENS.white }}
@@ -133,15 +140,26 @@ export default function Whitelabel() {
           at 1280, and from 2xl the column drops back to 52fr so the browser
           frame gets the width instead. */}
       <div className="mx-auto mb-10 max-w-[1320px]">
-        <div className="border-t pt-5" style={{ borderColor: TOKENS.ink }}>
+        {/* Hairline as its own element so the draw reveal can scale it
+            without scaling the numeral. */}
+        <div
+          data-reveal="draw"
+          style={{ "--i": 1, borderColor: TOKENS.ink } as CSSProperties}
+          className="border-t"
+        />
+        <div className="pt-5">
           <div className="flex justify-end">
             <span
-              className="tabular-nums tracking-[0.2em]"
-              style={{
-                color: TOKENS.muted,
-                fontSize: TYPE.micro,
-                ...TYPE_STYLE.micro,
-              }}
+              data-reveal="stamp"
+              className="inline-block tabular-nums tracking-[0.2em]"
+              style={
+                {
+                  "--i": 0,
+                  color: TOKENS.muted,
+                  fontSize: TYPE.micro,
+                  ...TYPE_STYLE.micro,
+                } as CSSProperties
+              }
             >
               05
             </span>
@@ -164,13 +182,17 @@ export default function Whitelabel() {
               it wrapped to a third line with "sight." orphaned. Balancing
               splits it evenly instead of leaving one word stranded. */}
           <h2
+            data-reveal="rise"
             className="mx-auto mt-4 xl:mx-0"
-            style={{
-              fontFamily: "var(--font-grotesk)",
-              color: TOKENS.ink,
-              fontSize: TYPE.section,
-              ...TYPE_STYLE.section,
-            }}
+            style={
+              {
+                "--i": 2,
+                fontFamily: "var(--font-grotesk)",
+                color: TOKENS.ink,
+                fontSize: TYPE.section,
+                ...TYPE_STYLE.section,
+              } as CSSProperties
+            }
           >
             <span className="block" style={{ color: TOKENS.muted }}>
               Your brand on top.
@@ -180,8 +202,16 @@ export default function Whitelabel() {
             </span>
           </h2>
           <p
+            data-reveal="rise"
             className="mx-auto mt-5 max-w-[46ch] xl:mx-0"
-            style={{ color: TOKENS.muted, fontSize: TYPE.body, ...TYPE_STYLE.body }}
+            style={
+              {
+                "--i": 3,
+                color: TOKENS.muted,
+                fontSize: TYPE.body,
+                ...TYPE_STYLE.body,
+              } as CSSProperties
+            }
           >
             Turn GoHighLevel into an environment your clients know as yours.
             Domain, branding, navigation, the whole client-facing layer, without
@@ -190,7 +220,11 @@ export default function Whitelabel() {
         </div>
 
         {/* Toggle */}
-        <div className="mt-8 flex flex-col items-center xl:mt-7 xl:items-start">
+        <div
+          data-reveal="rise"
+          style={{ "--i": 4 } as CSSProperties}
+          className="mt-8 flex flex-col items-center xl:mt-7 xl:items-start"
+        >
           <div
             role="group"
             aria-label="Switch between the client view and the platform underneath"
@@ -251,7 +285,11 @@ export default function Whitelabel() {
         {/* Browser frame — the proof column. No max-width at xl: the grid track
             is the constraint there, and an inherited cap would shrink the
             screenshot below the size where the CRM navigation stays readable. */}
-        <div className="relative mx-auto mt-8 w-full min-w-0 max-w-[1320px] xl:mt-0 xl:max-w-none">
+        <div
+          data-reveal="rise"
+          style={{ "--i": 3 } as CSSProperties}
+          className="relative mx-auto mt-8 w-full min-w-0 max-w-[1320px] xl:mt-0 xl:max-w-none"
+        >
           <div className="border" style={{ borderColor: TOKENS.line }}>
             {/* Slim chrome: dots + the live address bar */}
             <div

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useReveal } from "@/hooks/useReveal";
 import ChatStage, { type ChatPhase } from "@/components/chat-stage";
 import { CHAT, CHAT_EMBED, CHAT_STACK } from "@/lib/chat";
 import { EASE, TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
@@ -27,6 +28,8 @@ export default function ChatAi() {
      next step: this is the page's only live system, and it used to end in
      silence while the recorded call got a bridge to the contact form. */
   const [engaged, setEngaged] = useState(false);
+  /* Blueprint reveal: one observer for the whole section. */
+  const reveal = useReveal<HTMLDivElement>();
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -53,16 +56,27 @@ export default function ChatAi() {
       className="px-6 py-20 sm:px-10 sm:py-24"
       style={{ background: TOKENS.white }}
     >
-      <div className="mx-auto max-w-[1320px]">
-        <div className="border-t pt-5" style={{ borderColor: TOKENS.ink }}>
+      <div ref={reveal} className="mx-auto max-w-[1320px]">
+        {/* Hairline as its own element so the draw reveal can scale it
+            without scaling the numeral. */}
+        <div
+          data-reveal="draw"
+          style={{ "--i": 1, borderColor: TOKENS.ink } as React.CSSProperties}
+          className="border-t"
+        />
+        <div className="pt-5">
           <div className="flex justify-end">
             <span
-              className="tabular-nums tracking-[0.2em]"
-              style={{
-                color: TOKENS.muted,
-                fontSize: TYPE.micro,
-                ...TYPE_STYLE.micro,
-              }}
+              data-reveal="stamp"
+              className="inline-block tabular-nums tracking-[0.2em]"
+              style={
+                {
+                  "--i": 0,
+                  color: TOKENS.muted,
+                  fontSize: TYPE.micro,
+                  ...TYPE_STYLE.micro,
+                } as React.CSSProperties
+              }
             >
               04
             </span>
@@ -97,12 +111,16 @@ export default function ChatAi() {
           {/* ── The claim ── */}
           <div className="min-w-0" style={recede}>
             <h2
-              style={{
-                fontFamily: "var(--font-grotesk)",
-                color: TOKENS.ink,
-                fontSize: TYPE.section,
-                ...TYPE_STYLE.section,
-              }}
+              data-reveal="rise"
+              style={
+                {
+                  "--i": 2,
+                  fontFamily: "var(--font-grotesk)",
+                  color: TOKENS.ink,
+                  fontSize: TYPE.section,
+                  ...TYPE_STYLE.section,
+                } as React.CSSProperties
+              }
             >
               <span className="block" style={{ color: TOKENS.muted }}>
                 {CHAT.titleTop}
@@ -111,24 +129,32 @@ export default function ChatAi() {
             </h2>
 
             <p
+              data-reveal="rise"
               className="mt-4 max-w-[46ch]"
-              style={{
-                color: TOKENS.muted,
-                fontSize: TYPE.body,
-                ...TYPE_STYLE.body,
-              }}
+              style={
+                {
+                  "--i": 3,
+                  color: TOKENS.muted,
+                  fontSize: TYPE.body,
+                  ...TYPE_STYLE.body,
+                } as React.CSSProperties
+              }
             >
               {CHAT.lead}
             </p>
 
             {CHAT_EMBED.enabled ? (
               <p
+                data-reveal="rise"
                 className="mt-5 max-w-[46ch]"
-                style={{
-                  color: TOKENS.muted,
-                  fontSize: TYPE.micro,
-                  ...TYPE_STYLE.micro,
-                }}
+                style={
+                  {
+                    "--i": 4,
+                    color: TOKENS.muted,
+                    fontSize: TYPE.micro,
+                    ...TYPE_STYLE.micro,
+                  } as React.CSSProperties
+                }
               >
                 {CHAT.liveNote}
               </p>
@@ -159,8 +185,9 @@ export default function ChatAi() {
                 while both are the same receptionist. */}
             {CHAT_EMBED.enabled && (
               <div
+                data-reveal="rise"
                 className="mt-6 border-t pt-4 xl:mt-4"
-                style={{ borderColor: TOKENS.line }}
+                style={{ "--i": 5, borderColor: TOKENS.line } as React.CSSProperties}
               >
                 {CHAT_STACK.map((c) => (
                   <div
@@ -199,7 +226,13 @@ export default function ChatAi() {
               Absent entirely while the embed is disabled: an empty dark box
               saying "not configured" advertises an unfinished feature, where
               the pending sentence above simply tells the truth. */}
-          <div className="mt-9 min-w-0 xl:mt-0">
+          {/* One entrance for the whole panel column — the widget's own
+              loading choreography happens inside it, untouched. */}
+          <div
+            data-reveal="rise"
+            style={{ "--i": 3 } as React.CSSProperties}
+            className="mt-9 min-w-0 xl:mt-0"
+          >
             {CHAT_EMBED.enabled && (
               <ChatStage
                 reduced={reduced}

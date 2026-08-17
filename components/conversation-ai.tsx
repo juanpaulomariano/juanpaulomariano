@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useReveal } from "@/hooks/useReveal";
 import CallStage, { type StagePhase } from "@/components/call-stage";
 import GalleryLightbox from "@/components/gallery-lightbox";
 import { CAPABILITIES, CHANNELS, SECTION, STAGE } from "@/lib/conversation";
@@ -40,6 +41,9 @@ export default function ConversationAi() {
   const [reduced, setReduced] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [galleryStart, setGalleryStart] = useState(0);
+  /* Blueprint reveal: one observer for the whole section — it fits a
+     viewport, so everything drafts in together on its stagger. */
+  const reveal = useReveal<HTMLDivElement>();
 
   /* This section stages the voice channel. A text surface is section 04's
      live GHL widget, which gets its own treatment rather than a switch
@@ -84,18 +88,28 @@ export default function ConversationAi() {
       className="px-6 py-20 sm:px-10 sm:py-24"
       style={{ background: TOKENS.white }}
     >
-      <div className="mx-auto max-w-[1320px]">
+      <div ref={reveal} className="mx-auto max-w-[1320px]">
         {/* Numeral only — the page numbers its sections, it does not label
-            them. */}
-        <div className="border-t pt-5" style={{ borderColor: TOKENS.ink }}>
+            them. The hairline is its own element so the draw reveal can
+            scale it without scaling the numeral. */}
+        <div
+          data-reveal="draw"
+          style={{ "--i": 1, borderColor: TOKENS.ink } as React.CSSProperties}
+          className="border-t"
+        />
+        <div className="pt-5">
           <div className="flex justify-end">
             <span
-              className="tabular-nums tracking-[0.2em]"
-              style={{
-                color: TOKENS.muted,
-                fontSize: TYPE.micro,
-                ...TYPE_STYLE.micro,
-              }}
+              data-reveal="stamp"
+              className="inline-block tabular-nums tracking-[0.2em]"
+              style={
+                {
+                  "--i": 0,
+                  color: TOKENS.muted,
+                  fontSize: TYPE.micro,
+                  ...TYPE_STYLE.micro,
+                } as React.CSSProperties
+              }
             >
               03
             </span>
@@ -114,12 +128,16 @@ export default function ConversationAi() {
           {/* ── The claim, the receipts, the close ── */}
           <div className="min-w-0 xl:order-2" style={recede}>
             <h2
-              style={{
-                fontFamily: "var(--font-grotesk)",
-                color: TOKENS.ink,
-                fontSize: TYPE.section,
-                ...TYPE_STYLE.section,
-              }}
+              data-reveal="rise"
+              style={
+                {
+                  "--i": 2,
+                  fontFamily: "var(--font-grotesk)",
+                  color: TOKENS.ink,
+                  fontSize: TYPE.section,
+                  ...TYPE_STYLE.section,
+                } as React.CSSProperties
+              }
             >
               <span className="block" style={{ color: TOKENS.muted }}>
                 {SECTION.titleTop}
@@ -128,12 +146,16 @@ export default function ConversationAi() {
             </h2>
 
             <p
+              data-reveal="rise"
               className="mt-4 max-w-[46ch]"
-              style={{
-                color: TOKENS.muted,
-                fontSize: TYPE.body,
-                ...TYPE_STYLE.body,
-              }}
+              style={
+                {
+                  "--i": 3,
+                  color: TOKENS.muted,
+                  fontSize: TYPE.body,
+                  ...TYPE_STYLE.body,
+                } as React.CSSProperties
+              }
             >
               {SECTION.lead}
             </p>
@@ -141,17 +163,25 @@ export default function ConversationAi() {
             {/* One operational fact where a lesser page would put a stat
                 block. A demonstration practice has no honest ROI numbers. */}
             <p
+              data-reveal="rise"
               className="mt-3 max-w-[46ch] xl:mt-2"
-              style={{
-                color: TOKENS.body,
-                fontSize: TYPE.small,
-                ...TYPE_STYLE.small,
-              }}
+              style={
+                {
+                  "--i": 4,
+                  color: TOKENS.body,
+                  fontSize: TYPE.small,
+                  ...TYPE_STYLE.small,
+                } as React.CSSProperties
+              }
             >
               {SECTION.factLine}
             </p>
 
-            <div className="mt-5 flex items-center gap-3 xl:mt-4">
+            <div
+              data-reveal="rise"
+              style={{ "--i": 5 } as React.CSSProperties}
+              className="mt-5 flex items-center gap-3 xl:mt-4"
+            >
               <img
                 src="/logos/vapi.svg"
                 alt="Vapi"
@@ -183,8 +213,9 @@ export default function ConversationAi() {
                 opened a dead gap under the receipts line, which reads worse
                 than a small difference in column length ever did. */}
             <div
+              data-reveal="rise"
               className="mt-6 border-t pt-4 xl:mt-2 xl:pt-2"
-              style={{ borderColor: TOKENS.line }}
+              style={{ "--i": 6, borderColor: TOKENS.line } as React.CSSProperties}
             >
               {CAPABILITIES.map((c) => (
                 <button
@@ -239,7 +270,13 @@ export default function ConversationAi() {
           {/* ── The stage, then the close ──
               Reading order after the demo IS the conversion order: the
               receipts, the honesty line, the bridge. */}
-          <div className="mt-9 min-w-0 xl:order-1 xl:mt-0">
+          {/* One entrance for the whole stage column — its children (stage,
+              receipts, gallery) do not stagger inside it. */}
+          <div
+            data-reveal="rise"
+            style={{ "--i": 3 } as React.CSSProperties}
+            className="mt-9 min-w-0 xl:order-1 xl:mt-0"
+          >
             <CallStage channel={voice} reduced={reduced} onPhase={handlePhase} />
 
             <div style={recede}>
@@ -264,7 +301,7 @@ export default function ConversationAi() {
                   <button
                     type="button"
                     onClick={() => openGallery()}
-                    className="group/all relative inline-flex shrink-0 items-center gap-2 border-b pb-0.5 transition-colors duration-300 before:absolute before:-inset-x-1 before:-inset-y-3 before:content-[''] hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+                    className="link-arrow relative inline-flex shrink-0 items-center gap-2 border-b pb-0.5 transition-colors duration-300 before:absolute before:-inset-x-1 before:-inset-y-3 before:content-[''] hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
                     style={{
                       borderColor: TOKENS.ink,
                       color: TOKENS.ink,
@@ -273,10 +310,10 @@ export default function ConversationAi() {
                     }}
                   >
                     See all {shots.length} screenshots
-                    <span
-                      aria-hidden="true"
-                      className="transition-transform duration-300 group-hover/all:translate-x-1"
-                    >
+                    {/* Arrow nudge now comes from the kit's .link-arrow; the
+                        old group-hover translate was the conflicting rule and
+                        was removed rather than doubled. */}
+                    <span aria-hidden="true" className="arrow">
                       →
                     </span>
                   </button>

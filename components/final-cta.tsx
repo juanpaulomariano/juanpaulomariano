@@ -1,3 +1,4 @@
+import RevealGroup from "@/components/reveal-group";
 import { TOKENS, TYPE, TYPE_STYLE } from "@/lib/tokens";
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -13,21 +14,31 @@ export default function FinalCta() {
       className="px-6 py-20 sm:px-10 sm:py-24"
       style={{ background: TOKENS.white }}
     >
-      <div className="mx-auto max-w-[1320px]">
+      {/* RevealGroup is the section's one client leaf: the section itself
+          stays server-rendered, children pass through as a slot. */}
+      <RevealGroup className="mx-auto max-w-[1320px]">
+        {/* Hairline as its own element so the draw reveal can scale it
+            without scaling the numeral. */}
         <div
-          className="border-t pt-5"
-          style={{ borderColor: TOKENS.ink }}
-        >
+          data-reveal="draw"
+          style={{ "--i": 1, borderColor: TOKENS.ink } as React.CSSProperties}
+          className="border-t"
+        />
+        <div className="pt-5">
           {/* Numeral only, like every other section. The "Contact" eyebrow is
               gone: the headline and the two links below say what this is. */}
           <div className="flex justify-end">
             <span
-              className="tabular-nums tracking-[0.2em]"
-              style={{
-                color: TOKENS.muted,
-                fontSize: TYPE.micro,
-                ...TYPE_STYLE.micro,
-              }}
+              data-reveal="stamp"
+              className="inline-block tabular-nums tracking-[0.2em]"
+              style={
+                {
+                  "--i": 0,
+                  color: TOKENS.muted,
+                  fontSize: TYPE.micro,
+                  ...TYPE_STYLE.micro,
+                } as React.CSSProperties
+              }
             >
               06
             </span>
@@ -36,26 +47,42 @@ export default function FinalCta() {
 
         <div className="mx-auto mt-14 max-w-[44rem] text-center sm:mt-16">
           <h2
+            data-reveal="rise"
             className="mx-auto max-w-[15em] text-balance"
-            style={{
-              fontFamily: "var(--font-grotesk)",
-              color: TOKENS.ink,
-              fontSize: TYPE.section,
-              ...TYPE_STYLE.section,
-            }}
+            style={
+              {
+                "--i": 2,
+                fontFamily: "var(--font-grotesk)",
+                color: TOKENS.ink,
+                fontSize: TYPE.section,
+                ...TYPE_STYLE.section,
+              } as React.CSSProperties
+            }
           >
             Tell me what the platform can&apos;t do yet.
           </h2>
           <p
+            data-reveal="rise"
             className="mx-auto mt-6 max-w-[42ch]"
-            style={{ color: TOKENS.muted, fontSize: TYPE.body, ...TYPE_STYLE.body }}
+            style={
+              {
+                "--i": 3,
+                color: TOKENS.muted,
+                fontSize: TYPE.body,
+                ...TYPE_STYLE.body,
+              } as React.CSSProperties
+            }
           >
             If you have a client build that runs past what GoHighLevel does out
             of the box, send me the shape of it. I&apos;ll tell you straight
             whether it&apos;s worth building.
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <div
+            data-reveal="rise"
+            style={{ "--i": 4 } as React.CSSProperties}
+            className="mt-10 flex flex-wrap items-center justify-center gap-3"
+          >
             <a
               href="mailto:paumirasol800@gmail.com"
               className="rounded-full bg-[#0A0A0A] px-6 py-3 text-[13.5px] font-medium text-white transition-colors duration-300 hover:bg-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
@@ -92,7 +119,7 @@ export default function FinalCta() {
             </a>
           </span>
         </div>
-      </div>
+      </RevealGroup>
     </section>
   );
 }

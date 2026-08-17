@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useReveal } from "@/hooks/useReveal";
 import GalleryLightbox from "@/components/gallery-lightbox";
 import LivingPipeline from "@/components/living-pipeline";
 import VideoModal, { muxPoster } from "@/components/video-modal";
@@ -67,6 +68,9 @@ export default function SelectedWorks() {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryStart, setGalleryStart] = useState(0);
   const railRef = useRef<HTMLDivElement>(null);
+  /* Blueprint reveal: arms the section container; children tagged with
+     [data-reveal] draft in once, on first intersection. */
+  const reveal = useReveal<HTMLDivElement>();
 
   const active = PROJECTS.find((p) => p.key === activeKey) ?? PROJECTS[0];
 
@@ -84,7 +88,7 @@ export default function SelectedWorks() {
       className="px-6 py-20 sm:px-10 sm:py-24 xl:py-[68px]"
       style={{ background: TOKENS.darkBg }}
     >
-      <div className="mx-auto max-w-[1320px]">
+      <div ref={reveal} className="mx-auto max-w-[1320px]">
         {/* ── Section header ──────────────────────────────────────────────
             A numeral, and no text eyebrow. The eyebrow used to read "Selected
             work" in the same small uppercase tracked voice as the project
@@ -92,16 +96,29 @@ export default function SelectedWorks() {
             same pitch and nothing led. The headline says what the section is.
 
             The numeral stays because the page numbers its sections 01-06 and a
-            single figure against a rule cannot compete with a headline. */}
-        <div className="border-t pt-5" style={{ borderColor: TOKENS.darkLine }}>
+            single figure against a rule cannot compete with a headline.
+
+            The hairline is its own element so the draw reveal can scale it
+            without also scaling the numeral; border-t on an empty div is
+            visually identical to the border the wrapper used to carry. */}
+        <div
+          data-reveal="draw"
+          style={{ "--i": 1, borderColor: TOKENS.darkLine } as React.CSSProperties}
+          className="border-t"
+        />
+        <div className="pt-5">
           <div className="flex justify-end">
             <span
-              className="tabular-nums tracking-[0.2em]"
-              style={{
-                color: TOKENS.darkMuted,
-                fontSize: TYPE.micro,
-                ...TYPE_STYLE.micro,
-              }}
+              data-reveal="stamp"
+              className="inline-block tabular-nums tracking-[0.2em]"
+              style={
+                {
+                  "--i": 0,
+                  color: TOKENS.darkMuted,
+                  fontSize: TYPE.micro,
+                  ...TYPE_STYLE.micro,
+                } as React.CSSProperties
+              }
             >
               02
             </span>
@@ -113,13 +130,17 @@ export default function SelectedWorks() {
               two lines so it establishes this as the main section without
               growing large enough to overpower the work below. */}
           <h2
+            data-reveal="rise"
             className="max-w-[13em]"
-            style={{
-              fontFamily: "var(--font-grotesk)",
-              color: TOKENS.darkInk,
-              fontSize: TYPE.section,
-              ...TYPE_STYLE.section,
-            }}
+            style={
+              {
+                "--i": 2,
+                fontFamily: "var(--font-grotesk)",
+                color: TOKENS.darkInk,
+                fontSize: TYPE.section,
+                ...TYPE_STYLE.section,
+              } as React.CSSProperties
+            }
           >
             Systems I&apos;ve built,
             <br />
@@ -129,7 +150,11 @@ export default function SelectedWorks() {
 
         {/* ── The switchboard: two columns of one composition, joined by a
                single hairline. No outer card, no rounded container. ── */}
-        <div className="mt-10 flex flex-col lg:flex-row lg:gap-14 xl:mt-9 xl:gap-16">
+        <div
+          data-reveal="rise"
+          style={{ "--i": 3 } as React.CSSProperties}
+          className="mt-10 flex flex-col lg:flex-row lg:gap-14 xl:mt-9 xl:gap-16"
+        >
           {/* LEFT RAIL — an index of systems. Horizontal strip under lg. */}
           <div
             ref={railRef}

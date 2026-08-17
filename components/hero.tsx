@@ -386,22 +386,22 @@ export default function Hero() {
               an id that never existed, while the two showcase sections had no
               nav entry at all — the inverse of what a visitor needs. */}
           <nav className="hidden items-center gap-7 sm:flex" aria-label="Primary">
-            <a href="#work" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
+            <a href="#work" className="nav-link text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
               Work
             </a>
             {/* Voice and chat are named by their surface, not both as "AI":
                 once the page carries two conversation sections, one generic
                 label sends the visitor to the wrong one. */}
-            <a href="#ai" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
+            <a href="#ai" className="nav-link text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
               Voice AI
             </a>
-            <a href="#chat" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
+            <a href="#chat" className="nav-link text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
               Chat AI
             </a>
-            <a href="#whitelabel" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
+            <a href="#whitelabel" className="nav-link text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
               White-label
             </a>
-            <a href="#contact" className="text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
+            <a href="#contact" className="nav-link text-[13.5px] text-[#444444] transition-colors duration-200 hover:text-[#0A0A0A]">
               Contact
             </a>
           </nav>
@@ -663,11 +663,14 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Scroll cue */}
+        {/* Scroll cue. The visual is the kit's rail-and-tick (a tick drifting
+            down a hairline), replacing the mouse outline + cue-wheel — the
+            label is untouched. Same footprint, still the page's one quiet
+            loop. */}
         {cueOn && (
           <div className="pointer-events-none absolute bottom-4 left-1/2 z-[5] hidden -translate-x-1/2 flex-col items-center gap-2.5 lg:flex">
-            <div className="flex h-[30px] w-[19px] justify-center rounded-[10px] border border-black/15 pt-[5px]">
-              <div className="cue-wheel h-[6px] w-[3px] rounded-full bg-black/35" />
+            <div className="scroll-rail">
+              <div className="scroll-tick" />
             </div>
             <span className="text-[10px] uppercase leading-none tracking-[0.22em] text-[#9C9C9C]">
               scroll to explore

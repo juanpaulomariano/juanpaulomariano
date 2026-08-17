@@ -21,7 +21,7 @@ seeing a booking system work end to end.
 
 Juan Paulo Mariano built this receptionist. He is a GoHighLevel automation
 architect who builds AI receptionists that answer phones and websites for
-real businesses. He can be reached at paumirasol800@gmail.com.
+real businesses. He can be reached at contact@juanpaulomariano.com.
 
 
 ## Location and contact

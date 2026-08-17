@@ -437,7 +437,7 @@ export default function CallStage({ channel, reduced, onPhase }: Props) {
                     ? "Replay the recording"
                     : "Resume the recording"
               }
-              className="press flex h-11 w-11 shrink-0 items-center justify-center border transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
+              className="flex h-11 w-11 shrink-0 items-center justify-center border transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
               style={{
                 borderColor:
                   state === "errored" ? TOKENS.stageHair : TOKENS.stageLine,
@@ -568,7 +568,7 @@ export default function CallStage({ channel, reduced, onPhase }: Props) {
                   ? `Answer the call. Plays the recording, ${clock(total)}.`
                   : STAGE.pendingNote
               }
-              className="press relative flex h-14 w-14 items-center justify-center border transition-transform duration-200 enabled:hover:scale-[1.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 disabled:cursor-default"
+              className="relative flex h-14 w-14 items-center justify-center border transition-transform duration-200 enabled:hover:scale-[1.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 disabled:cursor-default"
               style={{
                 borderColor: hasAudio ? TOKENS.stageInk : TOKENS.stageLine,
                 color: TOKENS.stageInk,

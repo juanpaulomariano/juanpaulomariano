@@ -121,7 +121,7 @@ export default function GalleryLightbox({
           <button
             type="button"
             onClick={() => setZoomed((v) => !v)}
-            className="press absolute right-3 top-3 flex min-h-11 items-center rounded-full border bg-white/95 px-4 text-[12px] transition-colors duration-200 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="absolute right-3 top-3 flex min-h-11 items-center rounded-full border bg-white/95 px-4 text-[12px] transition-colors duration-200 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ borderColor: TOKENS.line, color: TOKENS.ink }}
           >
             {zoomed ? "Fit to screen" : "Zoom to 100%"}

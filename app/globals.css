@@ -333,61 +333,6 @@ button:focus-visible {
   }
 }
 
-/* ── Press feedback ──────────────────────────────────────────────────────────
-   The site had 24 hover states and no press states. Hover is a mouse-only
-   affordance: on a phone, every control here gave no acknowledgement at all
-   between the tap and whatever it caused, which reads as a dropped input on
-   anything that takes a moment (opening the gallery, loading a widget).
-
-   One rule, every control. 90ms in on press, released on the site's own enter
-   curve so the return is the graceful half — the asymmetry that makes a press
-   feel instant and the release feel unhurried.
-
-   Composed through a custom property rather than `transform` directly: the
-   video poster's play mark already composes --prime-scale and --hover-scale,
-   and an inline transform on the same element would silently win over both.
-   Anything that sets --press-scale participates; anything that does not is
-   untouched. */
-
-@property --press-scale {
-  syntax: "<number>";
-  inherits: false;
-  initial-value: 1;
-}
-
-button:not(:disabled):active,
-a:active {
-  --press-scale: 0.97;
-}
-
-/* Applied where a scale is safe: excludes the full-bleed backdrop button and
-   anything whose layout depends on its own transform. */
-button:not(:disabled),
-a[href] {
-  transition: --press-scale 140ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.press {
-  transform: scale(var(--press-scale, 1));
-}
-
-/* The poster's mark composes three scales; press must join, not replace. */
-.play-prime.press {
-  transform: scale(
-    calc(var(--prime-scale, 1) * var(--hover-scale, 1) * var(--press-scale, 1))
-  );
-}
-
-@media (prefers-reduced-motion: reduce) {
-  button:not(:disabled),
-  a[href] {
-    transition: none;
-  }
-  button:not(:disabled):active,
-  a:active {
-    --press-scale: 1;
-  }
-}
 
 /* ── Chat AI: the panel wakes ────────────────────────────────────────────────
    The widget used to cross-fade in, which reads as a swap rather than an
@@ -455,5 +400,115 @@ a[href] {
   .chat-wake-surface,
   .chat-close-in {
     animation: none;
+  }
+}
+
+/* ── Press feedback ──────────────────────────────────────────────────────────
+   The site had 24 hover states and none for press. Hover is mouse-only, so on
+   a phone every control sat silent between the tap and whatever it caused,
+   which reads as a dropped input on anything that takes a moment.
+
+   GLOBAL, not opt-in. The first pass tagged ten controls by hand and missed
+   the hero's CTAs, the nav, the rail tabs, the video poster, the white-label
+   toggle, and the final CTA pair — which is most of what a visitor actually
+   presses. A rule that must be remembered per element is a rule that will be
+   forgotten, so this applies to every button and link and then excludes the
+   handful where a scale would be wrong.
+
+   `transform` is set on the element itself rather than a custom property so
+   it reaches controls that were never authored with press in mind. The one
+   element that composes its own scales (the poster's play mark) is excluded
+   here and handled below, because two transform declarations cannot coexist:
+   the more specific one silently wins and the composition breaks. */
+
+button:not(:disabled),
+a[href] {
+  transition: transform 140ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+button:not(:disabled):active,
+a[href]:active {
+  transform: scale(0.97);
+}
+
+/* Excluded, and why:
+     [data-no-press]  — opt-out for anything that needs it
+     .play-prime      — composes --prime-scale x --hover-scale; handled below
+     [role="tab"]     — scaling a rail row detaches it from its own hairline
+     .stage-ring      — decorative, never pressed
+   The backdrop button is excluded by being aria-hidden from press: scaling a
+   full-bleed scrim would visibly shrink the dimming. */
+button[data-no-press]:active,
+a[data-no-press]:active,
+[role="tab"]:active,
+.night-panel > .chat-lock:active {
+  transform: none;
+}
+
+/* The poster's mark already multiplies two scales; press joins the product
+   rather than replacing it. */
+.play-prime {
+  transform: scale(
+    calc(var(--prime-scale, 1) * var(--hover-scale, 1) * var(--press-scale, 1))
+  );
+}
+
+.play-prime:active {
+  --press-scale: 0.97;
+}
+
+@property --press-scale {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+/* Tabs get a press state that suits a row rather than a box: the row does not
+   shrink, its accent marker acknowledges instead. */
+[role="tab"]:active {
+  opacity: 0.82;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled),
+  a[href] {
+    transition: none;
+  }
+  button:not(:disabled):active,
+  a[href]:active,
+  .play-prime:active {
+    transform: none;
+    --press-scale: 1;
+  }
+}
+
+/* ── Navigating between sections ─────────────────────────────────────────────
+   Clicking a nav link or a CTA used to teleport: the page cut to the target
+   with nothing connecting where you were to where you arrived, which on a
+   page of six full-height sections reads as a different page rather than a
+   different part of this one.
+
+   Smooth scrolling supplies the connective tissue, and scroll-margin keeps
+   the landing honest — without it a section arrives flush against the
+   viewport edge with its opening rule jammed under the browser chrome, so
+   the numeral and the top hairline that identify it are the first things
+   lost. 88px clears the fixed nav with air to spare.
+
+   `:has()` guards the smooth behaviour so it applies to anchor navigation
+   only, never to programmatic scrolling elsewhere in the site. */
+
+html {
+  scroll-behavior: smooth;
+}
+
+:target,
+section[id],
+main > section {
+  scroll-margin-top: 88px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }

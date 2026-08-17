@@ -581,15 +581,24 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Center block */}
-        <div className="relative z-10 flex flex-col items-center px-6 py-16 text-center">
-          <p className="text-[12px] tracking-[0.14em] text-[#5E5E5E]">
+        {/* Center block. `hero-enter` staggers the four children below on
+            mount (eyebrow → h1 → dek → CTAs); the logo displays are NOT
+            tagged — the mobile row already enters via `.assemble` and the
+            desktop orbit is its own animated system, and one entrance per
+            element is the kit's law. */}
+        <div className="hero-enter relative z-10 flex flex-col items-center px-6 py-16 text-center">
+          <p
+            data-hero
+            style={{ "--i": 0 } as CSSProperties}
+            className="text-[12px] tracking-[0.14em] text-[#5E5E5E]"
+          >
             GoHighLevel · Automation · Custom builds
           </p>
 
           <h1
+            data-hero
             className={`mt-5 max-w-[14em] text-balance ${headline.className}`}
-            style={headline.style}
+            style={{ ...headline.style, "--i": 1 } as CSSProperties}
           >
             Your best client keeps asking for things GoHighLevel{" "}
             <em
@@ -604,13 +613,21 @@ export default function Hero() {
           {/* body role (14.5px/1.75) — was a one-off 15px/1.7, which put the
               hero's dek half a pixel away from every other paragraph on the
               page for no reason. */}
-          <p className="mt-6 max-w-[34em] text-[14.5px] leading-[1.75] text-[#444444]">
+          <p
+            data-hero
+            style={{ "--i": 2 } as CSSProperties}
+            className="mt-6 max-w-[34em] text-[14.5px] leading-[1.75] text-[#444444]"
+          >
             I build the CRM, the automation, and the custom code for when the
             platform runs out. Under your brand, handed off clean. That’s the
             short version — the rest is in the work.
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <div
+            data-hero
+            style={{ "--i": 3 } as CSSProperties}
+            className="mt-9 flex flex-wrap items-center justify-center gap-3"
+          >
             <a
               href="#contact"
               className="rounded-full bg-[#0A0A0A] px-6 py-3 text-[13.5px] font-medium text-white transition-colors duration-300 hover:bg-[var(--accent)]"

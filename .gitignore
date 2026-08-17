@@ -5,10 +5,27 @@ next-env.d.ts
 *.tsbuildinfo
 .DS_Store
 
-# Workflow screenshot sources + client documents (converted copies live in
-# public/works/ as WebP). Keep the originals local.
-assets/GlowTheory Workflow Screenshots/
-assets/IronPulse Workflow Screensots/
+# ── assets/ is LOCAL-ONLY working material, never published ────────────────
+# Nothing the site serves lives here. Every shipping image is converted into
+# public/ (WebP for rasters, SVG for marks) and the app imports only from
+# there — `git grep "assets/"` in app/, components/ and lib/ returns comments
+# and nothing else.
+#
+# It stays out of the repo for three reasons:
+#
+#   1. assets/bright-hollow-bot-prompts.md is the live GoHighLevel bot's
+#      working prompt, including its jailbreak and prompt-extraction
+#      defenses. Publishing it hands anyone the map for attacking the bot
+#      that is running on the site right now, and gives away the work.
+#   2. That same file carries the sub-account and calendar ids. They are not
+#      credentials — the API rejects them without the PIT — but they are
+#      internal infrastructure identifiers with no reason to be public.
+#   3. It is ~47MB of source rasters and client documents. The repo does not
+#      need to carry them.
+#
+# If a fact from these files needs to be on the site, put the fact in lib/
+# where the copy lives. Do not un-ignore this directory.
+assets/
 
 # Raw call recordings. The served copy lives in public/conversation/; keeping
 # the source here too would double 2.9MB in history for no benefit.
@@ -24,8 +41,9 @@ assets/*.mp3
 .env.local
 .env.*.local
 
-# Impeccable working files: review captures are evidence, not assets
-.impeccable/review/
+# Impeccable working files: critique reports, review captures and surface
+# briefs are the scaffolding around the work, not the work. Local only.
+.impeccable/
 
 .vercel
 .env*

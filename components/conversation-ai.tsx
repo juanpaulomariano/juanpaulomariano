@@ -277,37 +277,86 @@ export default function ConversationAi() {
                 </div>
               )}
 
-              {SECTION.limitation && (
-                <p
-                  className="mt-4 max-w-[64ch]"
-                  style={{
-                    color: TOKENS.muted,
-                    fontSize: TYPE.micro,
-                    ...TYPE_STYLE.micro,
-                  }}
-                >
-                  {SECTION.limitation}
-                </p>
-              )}
+              {/* ── The workflow gallery ──
+                  This replaced a limitation paragraph and a bridge line.
+                  Eleven canvases a visitor can open are a better argument
+                  than a sentence saying the agent is fast, and the section
+                  already had the screenshots — they were reachable only
+                  through a text control most visitors never pressed.
 
-              <p
-                className="mt-4"
-                style={{
-                  color: TOKENS.muted,
-                  fontSize: TYPE.small,
-                  ...TYPE_STYLE.small,
-                }}
-              >
-                {SECTION.bridgeText}{" "}
-                <a
-                  href="#contact"
-                  className="relative border-b pb-px transition-colors duration-200 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-                  style={{ color: TOKENS.ink, borderColor: TOKENS.ink }}
-                >
-                  {SECTION.bridgeLinkLabel}
-                </a>{" "}
-                <span aria-hidden="true">→</span>
-              </p>
+                  Deliberately not a card grid: no borders, no shadows, no
+                  rounded corners. Each thumbnail is the raster itself on the
+                  section's white, separated by the same hairline the
+                  capability ledger uses. The canvases are dark, so they read
+                  as a row of windows rather than a component.
+
+                  Bottom-aligned with the text column by construction — see
+                  the height calculation in the wrapper below. */}
+              {hasEvidence && (
+                <div className="mt-5 xl:mt-2">
+                  {/* One row of four. Two rows of four ran the left column
+                      ~64px past the capability ledger opposite; six across
+                      aligned but shrank each canvas to ~112px, where an n8n
+                      graph is a dark smudge rather than evidence. Four lands
+                      ~172px, which is the smallest a canvas can be and still
+                      read as a workflow, and one row keeps the bottom on the
+                      ledger's baseline. The rest stay one press away in the
+                      lightbox. */}
+                  {/* Two across on phones. Four across at 375px puts each
+                      canvas at 76px, which is a texture swatch rather than a
+                      screenshot; the row has no ledger to align to once the
+                      columns stack, so it is free to be legible instead. */}
+                  <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-x-3">
+                    {shots.slice(0, 4).map((s, i) => (
+                      <li key={s.label} className="min-w-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setGalleryStart(i);
+                            setLightboxOpen(true);
+                          }}
+                          aria-label={`Open ${s.label} in the gallery`}
+                          className="group/shot block w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                        >
+                          {/* Fixed aspect so a tall canvas cannot push the
+                              row out of alignment with the text column.
+                              4:3 rather than 16:10: at six across the
+                              thumbnails are ~112px wide, and the squarer
+                              crop both shows more of each canvas and lands
+                              the column's bottom on the ledger's baseline
+                              opposite. */}
+                          <span
+                            className="block w-full overflow-hidden"
+                            style={{
+                              aspectRatio: "4 / 3",
+                              background: TOKENS.stageBg,
+                            }}
+                          >
+                            <img
+                              src={s.src}
+                              alt=""
+                              loading="lazy"
+                              decoding="async"
+                              className="h-full w-full object-cover object-left-top opacity-80 transition-opacity duration-300 group-hover/shot:opacity-100 group-focus-visible/shot:opacity-100"
+                            />
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <p
+                    className="mt-3 max-w-[64ch]"
+                    style={{
+                      color: TOKENS.muted,
+                      fontSize: TYPE.micro,
+                      ...TYPE_STYLE.micro,
+                    }}
+                  >
+                    {SECTION.galleryNote}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

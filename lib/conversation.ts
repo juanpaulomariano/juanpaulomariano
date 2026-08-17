@@ -433,18 +433,24 @@ export const SECTION = {
     "Answers on the first ring, at two in the morning, on a public holiday.",
   /** Named under the Vapi wordmark. */
   stackNote: "Voice on Vapi. Every record lands in GoHighLevel.",
-  /** The honest limitation, in the voice of the white-label section's. A
-      credibility instrument, not a disclaimer.
+  /** The limitation paragraph and the bridge line were both cut when the
+      workflow gallery took the space under the stage. The gallery is the
+      stronger argument: eleven canvases a visitor can open beat a sentence
+      claiming the agent is fast.
 
-      The latency claim is measured from this recording, not estimated:
-      replies land in about 1.6 seconds, and the availability check runs 11
-      from "let me check" to the first slot offered. Saying "short pause"
-      would undersell what a listener actually hears, and a visitor who
-      counts is the reader this section is written for. */
-  limitation:
-    "Bright Hollow is a demonstration practice I built to spec, not a client. The agent replies in about a second and a half, and takes eleven to read the calendar out loud, which is what it sounds like when a booking is real.",
-  /** The bridge to the page's one conversion control. A line, not a button:
-      the page has exactly one filled button and it belongs to the final CTA. */
-  bridgeText: "Want this answering your phones?",
-  bridgeLinkLabel: "Send me a client build",
+      What the paragraph carried that the gallery must not lose is the
+      demonstration-practice disclosure — the only one section 03 had. It
+      now rides on `galleryNote` below, which sits under the thumbnails
+      where the paragraph used to be, so the fact stays on screen at the
+      same moment in the read.
+
+      Cut with it: the measured latency (~1.6s reply, 11s calendar read).
+      Both numbers are real and measured from the recording; if they are
+      ever wanted back, they belong on the stage next to the clock, not in
+      a paragraph. */
+  limitation: "",
+  /** Under the gallery. Carries the disclosure the cut paragraph used to
+      hold, plus what the thumbnails are, in one line. */
+  galleryNote:
+    "The eleven workflows behind the call. Bright Hollow is a demonstration practice I built to spec, not a client.",
 } as const;

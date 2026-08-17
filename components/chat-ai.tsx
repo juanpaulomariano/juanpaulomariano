@@ -50,7 +50,10 @@ export default function ChatAi() {
   return (
     <section
       id="chat"
-      className="px-6 py-20 sm:px-10 sm:py-24"
+      /* py trimmed at xl for the same reason Selected Work trims it: centred,
+         this section stacks its headline, lead, disclosure and a 416px panel
+         in one column, and the padding is the only slack that isn't content. */
+      className="px-6 py-20 sm:px-10 sm:py-24 xl:py-[68px]"
       style={{ background: TOKENS.white }}
     >
       <div className="mx-auto max-w-[1320px]">
@@ -69,9 +72,16 @@ export default function ChatAi() {
           </div>
         </div>
 
-        <div className="mt-8 xl:grid xl:grid-cols-[42fr_58fr] xl:gap-x-14 2xl:gap-x-16">
+        {/* CENTRED, alone among the demonstration sections. Two reasons, and
+            they agree. Compositionally the page now travels middle → left →
+            right → middle rather than anchoring four sections to one edge.
+            And hierarchically this is the only thing on the page a visitor
+            operates directly, so it earns the frame to itself: a text column
+            beside it would be competing with the argument rather than
+            carrying it. */}
+        <div className="mt-8 flex flex-col items-center text-center">
           {/* ── The claim ── */}
-          <div className="min-w-0" style={recede}>
+          <div className="min-w-0 max-w-[42rem]" style={recede}>
             <h2
               style={{
                 fontFamily: "var(--font-grotesk)",
@@ -87,7 +97,7 @@ export default function ChatAi() {
             </h2>
 
             <p
-              className="mt-4 max-w-[46ch]"
+              className="mx-auto mt-4 max-w-[62ch] text-balance"
               style={{
                 color: TOKENS.muted,
                 fontSize: TYPE.body,
@@ -98,8 +108,12 @@ export default function ChatAi() {
             </p>
 
             {CHAT_EMBED.enabled ? (
+              /* Wider measure when centred: at 58ch this ran five short
+                 ragged lines, which reads as a block to get past rather than
+                 a sentence to read. Centred text needs a longer line than
+                 left-aligned text to avoid looking stacked. */
               <p
-                className="mt-5 max-w-[52ch]"
+                className="mx-auto mt-4 max-w-[76ch] text-pretty"
                 style={{
                   color: TOKENS.muted,
                   fontSize: TYPE.micro,
@@ -110,7 +124,7 @@ export default function ChatAi() {
               </p>
             ) : (
               <p
-                className="mt-4 max-w-[46ch]"
+                className="mx-auto mt-4 max-w-[52ch]"
                 style={{
                   color: TOKENS.muted,
                   fontSize: TYPE.small,
@@ -125,8 +139,12 @@ export default function ChatAi() {
           {/* ── The panel ──
               Absent entirely while the embed is disabled: an empty dark box
               saying "not configured" advertises an unfinished feature, where
-              the pending sentence on the left simply tells the truth. */}
-          <div className="mt-9 min-w-0 xl:mt-0">
+              the pending sentence above simply tells the truth.
+
+              Capped at the widget's own 760px: the panel is a window onto a
+              third-party surface of exactly that width, so a wider frame
+              would be dark margin pretending to be design. */}
+          <div className="mt-8 w-full min-w-0 max-w-[760px] text-left">
             {CHAT_EMBED.enabled && (
               <ChatStage
                 reduced={reduced}
@@ -152,7 +170,7 @@ export default function ChatAi() {
                 {CHAT.closeText}{" "}
                 <a
                   href="#contact"
-                  className="press relative border-b pb-px transition-colors duration-200 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+                  className="relative border-b pb-px transition-colors duration-200 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
                   style={{ color: TOKENS.ink, borderColor: TOKENS.ink }}
                 >
                   {CHAT.closeLinkLabel}

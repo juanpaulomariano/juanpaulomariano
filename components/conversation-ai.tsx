@@ -102,9 +102,17 @@ export default function ConversationAi() {
           </div>
         </div>
 
-        <div className="mt-8 xl:grid xl:grid-cols-[42fr_58fr] xl:gap-x-14 2xl:gap-x-16">
+        {/* MIRRORED: the stage takes the left track and the text the right,
+            so the page's composition travels middle → left → right → middle
+            instead of anchoring four consecutive sections to the same edge.
+            The columns swap by grid order, not by DOM order: the claim still
+            comes first in the markup and for a screen reader, because the
+            argument reads before the demonstration regardless of which side
+            the eye finds it on. Stacked below xl, where order is reading
+            order and the text must lead. */}
+        <div className="mt-8 xl:grid xl:grid-cols-[58fr_42fr] xl:gap-x-14 2xl:gap-x-16">
           {/* ── The claim, the receipts, the close ── */}
-          <div className="min-w-0" style={recede}>
+          <div className="min-w-0 xl:order-2" style={recede}>
             <h2
               style={{
                 fontFamily: "var(--font-grotesk)",
@@ -179,7 +187,7 @@ export default function ConversationAi() {
                   onClick={() => openGallery(c.galleryTarget)}
                   disabled={!hasEvidence}
                   aria-label={`${c.label}. Opens the ${c.galleryTarget} workflow in the gallery.`}
-                  className="press group/cap block w-full border-t py-2 text-left first:border-t-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
+                  className="group/cap block w-full border-t py-2 text-left first:border-t-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
                   style={{ borderColor: TOKENS.hair }}
                 >
                   <span
@@ -225,7 +233,7 @@ export default function ConversationAi() {
           {/* ── The stage, then the close ──
               Reading order after the demo IS the conversion order: the
               receipts, the honesty line, the bridge. */}
-          <div className="mt-9 min-w-0 xl:mt-0">
+          <div className="mt-9 min-w-0 xl:order-1 xl:mt-0">
             <CallStage channel={voice} reduced={reduced} onPhase={handlePhase} />
 
             <div style={recede}>
@@ -250,7 +258,7 @@ export default function ConversationAi() {
                   <button
                     type="button"
                     onClick={() => openGallery()}
-                    className="press group/all relative inline-flex shrink-0 items-center gap-2 border-b pb-0.5 transition-colors duration-300 before:absolute before:-inset-x-1 before:-inset-y-3 before:content-[''] hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+                    className="group/all relative inline-flex shrink-0 items-center gap-2 border-b pb-0.5 transition-colors duration-300 before:absolute before:-inset-x-1 before:-inset-y-3 before:content-[''] hover:border-[#C0392B] hover:text-[#C0392B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
                     style={{
                       borderColor: TOKENS.ink,
                       color: TOKENS.ink,

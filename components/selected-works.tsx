@@ -57,6 +57,12 @@ import { PROJECTS, type Project, type Shot } from "@/lib/works";
 
 export default function SelectedWorks() {
   const [activeKey, setActiveKey] = useState(PROJECTS[0].key);
+  /* Which way the selection travelled along the rail, so the incoming stage
+     enters from the direction the eye just moved: pick a project below the
+     current one and the new stage rises from beneath it. The swap stops being
+     a generic reveal and starts carrying the same spatial information the
+     rail does. */
+  const [dir, setDir] = useState<1 | -1>(1);
   const [videoOpen, setVideoOpen] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryStart, setGalleryStart] = useState(0);
@@ -142,7 +148,12 @@ export default function SelectedWorks() {
                   aria-controls={`stage-${p.key}`}
                   id={`tab-${p.key}`}
                   type="button"
-                  onClick={() => setActiveKey(p.key)}
+                  onClick={() => {
+                    const from = PROJECTS.findIndex((x) => x.key === activeKey);
+                    const to = PROJECTS.findIndex((x) => x.key === p.key);
+                    if (to !== from) setDir(to > from ? 1 : -1);
+                    setActiveKey(p.key);
+                  }}
                   /* The whole row is the target, and the accent rule slides
                      along the left edge on desktop rather than capping the top
                      border, so selecting a project reads as moving a marker
@@ -229,7 +240,11 @@ export default function SelectedWorks() {
             />
             {/* key remounts on selection so the entrance replays; see
                 `.stage-in` in globals.css for why it exists. */}
-            <div key={active.key} className="stage-in">
+            <div
+              key={active.key}
+              className="stage-in"
+              style={{ "--stage-from": `${dir * 8}px` } as React.CSSProperties}
+            >
               <Stage
                 project={active}
                 onPlay={() => setVideoOpen(true)}

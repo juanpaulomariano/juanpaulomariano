@@ -26,3 +26,6 @@ assets/*.mp3
 
 # Impeccable working files: review captures are evidence, not assets
 .impeccable/review/
+
+.vercel
+.env*

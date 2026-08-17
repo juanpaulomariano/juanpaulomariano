@@ -20,15 +20,21 @@
 export const CHAT = {
   titleTop: "Same practice.",
   titleBottom: "Now type to it.",
-  /* The claim is stated as CAPABILITY, not as a description of this demo.
-     A client build puts voice and chat in one sub-account sharing one
-     calendar and one contact record; this demo runs them in two accounts,
-     so "the chat books into the same calendar" — the earlier wording —
-     would have been false as shipped. A visitor who checks a claim against
-     the evidence and finds them disagreeing has caught the site lying, and
-     that costs more than the sentence was worth. */
+  /* Short on purpose. This section centres, and centred text has no fixed
+     left edge for the eye to return to, so every extra line costs more here
+     than it would in a column. The earlier lead spent two of its three
+     sentences explaining sub-account architecture to a reader whose only job
+     is to start typing.
+
+     What was cut: "on a client build, voice and chat share one calendar and
+     one contact record". That precision existed to stop the section claiming
+     a shared calendar it does not have in this demo. The claim is simply
+     gone now rather than hedged, which settles the same honesty problem
+     without spending three lines on it. Do not reintroduce the plumbing
+     here; if it needs saying, it belongs in the receipts, not above the
+     thing itself. */
   lead:
-    "The receptionist that answers Bright Hollow's phone also answers its website. On a client build, voice and chat share one calendar and one contact record; here they run side by side so you can try the chat yourself.",
+    "The receptionist that answers Bright Hollow's phone also answers its website. Try it.",
   /** Honest pending state, shown when CHAT_EMBED.enabled is false. */
   pendingNote:
     "The chat agent is being built in GoHighLevel. It goes live here once it is booking reliably.",
@@ -51,9 +57,17 @@ export const CHAT = {
   closeText: "That's the same agent that answers the phone.",
   closeLinkLabel: "Have one built for your business",
 
-  /** Under the panel once the chat is live. */
+  /* Above the panel once the chat is live. Carries the only two facts a
+     visitor needs BEFORE typing: this is not a real dentist, and a third
+     party reads what they write.
+
+     It used to run three sentences and say "GoHighLevel" three times, which
+     was the third telling — the panel header already names the practice and
+     the widget's own subtitle already calls it a demonstration. The full
+     detail lives at /privacy, linked from the footer, which is where
+     someone who wants it will look. */
   liveNote:
-    "This is a live GoHighLevel Conversation AI agent answering as Bright Hollow Family Dental, a demonstration practice I built to spec. Loading it contacts GoHighLevel, and what you type is processed by GoHighLevel and OpenAI. Don't type anything you wouldn't send a stranger.",
+    "A real agent, on a demonstration practice. What you type goes to GoHighLevel and OpenAI.",
 
   /* ── Failure states. Neither invents a reason; both leave the visitor
      somewhere useful. ── */

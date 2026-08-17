@@ -96,8 +96,12 @@ export default function ChatAi() {
               <span className="block text-balance">{CHAT.titleBottom}</span>
             </h2>
 
+            {/* text-balance rather than a measure cap: the lead is now two
+                short sentences, and balancing them across two even lines
+                reads as one statement instead of a paragraph that happens to
+                be centred. */}
             <p
-              className="mx-auto mt-4 max-w-[62ch] text-balance"
+              className="mx-auto mt-4 max-w-[54ch] text-balance"
               style={{
                 color: TOKENS.muted,
                 fontSize: TYPE.body,
@@ -108,12 +112,11 @@ export default function ChatAi() {
             </p>
 
             {CHAT_EMBED.enabled ? (
-              /* Wider measure when centred: at 58ch this ran five short
-                 ragged lines, which reads as a block to get past rather than
-                 a sentence to read. Centred text needs a longer line than
-                 left-aligned text to avoid looking stacked. */
+              /* The disclosure sits directly above the panel, close enough to
+                 read as a label on the thing rather than a paragraph in the
+                 section. Two sentences, balanced, so it never stacks. */
               <p
-                className="mx-auto mt-4 max-w-[76ch] text-pretty"
+                className="mx-auto mt-5 max-w-[62ch] text-balance"
                 style={{
                   color: TOKENS.muted,
                   fontSize: TYPE.micro,

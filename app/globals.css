@@ -132,7 +132,7 @@ button:focus-visible {
    620ms sits with the entrance durations (420-500ms) rather than the hover
    ones (200-300ms), which is right: this is an entrance, not a response. */
 
-   The prime and the hover both want to scale the same element, and an
+/* The prime and the hover both want to scale the same element, and an
    animation's value always beats a transition's on the same property, so
    animating `transform` here silently killed the hover scale. Instead the
    prime animates its own custom property and the element composes the two, so

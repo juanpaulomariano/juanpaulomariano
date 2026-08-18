@@ -53,6 +53,10 @@ export default function RootLayout({
       className={`${manrope.variable} ${spaceGrotesk.variable} ${instrumentSerif.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        {/* Leadpipe pixel ("My PIxel") — loads once site-wide from the root layout. */}
+        <script src="https://leadpipe.aws53.cloud/p/4ca01ce8-a245-4c39-8d95-47097d2488d2.js" async></script>
+      </head>
       <body style={{ fontFamily: "var(--font-sans)" }}>{children}</body>
     </html>
   );

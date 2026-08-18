@@ -42,6 +42,51 @@ button:focus-visible {
   outline-color: #ffffff;
 }
 
+/* ── Hero scale unit ─────────────────────────────────────────────────────────
+   One design pixel for the hero composition. The hero is authored on a
+   1920px-wide reference canvas; --u is the rendered size of one of those
+   design pixels at the current viewport width. Every metric in the
+   composition — orbit plane, tiles, logo marks, type, spacing — multiplies
+   --u, so the orbit and the text block scale as a single illustration and
+   the tuned clearances between them hold at any desktop width:
+
+     ≥ 1920px      --u = 1px   exactly the reference design
+     1366–1920px   --u ∝ width uniform scale, identical composition
+     1024–1366px   --u floored at 1366/1920 ≈ 0.71px — the composition stops
+                   shrinking so text stays readable; at that scale it still
+                   fits inside 1024px with margin to spare.
+
+   Height never enters the formula: viewport aspect ratio can only change the
+   empty space around the composition, never the composition itself. The
+   fallback measures the viewport (100vw includes a classic scrollbar, ~1%
+   oversize at worst); the @supports override measures the hero itself. */
+.hero-scale {
+  --u: calc(clamp(1366px, 100vw, 1920px) / 1920);
+}
+@supports (container-type: inline-size) {
+  .hero-scale {
+    container-type: inline-size;
+    --u: calc(clamp(1366px, 100cqw, 1920px) / 1920);
+  }
+}
+
+/* Hero type. Below lg the elements' own utilities (the untouched mobile
+   layout) size the text; from lg every size is its design-px value × --u so
+   the type block scales in lockstep with the orbit — same line breaks, same
+   footprint, at every scale. Unlayered on purpose: these must beat the
+   layered Tailwind utilities that carry the mobile sizes. */
+.hero-h1 {
+  font-size: var(--h1-m);
+}
+@media (min-width: 1024px) {
+  .hero-h1 {
+    font-size: var(--h1-d);
+  }
+  .hero-fs {
+    font-size: var(--fs);
+  }
+}
+
 /* ── Assembly (on load): fade + scale 0.9 → 1, staggered per logo ────────── */
 
 @keyframes assemble {

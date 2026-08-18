@@ -56,11 +56,12 @@ const SCALE_MIN = 0.58;
 const SCALE_MAX = 1.26;
 const OPACITY_FLOOR = 0.72;
 
-/** Tile box size (px) and how much the mark is enlarged inside it. */
+/** Tile box size (design px — rendered as × --u) and how much the mark is
+    enlarged inside it. */
 const TILE_PX = 80;
 const MARK_SCALE = 1.16;
 
-/* Sizes are per-logo rendered widths (px), tuned to each file's aspect ratio
+/* Sizes are per-logo rendered widths (design px), tuned to each file's aspect ratio
    so optical mass matches — wide marks (n8n 1.9:1, vapi 3.1:1, make 1.4:1)
    get more width than square icons; gohighlevel's art has built-in padding
    inside its viewBox so it gets extra. */
@@ -100,7 +101,14 @@ const LOGOS = [
    via calc(), which is what keeps both worlds in exact register. */
 
 const PERSP_FRAC = 1.6; // perspective distance = 1.6 × plane size
-const PLANE_SIZE = "min(94vw, 132vh, 1280px)";
+
+/** Plane size: 1280 design px (see --u in globals.css). At ≥1920px viewports
+    --u is 1px, so this is the same 1280px the old min(94vw, 132vh, 1280px)
+    formula capped at on large screens; below that the plane follows --u in
+    lockstep with the text block. Never a function of viewport height — the
+    old vh term shrank the orbit while the text stayed put, which is what let
+    arcs drift under the headline on laptop screens. */
+const PLANE_SIZE = "calc(var(--u) * 1280)";
 
 /** Per-layer shape (relative to the outer axes), speed, and starting phase.
 
@@ -238,6 +246,13 @@ const DOT_SPECS = [
 
 type FontKey = "grotesk" | "serif" | "manrope";
 
+/* Each face carries two sizes (see .hero-h1 in globals.css): `--h1-m` is the
+   original fluid clamp, still used below lg where the mobile layout is
+   untouched; `--h1-d` is the clamp's old cap expressed in design px × --u,
+   used from lg so the headline scales in lockstep with the orbit instead of
+   on its own vw curve — the size mismatch that used to let the orbit drift
+   under the text on laptop widths. Inline `fontSize` would override the
+   media-queried class, so the values travel as custom properties. */
 const HEADLINE_FONTS: Record<
   FontKey,
   { className: string; style: CSSProperties }
@@ -246,22 +261,25 @@ const HEADLINE_FONTS: Record<
     className: "font-bold tracking-[-0.02em] leading-[1.05]",
     style: {
       fontFamily: "var(--font-grotesk)",
-      fontSize: "clamp(2.5rem, 4.6vw, 3.9rem)",
-    },
+      "--h1-m": "clamp(2.5rem, 4.6vw, 3.9rem)",
+      "--h1-d": "calc(var(--u) * 62.4)",
+    } as CSSProperties,
   },
   serif: {
     className: "font-normal tracking-[-0.005em] leading-[1.03]",
     style: {
       fontFamily: "var(--font-serif)",
-      fontSize: "clamp(2.8rem, 5.2vw, 4.5rem)",
-    },
+      "--h1-m": "clamp(2.8rem, 5.2vw, 4.5rem)",
+      "--h1-d": "calc(var(--u) * 72)",
+    } as CSSProperties,
   },
   manrope: {
     className: "font-extrabold tracking-[-0.025em] leading-[1.06]",
     style: {
       fontFamily: "var(--font-sans)",
-      fontSize: "clamp(2.45rem, 4.5vw, 3.8rem)",
-    },
+      "--h1-m": "clamp(2.45rem, 4.5vw, 3.8rem)",
+      "--h1-d": "calc(var(--u) * 60.8)",
+    } as CSSProperties,
   },
 };
 
@@ -374,7 +392,7 @@ export default function Hero() {
           "--plane-s": PLANE_SIZE,
         } as CSSProperties
       }
-      className="relative flex min-h-screen flex-col overflow-hidden bg-white text-[#0A0A0A]"
+      className="hero-scale relative flex min-h-screen flex-col overflow-hidden bg-white text-[#0A0A0A]"
     >
       {/* ── Top bar ── */}
       <header className="relative z-20 flex items-center justify-between px-6 py-6 sm:px-10">
@@ -544,16 +562,16 @@ export default function Hero() {
                   <div
                     className={`group pointer-events-auto relative flex items-center justify-center transition-[transform,background-color,border-color] duration-200 ease-out hover:scale-[1.08] ${
                       tiles
-                        ? "rounded-xl border border-black/10 bg-white hover:border-black/20"
+                        ? "rounded-[calc(var(--u)*12)] border border-black/10 bg-white hover:border-black/20"
                         : ""
                     }`}
                     style={
                       tiles
                         ? {
-                            width: TILE_PX,
-                            height: TILE_PX,
+                            width: `calc(var(--u) * ${TILE_PX})`,
+                            height: `calc(var(--u) * ${TILE_PX})`,
                             boxShadow:
-                              "0 20px 40px -16px rgba(10,10,10,var(--tile-shadow-a,0.18)), 0 2px 8px -2px rgba(10,10,10,0.06)",
+                              "0 calc(var(--u)*20) calc(var(--u)*40) calc(var(--u)*-16) rgba(10,10,10,var(--tile-shadow-a,0.18)), 0 calc(var(--u)*2) calc(var(--u)*8) calc(var(--u)*-2) rgba(10,10,10,0.06)",
                           }
                         : undefined
                     }
@@ -563,7 +581,7 @@ export default function Hero() {
                       alt={logo.label}
                       width={Math.round(logo.size * MARK_SCALE)}
                       style={{
-                        width: Math.round(logo.size * MARK_SCALE),
+                        width: `calc(var(--u) * ${Math.round(logo.size * MARK_SCALE)})`,
                         height: "auto",
                       }}
                       draggable={false}
@@ -586,18 +604,18 @@ export default function Hero() {
             tagged — the mobile row already enters via `.assemble` and the
             desktop orbit is its own animated system, and one entrance per
             element is the kit's law. */}
-        <div className="hero-enter relative z-10 flex flex-col items-center px-6 py-16 text-center">
+        <div className="hero-enter relative z-10 flex flex-col items-center px-6 py-16 text-center lg:px-[calc(var(--u)*24)] lg:py-[calc(var(--u)*64)]">
           <p
             data-hero
-            style={{ "--i": 0 } as CSSProperties}
-            className="text-[12px] tracking-[0.14em] text-[#5E5E5E]"
+            style={{ "--i": 0, "--fs": "calc(var(--u) * 12)" } as CSSProperties}
+            className="hero-fs text-[12px] tracking-[0.14em] text-[#5E5E5E]"
           >
             GoHighLevel · Automation · Custom builds
           </p>
 
           <h1
             data-hero
-            className={`mt-5 max-w-[14em] text-balance ${headline.className}`}
+            className={`hero-h1 mt-5 max-w-[14em] text-balance lg:mt-[calc(var(--u)*20)] ${headline.className}`}
             style={{ ...headline.style, "--i": 1 } as CSSProperties}
           >
             Your best client keeps asking for things GoHighLevel{" "}
@@ -615,8 +633,8 @@ export default function Hero() {
               page for no reason. */}
           <p
             data-hero
-            style={{ "--i": 2 } as CSSProperties}
-            className="mt-6 max-w-[34em] text-[14.5px] leading-[1.75] text-[#444444]"
+            style={{ "--i": 2, "--fs": "calc(var(--u) * 14.5)" } as CSSProperties}
+            className="hero-fs mt-6 max-w-[34em] text-[14.5px] leading-[1.75] text-[#444444] lg:mt-[calc(var(--u)*24)]"
           >
             I build the CRM, the automation, and the custom code for when the
             platform runs out. Under your brand, handed off clean. That’s the
@@ -626,17 +644,19 @@ export default function Hero() {
           <div
             data-hero
             style={{ "--i": 3 } as CSSProperties}
-            className="mt-9 flex flex-wrap items-center justify-center gap-3"
+            className="mt-9 flex flex-wrap items-center justify-center gap-3 lg:mt-[calc(var(--u)*36)] lg:gap-[calc(var(--u)*12)]"
           >
             <a
               href="#contact"
-              className="rounded-full bg-[#0A0A0A] px-6 py-3 text-[13.5px] font-medium text-white transition-colors duration-300 hover:bg-[var(--accent)]"
+              style={{ "--fs": "calc(var(--u) * 13.5)" } as CSSProperties}
+              className="hero-fs rounded-full bg-[#0A0A0A] px-6 py-3 text-[13.5px] font-medium text-white transition-colors duration-300 hover:bg-[var(--accent)] lg:px-[calc(var(--u)*24)] lg:py-[calc(var(--u)*12)]"
             >
               Send me a client build
             </a>
             <a
               href="#work"
-              className="rounded-full border-[0.5px] border-black/20 px-6 py-3 text-[13.5px] font-medium text-[#0A0A0A] transition-colors duration-300 hover:border-black/45 hover:bg-black/[0.03]"
+              style={{ "--fs": "calc(var(--u) * 13.5)" } as CSSProperties}
+              className="hero-fs rounded-full border-[0.5px] border-black/20 px-6 py-3 text-[13.5px] font-medium text-[#0A0A0A] transition-colors duration-300 hover:border-black/45 hover:bg-black/[0.03] lg:px-[calc(var(--u)*24)] lg:py-[calc(var(--u)*12)]"
             >
               See my work
             </a>
